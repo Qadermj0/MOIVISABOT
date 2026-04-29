@@ -1,9 +1,42 @@
+import re
+
+
+OCCUPATION_VARIANTS = {
+    "نائب": ["نائب", "نواب", "نائبه", "نائبة"],
+    "عضو مجلس": ["عضو مجلس", "عضو مجالس", "اعضاء مجلس", "اعضاء مجالس", "مجالس"],
+    "عضو المجالس": ["عضو مجلس", "عضو مجالس", "اعضاء مجلس", "اعضاء مجالس", "مجالس"],
+    "رئيس": ["رئيس", "رؤساء", "رئيسه", "رئيسة"],
+    "مساعد": ["مساعد", "مساعدين", "مساعديهم"],
+}
+
+
 def normalize_text(value):
     text = str(value or "").strip().lower()
     text = text.replace("أ", "ا").replace("إ", "ا").replace("آ", "ا")
+    text = text.replace("ؤ", "و").replace("ئ", "ي")
     text = text.replace("ى", "ي").replace("ة", "ه")
-    text = text.replace("ال", "")
+    text = re.sub(r"[^\w\s\u0600-\u06ff]", " ", text)
+    text = re.sub(r"\bال", "", text)
+    text = re.sub(r"\s+", " ", text).strip()
     return text
+
+
+def occupation_search_terms(user_occupation: str):
+    normalized = normalize_text(user_occupation)
+    terms = {normalized}
+
+    for source, variants in OCCUPATION_VARIANTS.items():
+        source_norm = normalize_text(source)
+        if source_norm and (source_norm in normalized or normalized in source_norm):
+            terms.update(normalize_text(variant) for variant in variants)
+
+    if "نائب" in normalized:
+        terms.add("نواب")
+
+    if "عضو" in normalized and "مجلس" in normalized:
+        terms.update(["اعضاء مجالس", "اعضاء مجلس", "مجالس"])
+
+    return [term for term in terms if term]
 
 
 def extract_first_visa_data(api_response):
@@ -48,7 +81,7 @@ def occupation_matches(user_occupation: str, occupations: list):
     if not user_occupation:
         return False, None
 
-    user_text = normalize_text(user_occupation)
+    user_terms = occupation_search_terms(user_occupation)
 
     for occ in occupations:
         if not isinstance(occ, dict):
@@ -70,11 +103,12 @@ def occupation_matches(user_occupation: str, occupations: list):
 
             name_norm = normalize_text(name)
 
-            if user_text in name_norm or name_norm in user_text:
-                return True, name
+            for user_text in user_terms:
+                if user_text in name_norm or name_norm in user_text:
+                    return True, name
 
-            if user_text.rstrip("ونين") in name_norm:
-                return True, name
+                if user_text.rstrip("ونين") in name_norm:
+                    return True, name
 
     return False, None
 

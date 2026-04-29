@@ -125,6 +125,16 @@ CONTEXT_COUNTRY_QUESTIONS = [
 ]
 
 KNOWN_OCCUPATIONS = [
+    "استاذ",
+    "أستاذ",
+    "أستاذة",
+    "استاذة",
+    "نائب",
+    "نائبة",
+    "عضو مجلس",
+    "عضو المجالس",
+    "رئيس",
+    "رئيسة",
     "مهندس",
     "مهندسة",
     "طبيب",
@@ -326,6 +336,8 @@ def extract_occupation(text: str):
 
     patterns = [
         r"(?:مهنتي|وظيفتي|اعمل ك|أعمل ك|انا اعمل ك|انا أعمل ك)\s+([^\d،,.!?]{2,40})",
+        r"(?:اشتغل|أشتغل|انا اشتغل|انا أشتغل|اعمل|أعمل|شغلي|عملي)\s+([^\d،,.!?]{2,40})",
+        r"(?:لو مهنتي|اذا مهنتي|إذا مهنتي|مهنتي|لو كنت|اذا كنت|إذا كنت|كنت)\s+([^\d،,.!?]{2,40})",
         r"(?:my job is|i work as|occupation is)\s+([a-zA-Z\s]{2,40})",
     ]
 
@@ -336,8 +348,9 @@ def extract_occupation(text: str):
 
         candidate = match.group(1).strip()
         candidate_norm = normalize_text(candidate)
+        candidate_norm = re.sub(r"^(هي|هو|اني|انا)\s+", "", candidate_norm).strip()
         if not candidate_norm.startswith("من ") and not has_any(candidate, VISA_WORDS + LIST_WORDS):
-            return candidate
+            return candidate_norm or candidate
 
     return None
 

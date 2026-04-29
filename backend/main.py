@@ -47,6 +47,19 @@ class FormCheckRequest(BaseModel):
     relationship: str | None = None
 
 
+def final_answer(user_message: str, decision: dict, session: dict, extracted: dict):
+    fallback_answer = build_chat_answer(user_message, decision, session, extracted)
+    gemini_answer = gemini_service.generate_final_answer(
+        user_message=user_message,
+        decision=decision,
+        fallback_answer=fallback_answer,
+    )
+    decision["answer_source"] = "gemini" if gemini_answer else "fallback"
+    if gemini_service.last_error:
+        decision["gemini_error"] = gemini_service.last_error
+    return gemini_answer or fallback_answer
+
+
 @app.get("/api/health")
 def health():
     return {"status": "ok"}
@@ -146,7 +159,7 @@ def chat(req: ChatRequest):
         }
 
         return {
-            "answer": build_chat_answer(req.message, decision, session, extracted),
+            "answer": final_answer(req.message, decision, session, extracted),
             "context": session,
             "extracted": extracted,
             "decision": decision
@@ -163,7 +176,7 @@ def chat(req: ChatRequest):
         }
 
         return {
-            "answer": build_chat_answer(req.message, decision, session, extracted),
+            "answer": final_answer(req.message, decision, session, extracted),
             "context": session,
             "extracted": extracted,
             "decision": decision
@@ -180,7 +193,7 @@ def chat(req: ChatRequest):
             }
 
             return {
-                "answer": build_chat_answer(req.message, decision, session, extracted),
+                "answer": final_answer(req.message, decision, session, extracted),
                 "context": session,
                 "extracted": extracted,
                 "decision": decision
@@ -195,7 +208,7 @@ def chat(req: ChatRequest):
         }
 
         return {
-            "answer": build_chat_answer(req.message, decision, session, extracted),
+            "answer": final_answer(req.message, decision, session, extracted),
             "context": session,
             "extracted": extracted,
             "decision": decision
@@ -212,7 +225,7 @@ def chat(req: ChatRequest):
             }
 
             return {
-                "answer": build_chat_answer(req.message, decision, session, extracted),
+                "answer": final_answer(req.message, decision, session, extracted),
                 "context": session,
                 "extracted": extracted,
                 "decision": decision
@@ -228,7 +241,7 @@ def chat(req: ChatRequest):
         }
 
         return {
-            "answer": build_chat_answer(req.message, decision, session, extracted),
+            "answer": final_answer(req.message, decision, session, extracted),
             "context": session,
             "extracted": extracted,
             "decision": decision
@@ -243,7 +256,7 @@ def chat(req: ChatRequest):
         }
 
         return {
-            "answer": build_chat_answer(req.message, decision, session, extracted),
+            "answer": final_answer(req.message, decision, session, extracted),
             "context": session,
             "extracted": extracted,
             "decision": decision
@@ -263,9 +276,15 @@ def chat(req: ChatRequest):
 
     decision["intent"] = intent
     decision["raw_visa_details"] = visa_data
+    decision["applicant_data"] = {
+        "age": session.get("age"),
+        "occupation": session.get("occupation"),
+        "gender": session.get("gender"),
+        "relationship": extracted.get("relationship") or session.get("relationship"),
+    }
 
     return {
-        "answer": build_chat_answer(req.message, decision, session, extracted),
+        "answer": final_answer(req.message, decision, session, extracted),
         "context": session,
         "extracted": extracted,
         "decision": decision
