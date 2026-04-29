@@ -1,0 +1,1616 @@
+[
+  {
+    "country_name_ar": "منغوليا",
+    "country_name_en": "20 gnitSET",
+    "ocr_code": "MNG",
+    "country_code": 162
+  },
+  {
+    "country_name_ar": "أفغانستان",
+    "country_name_en": "AFGHANISTAN",
+    "ocr_code": "AFG",
+    "country_code": 144
+  },
+  {
+    "country_name_ar": "اكروتيري ودكليا",
+    "country_name_en": "AKROTIRI AND DHEKELIA",
+    "ocr_code": "YC١",
+    "country_code": 299
+  },
+  {
+    "country_name_ar": "جزيرة الآند",
+    "country_name_en": "ALAND ISLANDS",
+    "ocr_code": "ALA",
+    "country_code": 291
+  },
+  {
+    "country_name_ar": "ألبانيا",
+    "country_name_en": "ALBANIA",
+    "ocr_code": "ALB",
+    "country_code": 94
+  },
+  {
+    "country_name_ar": "الجزائر",
+    "country_name_en": "ALGERIA",
+    "ocr_code": "DZA",
+    "country_code": 15
+  },
+  {
+    "country_name_ar": "ساموا الامريكية",
+    "country_name_en": "AMERICAN SAMOA",
+    "ocr_code": "ASM",
+    "country_code": 304
+  },
+  {
+    "country_name_ar": "أندورا",
+    "country_name_en": "ANDORRA",
+    "ocr_code": "AND",
+    "country_code": 69
+  },
+  {
+    "country_name_ar": "انغولا",
+    "country_name_en": "ANGOLA",
+    "ocr_code": "AGO",
+    "country_code": 25
+  },
+  {
+    "country_name_ar": "انغويلا",
+    "country_name_en": "ANGUILLA",
+    "ocr_code": "AIA",
+    "country_code": 286
+  },
+  {
+    "country_name_ar": "القارة القطبية الجنوبية",
+    "country_name_en": "ANTARCTICA",
+    "ocr_code": "ATA",
+    "country_code": 283
+  },
+  {
+    "country_name_ar": "انتيجوا وبربودا",
+    "country_name_en": "ANTIGUA AND BARBUDA",
+    "ocr_code": "ATG",
+    "country_code": 257
+  },
+  {
+    "country_name_ar": "الأرجنتين",
+    "country_name_en": "ARGENTINA",
+    "ocr_code": "ARG",
+    "country_code": 105
+  },
+  {
+    "country_name_ar": "أرمينيا",
+    "country_name_en": "ARMINIA",
+    "ocr_code": "ARM",
+    "country_code": 196
+  },
+  {
+    "country_name_ar": "الأروبا - جزر",
+    "country_name_en": "ARUBA",
+    "ocr_code": "ABW",
+    "country_code": 106
+  },
+  {
+    "country_name_ar": "أستراليا",
+    "country_name_en": "AUSTRALIA",
+    "ocr_code": "AUS",
+    "country_code": 173
+  },
+  {
+    "country_name_ar": "النمسا",
+    "country_name_en": "AUSTRIA",
+    "ocr_code": "AUT",
+    "country_code": 91
+  },
+  {
+    "country_name_ar": "اذربيجان",
+    "country_name_en": "AZERBAIJAN",
+    "ocr_code": "AZE",
+    "country_code": 204
+  },
+  {
+    "country_name_ar": "الباهاما - جزر",
+    "country_name_en": "BAHAMAS",
+    "ocr_code": "BHS",
+    "country_code": 125
+  },
+  {
+    "country_name_ar": "البحرين",
+    "country_name_en": "BAHRAIN",
+    "ocr_code": "BHR",
+    "country_code": 17
+  },
+  {
+    "country_name_ar": "بنجلاديش",
+    "country_name_en": "BANGLADESH",
+    "ocr_code": "BGD",
+    "country_code": 145
+  },
+  {
+    "country_name_ar": "باربادوس​ - جزر",
+    "country_name_en": "BARBADOS",
+    "ocr_code": "BRB",
+    "country_code": 107
+  },
+  {
+    "country_name_ar": "بيلاروس",
+    "country_name_en": "BELARUS",
+    "ocr_code": "BLR",
+    "country_code": 205
+  },
+  {
+    "country_name_ar": "بلجيكا",
+    "country_name_en": "BELGIUM",
+    "ocr_code": "BEL",
+    "country_code": 70
+  },
+  {
+    "country_name_ar": "بليز",
+    "country_name_en": "BELIZE",
+    "ocr_code": "BLZ",
+    "country_code": 186
+  },
+  {
+    "country_name_ar": "بنين",
+    "country_name_en": "BENIN",
+    "ocr_code": "BEN",
+    "country_code": 30
+  },
+  {
+    "country_name_ar": "بيرمودا - جزر",
+    "country_name_en": "BERMUDA",
+    "ocr_code": "BMU",
+    "country_code": 127
+  },
+  {
+    "country_name_ar": "بوتان",
+    "country_name_en": "BHUTAN",
+    "ocr_code": "BTN",
+    "country_code": 146
+  },
+  {
+    "country_name_ar": "البوسنة والهرسك",
+    "country_name_en": "BINSOA AND HERZEGOVINA",
+    "ocr_code": "BIH",
+    "country_code": 202
+  },
+  {
+    "country_name_ar": "بولينيا",
+    "country_name_en": "BOLINIA",
+    "ocr_code": "-",
+    "country_code": 181
+  },
+  {
+    "country_name_ar": "بوليفيا",
+    "country_name_en": "BOLIVIA",
+    "ocr_code": "BOL",
+    "country_code": 108
+  },
+  {
+    "country_name_ar": "بوتسوانا",
+    "country_name_en": "BOTSWANA",
+    "ocr_code": "BWA",
+    "country_code": 26
+  },
+  {
+    "country_name_ar": "جزيرة بوفية",
+    "country_name_en": "BOUVET ISLAND",
+    "ocr_code": "BVT",
+    "country_code": 285
+  },
+  {
+    "country_name_ar": "البرازيل",
+    "country_name_en": "BRAZIL",
+    "ocr_code": "BRA",
+    "country_code": 109
+  },
+  {
+    "country_name_ar": "اقليم المحيط الهندي البريطاني",
+    "country_name_en": "BRITISH INDIAN OCEAN TERRITORY",
+    "ocr_code": "IOT",
+    "country_code": 282
+  },
+  {
+    "country_name_ar": "جزر فيرجن البريطانية",
+    "country_name_en": "BRITISH VIRGIN ISLANDS",
+    "ocr_code": "BGV",
+    "country_code": 271
+  },
+  {
+    "country_name_ar": "بوروني",
+    "country_name_en": "BRUNEI",
+    "ocr_code": "BRN",
+    "country_code": 147
+  },
+  {
+    "country_name_ar": "بلغاريا",
+    "country_name_en": "BULGARIA",
+    "ocr_code": "BGR",
+    "country_code": 95
+  },
+  {
+    "country_name_ar": "بوركينا فاصو",
+    "country_name_en": "BURKINA FASO",
+    "ocr_code": "BFA",
+    "country_code": 63
+  },
+  {
+    "country_name_ar": "بوروندي",
+    "country_name_en": "BURUNDI",
+    "ocr_code": "BDI",
+    "country_code": 27
+  },
+  {
+    "country_name_ar": "كمبوديا",
+    "country_name_en": "CAMBODIA",
+    "ocr_code": "KHM",
+    "country_code": 148
+  },
+  {
+    "country_name_ar": "الكاميرون",
+    "country_name_en": "CAMEROON",
+    "ocr_code": "CMR",
+    "country_code": 28
+  },
+  {
+    "country_name_ar": "كندا",
+    "country_name_en": "CANADA",
+    "ocr_code": "CAN",
+    "country_code": 128
+  },
+  {
+    "country_name_ar": "جزرالكاج فردس",
+    "country_name_en": "CAYMAN ISLANDS",
+    "ocr_code": "CYM",
+    "country_code": 38
+  },
+  {
+    "country_name_ar": "أفريقيا الوسطى",
+    "country_name_en": "CENTRAL AFRICA",
+    "ocr_code": "CAF",
+    "country_code": 29
+  },
+  {
+    "country_name_ar": "تشاد",
+    "country_name_en": "CHAD",
+    "ocr_code": "TCD",
+    "country_code": 56
+  },
+  {
+    "country_name_ar": "الشيشان",
+    "country_name_en": "CHECHENIA",
+    "ocr_code": "AAA",
+    "country_code": 229
+  },
+  {
+    "country_name_ar": "تشيلي",
+    "country_name_en": "CHILE",
+    "ocr_code": "CHL",
+    "country_code": 110
+  },
+  {
+    "country_name_ar": "جزيرة كريسميس",
+    "country_name_en": "CHRISTMAS ISLAND",
+    "ocr_code": "CXR",
+    "country_code": 284
+  },
+  {
+    "country_name_ar": "كوراكاو - جزر",
+    "country_name_en": "COCOS ISLANDS",
+    "ocr_code": "CCK",
+    "country_code": 121
+  },
+  {
+    "country_name_ar": "كولومبيا",
+    "country_name_en": "COLOMBIA",
+    "ocr_code": "COL",
+    "country_code": 111
+  },
+  {
+    "country_name_ar": "الكونغو الديمقراطية",
+    "country_name_en": "CONGO DEMOCRATIC",
+    "ocr_code": "COG",
+    "country_code": 67
+  },
+  {
+    "country_name_ar": "الكونغو الديمقراطية",
+    "country_name_en": "CONGO DEMOCRATIC",
+    "ocr_code": "COD",
+    "country_code": 67
+  },
+  {
+    "country_name_ar": "كوك - جزر",
+    "country_name_en": "COOK ISLAND",
+    "ocr_code": "COK",
+    "country_code": 174
+  },
+  {
+    "country_name_ar": "كوستاريكا",
+    "country_name_en": "COSTA RICA",
+    "ocr_code": "CRI",
+    "country_code": 129
+  },
+  {
+    "country_name_ar": "كرواتيا",
+    "country_name_en": "CROATIA",
+    "ocr_code": "HRV",
+    "country_code": 100
+  },
+  {
+    "country_name_ar": "كوبا",
+    "country_name_en": "CUBA",
+    "ocr_code": "CUB",
+    "country_code": 130
+  },
+  {
+    "country_name_ar": "قبرص",
+    "country_name_en": "CYPRUS",
+    "ocr_code": "CYP",
+    "country_code": 71
+  },
+  {
+    "country_name_ar": "التشيك",
+    "country_name_en": "CZECH",
+    "ocr_code": "CZE",
+    "country_code": 200
+  },
+  {
+    "country_name_ar": "كوريا الديمقراطية",
+    "country_name_en": "DEMOCRATIC REPUBLIC OF KOREA",
+    "ocr_code": "PRK",
+    "country_code": 231
+  },
+  {
+    "country_name_ar": "الدانمارك",
+    "country_name_en": "DENMARK",
+    "ocr_code": "DNK",
+    "country_code": 72
+  },
+  {
+    "country_name_ar": "جيبوتي",
+    "country_name_en": "DJIBOUTI",
+    "ocr_code": "DJI",
+    "country_code": 22
+  },
+  {
+    "country_name_ar": "الدومينيكان",
+    "country_name_en": "DOMINICA",
+    "ocr_code": "DMA",
+    "country_code": 137
+  },
+  {
+    "country_name_ar": "الدومينيكان",
+    "country_name_en": "DOMINICAN REPUBLIC",
+    "ocr_code": "DOM",
+    "country_code": 137
+  },
+  {
+    "country_name_ar": "تيمور الشرقية",
+    "country_name_en": "EAST TIMOR",
+    "ocr_code": "TLS",
+    "country_code": 339
+  },
+  {
+    "country_name_ar": "مصر",
+    "country_name_en": "EGYPT",
+    "ocr_code": "EGY",
+    "country_code": 7
+  },
+  {
+    "country_name_ar": "الأكوادور",
+    "country_name_en": "EQUADOR",
+    "ocr_code": "ECU",
+    "country_code": 112
+  },
+  {
+    "country_name_ar": "غينيا الاستوائية",
+    "country_name_en": "EQUATORIAL GUNIEA",
+    "ocr_code": "GNQ",
+    "country_code": 66
+  },
+  {
+    "country_name_ar": "أرتيريا",
+    "country_name_en": "ERITREA",
+    "ocr_code": "ERI",
+    "country_code": 68
+  },
+  {
+    "country_name_ar": "استونيا",
+    "country_name_en": "ESTONIA",
+    "ocr_code": "EST",
+    "country_code": 208
+  },
+  {
+    "country_name_ar": "ولاية فلوريدا الأمريكية",
+    "country_name_en": "ETATS ADIROLF",
+    "ocr_code": "0",
+    "country_code": 404
+  },
+  {
+    "country_name_ar": "أثيوبيا",
+    "country_name_en": "ETHIOPIA",
+    "ocr_code": "ETH",
+    "country_code": 192
+  },
+  {
+    "country_name_ar": "مصر",
+    "country_name_en": "Egypt",
+    "ocr_code": "EG",
+    "country_code": 1
+  },
+  {
+    "country_name_ar": "فالكلاند - جزر",
+    "country_name_en": "FALKLAND ISLANDS",
+    "ocr_code": "FLK",
+    "country_code": 113
+  },
+  {
+    "country_name_ar": "الولايات المتحدة الأمريكية",
+    "country_name_en": "FEDERATED STATES OF MICRONESIA",
+    "ocr_code": "FSM",
+    "country_code": 254
+  },
+  {
+    "country_name_ar": "فيجي",
+    "country_name_en": "FIJI",
+    "ocr_code": "FJI",
+    "country_code": 177
+  },
+  {
+    "country_name_ar": "فنلندا",
+    "country_name_en": "FINLAND",
+    "ocr_code": "FIN",
+    "country_code": 73
+  },
+  {
+    "country_name_ar": "فورموزا",
+    "country_name_en": "FORMZA",
+    "ocr_code": "FRO",
+    "country_code": 150
+  },
+  {
+    "country_name_ar": "فرنسا",
+    "country_name_en": "FRANCE",
+    "ocr_code": "FRA",
+    "country_code": 74
+  },
+  {
+    "country_name_ar": "غيانا الفرنسية",
+    "country_name_en": "FRENCH GUIANA",
+    "ocr_code": "GUF",
+    "country_code": 114
+  },
+  {
+    "country_name_ar": "بولينيزيا الفرنسية",
+    "country_name_en": "FRENCH POLYNESIA",
+    "ocr_code": "FYP",
+    "country_code": 265
+  },
+  {
+    "country_name_ar": "الاراضي الجنوبية الفرنسية",
+    "country_name_en": "FRENCH SOUTHERN TERRITORIES",
+    "ocr_code": "FTA",
+    "country_code": 293
+  },
+  {
+    "country_name_ar": "غابون",
+    "country_name_en": "GABON",
+    "ocr_code": "GAB",
+    "country_code": 32
+  },
+  {
+    "country_name_ar": "غامبيا",
+    "country_name_en": "GAMBIA",
+    "ocr_code": "GMB",
+    "country_code": 185
+  },
+  {
+    "country_name_ar": "جورجيا",
+    "country_name_en": "GEORGIA",
+    "ocr_code": "GEO",
+    "country_code": 213
+  },
+  {
+    "country_name_ar": "ألمانيا",
+    "country_name_en": "GERMANY",
+    "ocr_code": "DEU",
+    "country_code": 90
+  },
+  {
+    "country_name_ar": "غانا",
+    "country_name_en": "GHANA",
+    "ocr_code": "GHA",
+    "country_code": 33
+  },
+  {
+    "country_name_ar": "جبل طارق",
+    "country_name_en": "GIBRALTAR",
+    "ocr_code": "BIG",
+    "country_code": 273
+  },
+  {
+    "country_name_ar": "اليونان",
+    "country_name_en": "GREECE",
+    "ocr_code": "GRC",
+    "country_code": 92
+  },
+  {
+    "country_name_ar": "غرينلاند",
+    "country_name_en": "GREENLAND",
+    "ocr_code": "LRG",
+    "country_code": 275
+  },
+  {
+    "country_name_ar": "غرينلاند",
+    "country_name_en": "GREENLAND",
+    "ocr_code": "GRL",
+    "country_code": 275
+  },
+  {
+    "country_name_ar": "غرينادا",
+    "country_name_en": "GRENADA",
+    "ocr_code": "GRD",
+    "country_code": 115
+  },
+  {
+    "country_name_ar": "غواديلوب",
+    "country_name_en": "GUADELOUPE",
+    "ocr_code": "GLP",
+    "country_code": 132
+  },
+  {
+    "country_name_ar": "غوام",
+    "country_name_en": "GUAM",
+    "ocr_code": "MUG",
+    "country_code": 274
+  },
+  {
+    "country_name_ar": "غواتيمالا",
+    "country_name_en": "GUATEMALA",
+    "ocr_code": "GTM",
+    "country_code": 133
+  },
+  {
+    "country_name_ar": "غينيا",
+    "country_name_en": "GUINEA",
+    "ocr_code": "GIN",
+    "country_code": 34
+  },
+  {
+    "country_name_ar": "غينيا بيساو",
+    "country_name_en": "GUINEA BISSAU",
+    "ocr_code": "GNB",
+    "country_code": 35
+  },
+  {
+    "country_name_ar": "غويانا",
+    "country_name_en": "GUYANA",
+    "ocr_code": "YUG",
+    "country_code": 116
+  },
+  {
+    "country_name_ar": "غويانا",
+    "country_name_en": "GUYANA",
+    "ocr_code": "GUY",
+    "country_code": 116
+  },
+  {
+    "country_name_ar": "هاييتي",
+    "country_name_en": "HAITI",
+    "ocr_code": "HTI",
+    "country_code": 134
+  },
+  {
+    "country_name_ar": "جزيرة هيرد و جزر ماكدونالد",
+    "country_name_en": "HEARD ISLAND &MCDONALD ISLANDS",
+    "ocr_code": "HMD",
+    "country_code": 281
+  },
+  {
+    "country_name_ar": "هندوراس",
+    "country_name_en": "HONDURAS",
+    "ocr_code": "HND",
+    "country_code": 135
+  },
+  {
+    "country_name_ar": "هونج كونج",
+    "country_name_en": "HONG KONG",
+    "ocr_code": "HKG",
+    "country_code": 151
+  },
+  {
+    "country_name_ar": "جمهورية هنغاريا",
+    "country_name_en": "HUNGARY",
+    "ocr_code": "HUN",
+    "country_code": 104
+  },
+  {
+    "country_name_ar": "أيسلاندا",
+    "country_name_en": "ICELAND",
+    "ocr_code": "ISL",
+    "country_code": 77
+  },
+  {
+    "country_name_ar": "الهند",
+    "country_name_en": "INDIA",
+    "ocr_code": "IND",
+    "country_code": 152
+  },
+  {
+    "country_name_ar": "اندونيسيا",
+    "country_name_en": "INDONESIA",
+    "ocr_code": "IDN",
+    "country_code": 153
+  },
+  {
+    "country_name_ar": "ايران",
+    "country_name_en": "IRAN",
+    "ocr_code": "IRN",
+    "country_code": 154
+  },
+  {
+    "country_name_ar": "العراق",
+    "country_name_en": "IRAQ",
+    "ocr_code": "IRQ",
+    "country_code": 8
+  },
+  {
+    "country_name_ar": "أيرلندا",
+    "country_name_en": "IRELAND",
+    "ocr_code": "IRL",
+    "country_code": 76
+  },
+  {
+    "country_name_ar": "جزيرة مان",
+    "country_name_en": "ISLE OF MAN",
+    "ocr_code": "IMN",
+    "country_code": 277
+  },
+  {
+    "country_name_ar": "ايطاليا",
+    "country_name_en": "ITALY",
+    "ocr_code": "ITA",
+    "country_code": 78
+  },
+  {
+    "country_name_ar": "جزر العاج",
+    "country_name_en": "IVORY ISLAND",
+    "ocr_code": "CIV",
+    "country_code": 193
+  },
+  {
+    "country_name_ar": "جامايكا",
+    "country_name_en": "JAMAICA",
+    "ocr_code": "JAM",
+    "country_code": 136
+  },
+  {
+    "country_name_ar": "اليابان",
+    "country_name_en": "JAPAN",
+    "ocr_code": "JPN",
+    "country_code": 155
+  },
+  {
+    "country_name_ar": "جيرسي",
+    "country_name_en": "JERSEY",
+    "ocr_code": "JEY",
+    "country_code": 278
+  },
+  {
+    "country_name_ar": "الأردن",
+    "country_name_en": "JORDAN",
+    "ocr_code": "JOR",
+    "country_code": 6
+  },
+  {
+    "country_name_ar": "كازاخستان",
+    "country_name_en": "KAZAKHSTAN",
+    "ocr_code": "KAZ",
+    "country_code": 206
+  },
+  {
+    "country_name_ar": "كينيا",
+    "country_name_en": "KENYA",
+    "ocr_code": "KEN",
+    "country_code": 37
+  },
+  {
+    "country_name_ar": "تونغا",
+    "country_name_en": "KINGDOM OF TONGA",
+    "ocr_code": "TON",
+    "country_code": 194
+  },
+  {
+    "country_name_ar": "جمهورية كيريباتي",
+    "country_name_en": "KIRIBATI",
+    "ocr_code": "KIR",
+    "country_code": 245
+  },
+  {
+    "country_name_ar": "كوسوفو",
+    "country_name_en": "KOSOVO",
+    "ocr_code": "RKS",
+    "country_code": 247
+  },
+  {
+    "country_name_ar": "الكويت",
+    "country_name_en": "KUWAIT",
+    "ocr_code": "KWT",
+    "country_code": 1
+  },
+  {
+    "country_name_ar": "قيرغيزستان",
+    "country_name_en": "KYRGYZSTAN",
+    "ocr_code": "KGZ",
+    "country_code": 207
+  },
+  {
+    "country_name_ar": "لاوس",
+    "country_name_en": "LAOS",
+    "ocr_code": "LAO",
+    "country_code": 158
+  },
+  {
+    "country_name_ar": "لاتفيا",
+    "country_name_en": "LATVIA",
+    "ocr_code": "LVA",
+    "country_code": 101
+  },
+  {
+    "country_name_ar": "لبنان",
+    "country_name_en": "LEBANON",
+    "ocr_code": "LBN",
+    "country_code": 11
+  },
+  {
+    "country_name_ar": "ليسوتو",
+    "country_name_en": "LESOTHO",
+    "ocr_code": "LSO",
+    "country_code": 40
+  },
+  {
+    "country_name_ar": "ليبيريا",
+    "country_name_en": "LIBERIA",
+    "ocr_code": "LBR",
+    "country_code": 39
+  },
+  {
+    "country_name_ar": "دولة ليبيا",
+    "country_name_en": "LIBYA",
+    "ocr_code": "LBY",
+    "country_code": 13
+  },
+  {
+    "country_name_ar": "ليختنشتاين",
+    "country_name_en": "LIECHTENSTEIN",
+    "ocr_code": "LIE",
+    "country_code": 182
+  },
+  {
+    "country_name_ar": "لتوانيا",
+    "country_name_en": "LITHUANIA",
+    "ocr_code": "LTU",
+    "country_code": 99
+  },
+  {
+    "country_name_ar": "لوكسمبرغ",
+    "country_name_en": "LUXEMBOURG",
+    "ocr_code": "LUX",
+    "country_code": 79
+  },
+  {
+    "country_name_ar": "مكاو",
+    "country_name_en": "MACAU",
+    "ocr_code": "MAC",
+    "country_code": 159
+  },
+  {
+    "country_name_ar": "مدغشقر",
+    "country_name_en": "MADAGASCAR",
+    "ocr_code": "MDG",
+    "country_code": 41
+  },
+  {
+    "country_name_ar": "مقدونيا",
+    "country_name_en": "MAKDONIA",
+    "ocr_code": "MKD",
+    "country_code": 199
+  },
+  {
+    "country_name_ar": "مالاوي",
+    "country_name_en": "MALAWI",
+    "ocr_code": "MWI",
+    "country_code": 42
+  },
+  {
+    "country_name_ar": "ماليزيا",
+    "country_name_en": "MALAYSIA",
+    "ocr_code": "MYS",
+    "country_code": 161
+  },
+  {
+    "country_name_ar": "جزر المالديف",
+    "country_name_en": "MALDIVES",
+    "ocr_code": "MDV",
+    "country_code": 160
+  },
+  {
+    "country_name_ar": "مالي",
+    "country_name_en": "MALI",
+    "ocr_code": "MLI",
+    "country_code": 43
+  },
+  {
+    "country_name_ar": "مالطا",
+    "country_name_en": "MALTA",
+    "ocr_code": "MLT",
+    "country_code": 81
+  },
+  {
+    "country_name_ar": "جزر المارشال",
+    "country_name_en": "MARSHALL ISLANDS",
+    "ocr_code": "MHL",
+    "country_code": 256
+  },
+  {
+    "country_name_ar": "مارتينيك - جزر",
+    "country_name_en": "MARTINIQUE",
+    "ocr_code": "MTQ",
+    "country_code": 124
+  },
+  {
+    "country_name_ar": "موريتانيا",
+    "country_name_en": "MAURITANIA",
+    "ocr_code": "MRT",
+    "country_code": 5
+  },
+  {
+    "country_name_ar": "جزر موريشيوس",
+    "country_name_en": "MAURITIUS",
+    "ocr_code": "SUM",
+    "country_code": 44
+  },
+  {
+    "country_name_ar": "جزر موريشيوس",
+    "country_name_en": "MAURITIUS",
+    "ocr_code": "MUS",
+    "country_code": 44
+  },
+  {
+    "country_name_ar": "المكسيك",
+    "country_name_en": "MEXICO",
+    "ocr_code": "MEX",
+    "country_code": 138
+  },
+  {
+    "country_name_ar": "مولدوفا",
+    "country_name_en": "MOLDOVA",
+    "ocr_code": "MDA",
+    "country_code": 209
+  },
+  {
+    "country_name_ar": "موناكو",
+    "country_name_en": "MONACO",
+    "ocr_code": "MCO",
+    "country_code": 82
+  },
+  {
+    "country_name_ar": "مونتينيغرو",
+    "country_name_en": "MONTENEGRO",
+    "ocr_code": "MNE",
+    "country_code": 260
+  },
+  {
+    "country_name_ar": "مونتسيرات",
+    "country_name_en": "MONTSERRAT",
+    "ocr_code": "MSR",
+    "country_code": 292
+  },
+  {
+    "country_name_ar": "المغرب",
+    "country_name_en": "MOROCCO",
+    "ocr_code": "MAR",
+    "country_code": 16
+  },
+  {
+    "country_name_ar": "موزامبيق",
+    "country_name_en": "MOZAMBIQUE",
+    "ocr_code": "MOZ",
+    "country_code": 45
+  },
+  {
+    "country_name_ar": "ميانمار",
+    "country_name_en": "MYANMAR",
+    "ocr_code": "MMR",
+    "country_code": 179
+  },
+  {
+    "country_name_ar": "ناميبيا",
+    "country_name_en": "NAMIBIA",
+    "ocr_code": "NAM",
+    "country_code": 46
+  },
+  {
+    "country_name_ar": "النيبال",
+    "country_name_en": "NEPAL",
+    "ocr_code": "NPL",
+    "country_code": 163
+  },
+  {
+    "country_name_ar": "جزر الانتيل الهولندية",
+    "country_name_en": "NETHERLANDS ANTILLES",
+    "ocr_code": "NLD",
+    "country_code": 290
+  },
+  {
+    "country_name_ar": "جزر الانتيل الهولندية",
+    "country_name_en": "NETHERLANDS ANTILLES",
+    "ocr_code": "DLN",
+    "country_code": 290
+  },
+  {
+    "country_name_ar": "جزر الانتيل الهولندية",
+    "country_name_en": "NETHERLANDS ANTILLES",
+    "ocr_code": "LN١",
+    "country_code": 290
+  },
+  {
+    "country_name_ar": "نيوكاليدونيا",
+    "country_name_en": "NEW CALEDONIA",
+    "ocr_code": "LCN",
+    "country_code": 263
+  },
+  {
+    "country_name_ar": "نيوزيلاندا",
+    "country_name_en": "NEW ZEALAND",
+    "ocr_code": "NZL",
+    "country_code": 175
+  },
+  {
+    "country_name_ar": "نيكاراغوا",
+    "country_name_en": "NICARAGUA",
+    "ocr_code": "NIC",
+    "country_code": 139
+  },
+  {
+    "country_name_ar": "النيجر",
+    "country_name_en": "NIGER",
+    "ocr_code": "NER",
+    "country_code": 47
+  },
+  {
+    "country_name_ar": "نيجيريا",
+    "country_name_en": "NIGERIA",
+    "ocr_code": "NGA",
+    "country_code": 48
+  },
+  {
+    "country_name_ar": "نايو",
+    "country_name_en": "NIUE",
+    "ocr_code": "UIN",
+    "country_code": 264
+  },
+  {
+    "country_name_ar": "غير كويتي",
+    "country_name_en": "NON KUWAIT",
+    "ocr_code": "XXA",
+    "country_code": 2
+  },
+  {
+    "country_name_ar": "جزر ماريانا الشمالية",
+    "country_name_en": "NORTHERN MARIANA ISLANDS",
+    "ocr_code": "MNP",
+    "country_code": 280
+  },
+  {
+    "country_name_ar": "النرويج",
+    "country_name_en": "NORWAY",
+    "ocr_code": "NOR",
+    "country_code": 83
+  },
+  {
+    "country_name_ar": "النرويج",
+    "country_name_en": "NORWAY",
+    "ocr_code": "RON",
+    "country_code": 83
+  },
+  {
+    "country_name_ar": "باكستان",
+    "country_name_en": "PAKISTAN",
+    "ocr_code": "PAK",
+    "country_code": 164
+  },
+  {
+    "country_name_ar": "جوازالسلطةالفلسطينية",
+    "country_name_en": "PALESTINIAN AUTHORITY PASSPORT",
+    "ocr_code": "PSE",
+    "country_code": 251
+  },
+  {
+    "country_name_ar": "بنما",
+    "country_name_en": "PANAMA",
+    "ocr_code": "PAN",
+    "country_code": 122
+  },
+  {
+    "country_name_ar": "بارغواي",
+    "country_name_en": "PARAGUAY",
+    "ocr_code": "PRY",
+    "country_code": 117
+  },
+  {
+    "country_name_ar": "بيرو",
+    "country_name_en": "PERU",
+    "ocr_code": "PER",
+    "country_code": 118
+  },
+  {
+    "country_name_ar": "الفليبين",
+    "country_name_en": "PHILIPPINES",
+    "ocr_code": "PHL",
+    "country_code": 165
+  },
+  {
+    "country_name_ar": "بيتكيرن",
+    "country_name_en": "PITCAIRN",
+    "ocr_code": "NCP",
+    "country_code": 267
+  },
+  {
+    "country_name_ar": "بولندا",
+    "country_name_en": "POLAND",
+    "ocr_code": "POL",
+    "country_code": 97
+  },
+  {
+    "country_name_ar": "غينيا الجديدة",
+    "country_name_en": "POPUA NEW GUINEA",
+    "ocr_code": "PNG",
+    "country_code": 239
+  },
+  {
+    "country_name_ar": "البرتغال",
+    "country_name_en": "PORTUGAL",
+    "ocr_code": "PRT",
+    "country_code": 84
+  },
+  {
+    "country_name_ar": "بورتوريكو",
+    "country_name_en": "PUERTO RICO",
+    "ocr_code": "PRI",
+    "country_code": 140
+  },
+  {
+    "country_name_ar": "قطر",
+    "country_name_en": "QATAR",
+    "ocr_code": "QAT",
+    "country_code": 18
+  },
+  {
+    "country_name_ar": "جمهورية جزر الرأس​الاخضر",
+    "country_name_en": "REPUBLIC OF CAPE VERDE",
+    "ocr_code": "CPV",
+    "country_code": 236
+  },
+  {
+    "country_name_ar": "الصين الشعبية",
+    "country_name_en": "REPUBLIC OF CHINA",
+    "ocr_code": "CHN",
+    "country_code": 156
+  },
+  {
+    "country_name_ar": "كوريا",
+    "country_name_en": "REPUBLIC OF KOREA",
+    "ocr_code": "KOR",
+    "country_code": 20
+  },
+  {
+    "country_name_ar": "جمهورية ناورو",
+    "country_name_en": "REPUBLIC OF NAURU",
+    "ocr_code": "NRU",
+    "country_code": 345
+  },
+  {
+    "country_name_ar": "جمهورية شمال قبرص​ التركية",
+    "country_name_en": "REPUBLIC OF NORTHERN CUPRUS",
+    "ocr_code": "XXX",
+    "country_code": 259
+  },
+  {
+    "country_name_ar": "جمهورية بالو",
+    "country_name_en": "REPUBLIC OF PALOW",
+    "ocr_code": "PLW",
+    "country_code": 341
+  },
+  {
+    "country_name_ar": "ارض​الصومال",
+    "country_name_en": "REPUBLIC OF SOMALILAND",
+    "ocr_code": "OS١",
+    "country_code": 296
+  },
+  {
+    "country_name_ar": "ريونيون",
+    "country_name_en": "REUNION",
+    "ocr_code": "UER",
+    "country_code": 268
+  },
+  {
+    "country_name_ar": "رومانيا",
+    "country_name_en": "ROMANIA",
+    "ocr_code": "ROU",
+    "country_code": 98
+  },
+  {
+    "country_name_ar": "روسيا",
+    "country_name_en": "RUSSIA",
+    "ocr_code": "RUS",
+    "country_code": 183
+  },
+  {
+    "country_name_ar": "رواندا",
+    "country_name_en": "RWANDA",
+    "ocr_code": "RWA",
+    "country_code": 50
+  },
+  {
+    "country_name_ar": "رواندا",
+    "country_name_en": "RWANDA",
+    "ocr_code": "AWR",
+    "country_code": 50
+  },
+  {
+    "country_name_ar": "جورجياالجنوبية وجزر ساندويتش",
+    "country_name_en": "S.GEORGIA & S.SANDWICH ISLANDS",
+    "ocr_code": "SGS",
+    "country_code": 289
+  },
+  {
+    "country_name_ar": "سانت بارتليمي",
+    "country_name_en": "SAINT BARTHELEM",
+    "ocr_code": "BLM",
+    "country_code": 287
+  },
+  {
+    "country_name_ar": "سانت هيلانا",
+    "country_name_en": "SAINT HELENA",
+    "ocr_code": "SHN",
+    "country_code": 141
+  },
+  {
+    "country_name_ar": "سانت كيتس​ ونيفيس",
+    "country_name_en": "SAINT KITTS AND NEVIS",
+    "ocr_code": "ANK",
+    "country_code": 301
+  },
+  {
+    "country_name_ar": "سانت لوسيا",
+    "country_name_en": "SAINT LUCIA",
+    "ocr_code": "LCA",
+    "country_code": 126
+  },
+  {
+    "country_name_ar": "سانت مارتن الفرنسية",
+    "country_name_en": "SAINT MARTIN FRENCH",
+    "ocr_code": "MAF",
+    "country_code": 279
+  },
+  {
+    "country_name_ar": "سان بيار و ميكولون",
+    "country_name_en": "SAINT PIERRE AND MIQUELON",
+    "ocr_code": "MPS",
+    "country_code": 266
+  },
+  {
+    "country_name_ar": "سانت فنسنت وجزر غرينادين",
+    "country_name_en": "SAINT VINCENT & THE GRENADINES",
+    "ocr_code": "VCT",
+    "country_code": 335
+  },
+  {
+    "country_name_ar": "السلفادور",
+    "country_name_en": "SALVADOR",
+    "ocr_code": "SLV",
+    "country_code": 131
+  },
+  {
+    "country_name_ar": "ساموا",
+    "country_name_en": "SAMOA",
+    "ocr_code": "WSM",
+    "country_code": 252
+  },
+  {
+    "country_name_ar": "سان مارينو",
+    "country_name_en": "SAN MARINO",
+    "ocr_code": "SMR",
+    "country_code": 85
+  },
+  {
+    "country_name_ar": "سانت كريستوفر ونيفز",
+    "country_name_en": "SANT CRISTOPHER WENEVES",
+    "ocr_code": "KNA",
+    "country_code": 217
+  },
+  {
+    "country_name_ar": "ساوتومي وبرنسيب",
+    "country_name_en": "SAO TOME AND PRINCIPE",
+    "ocr_code": "STP",
+    "country_code": 346
+  },
+  {
+    "country_name_ar": "السعودية",
+    "country_name_en": "SAUDI ARABIA",
+    "ocr_code": "SAU",
+    "country_code": 9
+  },
+  {
+    "country_name_ar": "السنغال",
+    "country_name_en": "SENEGAL",
+    "ocr_code": "SEN",
+    "country_code": 51
+  },
+  {
+    "country_name_ar": "صربيا",
+    "country_name_en": "SERBIA",
+    "ocr_code": "SRB",
+    "country_code": 232
+  },
+  {
+    "country_name_ar": "سيشل - جزر",
+    "country_name_en": "SEYCHELLES",
+    "ocr_code": "SYC",
+    "country_code": 52
+  },
+  {
+    "country_name_ar": "سيراليون",
+    "country_name_en": "SIERRA LEONE",
+    "ocr_code": "SLE",
+    "country_code": 53
+  },
+  {
+    "country_name_ar": "سنغافوره",
+    "country_name_en": "SINGAPORE",
+    "ocr_code": "SGP",
+    "country_code": 168
+  },
+  {
+    "country_name_ar": "سلوفاكيا",
+    "country_name_en": "SLOVAKIA",
+    "ocr_code": "SVK",
+    "country_code": 201
+  },
+  {
+    "country_name_ar": "سلوفينيا",
+    "country_name_en": "SLOVENIA",
+    "ocr_code": "SVN",
+    "country_code": 198
+  },
+  {
+    "country_name_ar": "الصومال",
+    "country_name_en": "SOMALIA",
+    "ocr_code": "SOM",
+    "country_code": 3
+  },
+  {
+    "country_name_ar": "جنوب أفريقيا",
+    "country_name_en": "SOUTH AFRICA",
+    "ocr_code": "ZAF",
+    "country_code": 57
+  },
+  {
+    "country_name_ar": "جنوب السودان",
+    "country_name_en": "SOUTH SUDAN",
+    "ocr_code": "DSS",
+    "country_code": 261
+  },
+  {
+    "country_name_ar": "جنوب السودان",
+    "country_name_en": "SOUTH SUDAN",
+    "ocr_code": "SSD",
+    "country_code": 261
+  },
+  {
+    "country_name_ar": "أسبانيا",
+    "country_name_en": "SPAIN",
+    "ocr_code": "ESP",
+    "country_code": 87
+  },
+  {
+    "country_name_ar": "سيلان - سيريلانكا",
+    "country_name_en": "SRI LANKA",
+    "ocr_code": "AKL",
+    "country_code": 149
+  },
+  {
+    "country_name_ar": "سيلان - سيريلانكا",
+    "country_name_en": "SRI LANKA",
+    "ocr_code": "LKA",
+    "country_code": 149
+  },
+  {
+    "country_name_ar": "السودان",
+    "country_name_en": "SUDAN",
+    "ocr_code": "SDN",
+    "country_code": 12
+  },
+  {
+    "country_name_ar": "سلطنة عمان",
+    "country_name_en": "SULTANATE OMAN",
+    "ocr_code": "OMN",
+    "country_code": 19
+  },
+  {
+    "country_name_ar": "سورينام",
+    "country_name_en": "SURINAME",
+    "ocr_code": "SUR",
+    "country_code": 142
+  },
+  {
+    "country_name_ar": "سفالبارد و جان مايان",
+    "country_name_en": "SVALBARD AND JAN MAYEN ISLAND",
+    "ocr_code": "MJS",
+    "country_code": 269
+  },
+  {
+    "country_name_ar": "سفالبارد و جان مايان",
+    "country_name_en": "SVALBARD AND JAN MAYEN ISLAND",
+    "ocr_code": "SJM",
+    "country_code": 269
+  },
+  {
+    "country_name_ar": "سوازيلاند",
+    "country_name_en": "SWAZILAND",
+    "ocr_code": "SWZ",
+    "country_code": 54
+  },
+  {
+    "country_name_ar": "السويد",
+    "country_name_en": "SWEDEN",
+    "ocr_code": "SWE",
+    "country_code": 89
+  },
+  {
+    "country_name_ar": "سويسرا",
+    "country_name_en": "SWITZERLAND",
+    "ocr_code": "CHE",
+    "country_code": 86
+  },
+  {
+    "country_name_ar": "سوريا",
+    "country_name_en": "SYRIA",
+    "ocr_code": "SYR",
+    "country_code": 10
+  },
+  {
+    "country_name_ar": "تايوان",
+    "country_name_en": "TAIWAN",
+    "ocr_code": "TWN",
+    "country_code": 169
+  },
+  {
+    "country_name_ar": "طاجيكستان",
+    "country_name_en": "TAJIKISTAN",
+    "ocr_code": "TJK",
+    "country_code": 210
+  },
+  {
+    "country_name_ar": "تنزانيا",
+    "country_name_en": "TANZANIA",
+    "ocr_code": "TZA",
+    "country_code": 55
+  },
+  {
+    "country_name_ar": "تايلاند",
+    "country_name_en": "THAILAND",
+    "ocr_code": "THA",
+    "country_code": 170
+  },
+  {
+    "country_name_ar": "جزر فارو",
+    "country_name_en": "THE FAROE ISLANDS",
+    "ocr_code": "ORF",
+    "country_code": 300
+  },
+  {
+    "country_name_ar": "جزر توركس​ وكايكوس",
+    "country_name_en": "THE TURKS AND CAICOS ISLANDS",
+    "ocr_code": "TCA",
+    "country_code": 302
+  },
+  {
+    "country_name_ar": "والس​ وفوتونا",
+    "country_name_en": "THE WALLIS AND FUTUNA",
+    "ocr_code": "WLF",
+    "country_code": 298
+  },
+  {
+    "country_name_ar": "توجو",
+    "country_name_en": "TOGO",
+    "ocr_code": "TGO",
+    "country_code": 59
+  },
+  {
+    "country_name_ar": "توكيلاو",
+    "country_name_en": "TOKELAU",
+    "ocr_code": "LKT",
+    "country_code": 270
+  },
+  {
+    "country_name_ar": "ترانسنيتريا",
+    "country_name_en": "TRANSNISTRIA",
+    "ocr_code": "DM١",
+    "country_code": 297
+  },
+  {
+    "country_name_ar": "ترينداد وتوباغو",
+    "country_name_en": "TRINIDAD AND TOBAGO",
+    "ocr_code": "TTO",
+    "country_code": 119
+  },
+  {
+    "country_name_ar": "الاسبانية الاسبانية الاسبانية",
+    "country_name_en": "TSET TSET",
+    "ocr_code": "TES",
+    "country_code": 245
+  },
+  {
+    "country_name_ar": "نختبار اللغة العربية اعلان حرف",
+    "country_name_en": "TSET TSET TSET",
+    "ocr_code": "ART",
+    "country_code": 304
+  },
+  {
+    "country_name_ar": "اختبار",
+    "country_name_en": "TTTTSET",
+    "ocr_code": "TEST",
+    "country_code": 305
+  },
+  {
+    "country_name_ar": "تونس",
+    "country_name_en": "TUNISIA",
+    "ocr_code": "TUN",
+    "country_code": 14
+  },
+  {
+    "country_name_ar": "تركيا",
+    "country_name_en": "TURKEY",
+    "ocr_code": "TUR",
+    "country_code": 171
+  },
+  {
+    "country_name_ar": "تركمانستان",
+    "country_name_en": "TURKMENISTAN",
+    "ocr_code": "TKM",
+    "country_code": 211
+  },
+  {
+    "country_name_ar": "توفالو",
+    "country_name_en": "TUVALU",
+    "ocr_code": "TUV",
+    "country_code": 262
+  },
+  {
+    "country_name_ar": "الجزر الامريكية الصغيرةالنائية",
+    "country_name_en": "U.S MINOR OUTFLYING ISLANDS",
+    "ocr_code": "UMI",
+    "country_code": 288
+  },
+  {
+    "country_name_ar": "أوغندا",
+    "country_name_en": "UGANDA",
+    "ocr_code": "UGA",
+    "country_code": 60
+  },
+  {
+    "country_name_ar": "أوكرانيا",
+    "country_name_en": "UKRAINE",
+    "ocr_code": "UKR",
+    "country_code": 197
+  },
+  {
+    "country_name_ar": "جمهورية القمر المتحدة",
+    "country_name_en": "UNION OF THE COMOROS",
+    "ocr_code": "COM",
+    "country_code": 65
+  },
+  {
+    "country_name_ar": "الامارات العربية",
+    "country_name_en": "UNITED ARAB EMIRATES",
+    "ocr_code": "ARE",
+    "country_code": 21
+  },
+  {
+    "country_name_ar": "المملكة المتحدة",
+    "country_name_en": "UNITED KINGDOM",
+    "ocr_code": "GBR",
+    "country_code": 88
+  },
+  {
+    "country_name_ar": "الأمم المتحدة",
+    "country_name_en": "UNITED NATION",
+    "ocr_code": "UNO",
+    "country_code": 180
+  },
+  {
+    "country_name_ar": "الولايات المتحدة",
+    "country_name_en": "UNITED STATES",
+    "ocr_code": "USA",
+    "country_code": 143
+  },
+  {
+    "country_name_ar": "اورغواى",
+    "country_name_en": "URUGUAY",
+    "ocr_code": "URY",
+    "country_code": 120
+  },
+  {
+    "country_name_ar": "اوزبكستان",
+    "country_name_en": "UZBEKISTAN",
+    "ocr_code": "UZB",
+    "country_code": 212
+  },
+  {
+    "country_name_ar": "فانواتو",
+    "country_name_en": "VANUATU",
+    "ocr_code": "VUT",
+    "country_code": 228
+  },
+  {
+    "country_name_ar": "الفاتيكان",
+    "country_name_en": "VATICAN",
+    "ocr_code": "VAT",
+    "country_code": 93
+  },
+  {
+    "country_name_ar": "فنزويلا",
+    "country_name_en": "VENEZUELA",
+    "ocr_code": "VEN",
+    "country_code": 123
+  },
+  {
+    "country_name_ar": "فيتنام",
+    "country_name_en": "VIETNAM",
+    "ocr_code": "VNM",
+    "country_code": 172
+  },
+  {
+    "country_name_ar": "جزر فيرجن الامريكية",
+    "country_name_en": "VIRGIN ISLANDS UNITED STATES",
+    "ocr_code": "RIV",
+    "country_code": 272
+  },
+  {
+    "country_name_ar": "الصحراء الأسبانية",
+    "country_name_en": "WESTERN SAHARA",
+    "ocr_code": "ESH",
+    "country_code": 58
+  },
+  {
+    "country_name_ar": "روسياالبيضاء",
+    "country_name_en": "WHITE RUSSIA",
+    "ocr_code": "RTW",
+    "country_code": 102
+  },
+  {
+    "country_name_ar": "اليمن",
+    "country_name_en": "YEMEN",
+    "ocr_code": "YEM",
+    "country_code": 23
+  },
+  {
+    "country_name_ar": "زائير",
+    "country_name_en": "ZAIRE",
+    "ocr_code": "ZAR",
+    "country_code": 61
+  },
+  {
+    "country_name_ar": "زامبيا",
+    "country_name_en": "ZAMBIA",
+    "ocr_code": "ZMB",
+    "country_code": 62
+  },
+  {
+    "country_name_ar": "زيمبابوي",
+    "country_name_en": "ZIMBABWE",
+    "ocr_code": "ZWE",
+    "country_code": 49
+  }
+]
