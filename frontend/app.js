@@ -5,8 +5,10 @@ const state = {
   sessionId: getOrCreateSessionId(),
   countries: [],
   visaTypes: [],
+  occupations: [],
   selectedCountry: null,
   isCountriesLoaded: false,
+  isOccupationsLoading: false,
 };
 
 const elements = {
@@ -469,8 +471,11 @@ async function handleCountryChange() {
 
 function resetDirectCheckAfterCountry() {
   state.visaTypes = [];
+  state.occupations = [];
+  state.isOccupationsLoading = false;
   elements.visaTypeSelect.innerHTML = "";
   elements.visaTypeSelect.appendChild(createOption("", "Select a visa type"));
+  resetOccupationOptions();
   hideConditionalFields();
   clearDirectInputs();
   elements.eligibilityResult.innerHTML = "";
@@ -487,11 +492,15 @@ function populateVisaTypes() {
   });
 }
 
-function handleVisaTypeChange() {
+async function handleVisaTypeChange() {
   elements.eligibilityResult.innerHTML = "";
+  state.occupations = [];
+  state.isOccupationsLoading = false;
+  resetOccupationOptions();
 
   if (elements.visaTypeSelect.value) {
     showConditionalFields();
+    await loadOccupationsForSelectedVisa();
     return;
   }
 
@@ -517,6 +526,80 @@ function clearDirectInputs() {
   elements.occupationInput.value = "";
   elements.genderSelect.value = "";
   elements.relationshipInput.value = "";
+}
+
+async function loadOccupationsForSelectedVisa() {
+  const ocrCode = elements.countrySelect.value;
+  const visaType = elements.visaTypeSelect.value;
+
+  if (!ocrCode || !visaType) {
+    resetOccupationOptions();
+    return;
+  }
+
+  state.isOccupationsLoading = true;
+  elements.checkEligibilityButton.disabled = true;
+  resetOccupationOptions("Loading available occupations...");
+  setEligibilityStatus("Loading available occupations...");
+
+  try {
+    const data = await apiRequest(
+      `/api/occupations/${encodeURIComponent(ocrCode)}/${encodeURIComponent(visaType)}`
+    );
+
+    if (ocrCode !== elements.countrySelect.value || visaType !== elements.visaTypeSelect.value) {
+      return;
+    }
+
+    state.occupations = normalizeOccupations(data);
+    populateOccupations();
+    setEligibilityStatus("");
+  } catch (error) {
+    if (ocrCode === elements.countrySelect.value && visaType === elements.visaTypeSelect.value) {
+      state.occupations = [];
+      resetOccupationOptions("Could not load occupations");
+      setEligibilityStatus(error.message, "error");
+    }
+  } finally {
+    if (ocrCode === elements.countrySelect.value && visaType === elements.visaTypeSelect.value) {
+      state.isOccupationsLoading = false;
+      elements.checkEligibilityButton.disabled = false;
+      syncOccupationSelectState();
+    }
+  }
+}
+
+function resetOccupationOptions(label = "Select an occupation") {
+  elements.occupationInput.innerHTML = "";
+  elements.occupationInput.appendChild(createOption("", label));
+  syncOccupationSelectState();
+}
+
+function populateOccupations() {
+  elements.occupationInput.innerHTML = "";
+
+  if (!state.occupations.length) {
+    elements.occupationInput.appendChild(createOption("", "No occupation restriction for this visa"));
+    syncOccupationSelectState();
+    return;
+  }
+
+  elements.occupationInput.appendChild(createOption("", "Select an available occupation"));
+
+  state.occupations.forEach((occupation) => {
+    elements.occupationInput.appendChild(
+      createOption(occupation.value, occupation.label)
+    );
+  });
+
+  syncOccupationSelectState();
+}
+
+function syncOccupationSelectState() {
+  elements.occupationInput.disabled =
+    state.isOccupationsLoading ||
+    !elements.visaTypeSelect.value ||
+    !state.occupations.length;
 }
 
 async function handleEligibilitySubmit(event) {
@@ -559,7 +642,7 @@ function setEligibilityLoading(isLoading, status = "") {
   elements.countrySelect.disabled = isLoading;
   elements.visaTypeSelect.disabled = isLoading;
   elements.ageInput.disabled = isLoading;
-  elements.occupationInput.disabled = isLoading;
+  elements.occupationInput.disabled = isLoading || state.isOccupationsLoading || !state.occupations.length;
   elements.genderSelect.disabled = isLoading;
   elements.relationshipInput.disabled = isLoading;
   setEligibilityStatus(status);
@@ -769,6 +852,82 @@ function normalizeList(value) {
     return [];
   }
   return Array.isArray(value) ? value : [value];
+}
+
+function normalizeOccupations(data) {
+  const items =
+    data?.occupations ||
+    data?.data ||
+    (Array.isArray(data) ? data : []);
+
+  if (!Array.isArray(items)) {
+    return [];
+  }
+
+  const seen = new Set();
+  const occupations = [];
+
+  items.forEach((item) => {
+    const occupation = normalizeOccupation(item);
+    if (!occupation.value) {
+      return;
+    }
+
+    const key = occupation.value.trim().toLowerCase();
+    if (seen.has(key)) {
+      return;
+    }
+
+    seen.add(key);
+    occupations.push(occupation);
+  });
+
+  return occupations;
+}
+
+function normalizeOccupation(item) {
+  if (typeof item === "string") {
+    return { value: item, label: item };
+  }
+
+  if (!item || typeof item !== "object") {
+    return { value: "", label: "" };
+  }
+
+  const value =
+    item.value ||
+    item.occupation_name_ar ||
+    item.occupationNameAr ||
+    item.ArabicDescription ||
+    item.occupation_name_en ||
+    item.occupationNameEn ||
+    item.DescriptionEn ||
+    item.label ||
+    "";
+
+  return {
+    value,
+    label: item.label || formatOccupationLabel(item, value),
+  };
+}
+
+function formatOccupationLabel(occupation, fallback = "") {
+  const nameAr =
+    occupation.occupation_name_ar ||
+    occupation.occupationNameAr ||
+    occupation.ArabicDescription ||
+    "";
+  const nameEn =
+    occupation.occupation_name_en ||
+    occupation.occupationNameEn ||
+    occupation.DescriptionEn ||
+    "";
+
+  if (nameAr && nameEn && nameAr !== nameEn) {
+    return `${nameAr} - ${nameEn}`;
+  }
+
+  return nameAr || nameEn || fallback || "Occupation";
 }
 
 function isVisaTypesOnlyResponse(data, visaTypes) {

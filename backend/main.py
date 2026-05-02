@@ -11,7 +11,8 @@ from .countries import list_countries
 from .rules_engine import (
     extract_first_visa_data,
     check_eligibility,
-    build_visa_types_list
+    build_visa_types_list,
+    build_occupation_list,
 )
 from .intent_engine import analyze_message
 from .response_builder import build_chat_answer, visa_name_for
@@ -45,6 +46,13 @@ class FormCheckRequest(BaseModel):
     occupation: str | None = None
     gender: str | None = None
     relationship: str | None = None
+
+
+def english_display_name(value):
+    if not isinstance(value, str):
+        return value
+    value = value.strip()
+    return value.title() if value.isupper() else value
 
 
 def final_answer(user_message: str, decision: dict, session: dict, extracted: dict):
@@ -82,6 +90,17 @@ def get_visa_types(ocr_code: str):
 @app.get("/api/visa-details/{ocr_code}/{visa_type}")
 def get_visa_details(ocr_code: str, visa_type: int):
     return visa_api.get_visa_details(ocr_code, visa_type)
+
+
+@app.get("/api/occupations/{ocr_code}/{visa_type}")
+def get_occupations(ocr_code: str, visa_type: int):
+    details = visa_api.get_visa_details(ocr_code, visa_type)
+    visa_data = extract_first_visa_data(details)
+    return {
+        "ocr_code": ocr_code,
+        "visa_type": visa_type,
+        "occupations": build_occupation_list(visa_data),
+    }
 
 
 @app.post("/api/reset-session/{session_id}")
@@ -132,7 +151,7 @@ def chat(req: ChatRequest):
 
     update_data = {
         "country": extracted.get("country_name"),
-        "country_en": extracted.get("country_name_en"),
+        "country_en": english_display_name(extracted.get("country_name_en")),
         "ocr_code": extracted.get("ocr_code"),
         "visa_type": extracted.get("visa_type"),
         "age": extracted.get("age"),
@@ -203,6 +222,8 @@ def chat(req: ChatRequest):
             "status": "INFO",
             "intent": "list_visa_types",
             "country": session.get("country"),
+            "country_ar": session.get("country"),
+            "country_en": english_display_name(session.get("country_en")),
             "ocr_code": ocr_code,
             "visa_types": visa_types
         }
@@ -235,6 +256,8 @@ def chat(req: ChatRequest):
             "status": "NEED_MORE_INFO",
             "intent": intent,
             "country": session.get("country"),
+            "country_ar": session.get("country"),
+            "country_en": english_display_name(session.get("country_en")),
             "ocr_code": ocr_code,
             "missing_fields": ["visa_type"],
             "available_visa_types": visa_types
@@ -270,12 +293,14 @@ def chat(req: ChatRequest):
             "age": session.get("age"),
             "occupation": session.get("occupation"),
             "gender": session.get("gender"),
-            "relationship": extracted.get("relationship")
+            "relationship": extracted.get("relationship") or session.get("relationship")
         }
     )
 
     decision["intent"] = intent
     decision["raw_visa_details"] = visa_data
+    decision["country_ar"] = decision.get("country_ar") or session.get("country")
+    decision["country_en"] = english_display_name(decision.get("country_en") or session.get("country_en"))
     decision["applicant_data"] = {
         "age": session.get("age"),
         "occupation": session.get("occupation"),

@@ -170,6 +170,7 @@ KNOWN_OCCUPATIONS = [
     "accountant",
     "manager",
     "student",
+    "pilot",
 ]
 
 
@@ -200,6 +201,7 @@ def has_any(text: str, words: list[str]) -> bool:
 
 
 def resolve_applicant_country(text: str):
+    raw_text = str(text or "").strip()
     normalized = normalize_text(text)
     if not normalized:
         return None
@@ -227,16 +229,31 @@ def resolve_applicant_country(text: str):
     candidates = []
 
     for country in COUNTRIES:
+        ocr_code = str(country.get("ocr_code") or "").upper()
+        exact_code_pattern = re.compile(rf"(?<![A-Za-z]){re.escape(ocr_code)}(?![A-Za-z])")
+        for match in exact_code_pattern.finditer(raw_text):
+            before_raw = raw_text[max(0, match.start() - 45):match.start()]
+            before = normalize_text(before_raw)
+            is_only_code = raw_text.upper() == ocr_code
+            has_origin_context = bool(origin_pattern.search(before)) or before.endswith("من ")
+            if not is_only_code and not has_origin_context:
+                continue
+
+            score = 180 if has_origin_context else 120
+            candidates.append((score, -match.start(), country))
+
         aliases = [
             country.get("country_name_ar"),
             country.get("country_name_en"),
-            country.get("ocr_code"),
             *(country.get("aliases") or []),
         ]
+        ocr_norm = normalize_text(ocr_code)
 
         for alias in aliases:
             alias_norm = normalize_text(alias)
             if not alias_norm or len(alias_norm) < 2:
+                continue
+            if alias_norm == ocr_norm:
                 continue
 
             alias_variants = {alias_norm}
@@ -303,7 +320,7 @@ def extract_visa_type(text: str):
 def extract_age(text: str):
     patterns = [
         r"(?:عمري|عمرى|العمر|سنّي|سني)\s*(\d{1,3})",
-        r"(?:age|i am)\s*(\d{1,3})",
+        r"(?:my\s+age\s+is|age\s+is|age|i am)\s*(\d{1,3})",
         r"\b(\d{1,3})\s*(?:سنه|سنة|عام|years old)\b",
     ]
 
@@ -338,6 +355,7 @@ def extract_occupation(text: str):
         r"(?:مهنتي|وظيفتي|اعمل ك|أعمل ك|انا اعمل ك|انا أعمل ك)\s+([^\d،,.!?]{2,40})",
         r"(?:اشتغل|أشتغل|انا اشتغل|انا أشتغل|اعمل|أعمل|شغلي|عملي)\s+([^\d،,.!?]{2,40})",
         r"(?:لو مهنتي|اذا مهنتي|إذا مهنتي|مهنتي|لو كنت|اذا كنت|إذا كنت|كنت)\s+([^\d،,.!?]{2,40})",
+        r"(?:i am|i'm|im)\s+(?:a|an)?\s*([a-zA-Z][a-zA-Z\s-]{1,40})",
         r"(?:my job is|i work as|occupation is)\s+([a-zA-Z\s]{2,40})",
     ]
 
@@ -346,13 +364,26 @@ def extract_occupation(text: str):
         if not match:
             continue
 
-        candidate = match.group(1).strip()
+        candidate = clean_occupation_candidate(match.group(1))
         candidate_norm = normalize_text(candidate)
         candidate_norm = re.sub(r"^(هي|هو|اني|انا)\s+", "", candidate_norm).strip()
         if not candidate_norm.startswith("من ") and not has_any(candidate, VISA_WORDS + LIST_WORDS):
             return candidate_norm or candidate
 
     return None
+
+
+def clean_occupation_candidate(candidate: str):
+    text = str(candidate or "").strip()
+    text = re.split(
+        r"\b(?:and|with|my age|age is|age|visa|for)\b|[,،.!?;]",
+        text,
+        maxsplit=1,
+        flags=re.IGNORECASE,
+    )[0]
+    text = re.sub(r"^(?:a|an|the)\s+", "", text.strip(), flags=re.IGNORECASE)
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
 
 
 def extract_relationship(text: str):

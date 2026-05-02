@@ -35,6 +35,7 @@ EXTRA_ALIASES = {
     "TUR": ["تركيا", "تركي", "turkey", "turkish", "tur"],
     "USA": ["امريكا", "أمريكا", "الولايات المتحدة", "usa", "united states", "american"],
     "CAN": ["كندا", "كندي", "canada", "canadian", "can"],
+    "ARE": ["الامارات", "الإمارات", "اماراتي", "إماراتي","امارات","الامارات العربية المتحدة", "uae", "emirates", "are"],
 }
 
 
@@ -89,7 +90,6 @@ def load_countries():
         aliases = [
             ar,
             en,
-            ocr,
             ar.replace("أ", "ا").replace("إ", "ا").replace("آ", "ا"),
             en.lower(),
         ]
@@ -130,9 +130,13 @@ def resolve_country(text: str):
 
     # Alias search
     for country in COUNTRIES:
+        ocr_norm = country["ocr_code"].lower()
         for alias in country.get("aliases", []):
             alias_norm = normalize_text(alias)
-            if alias_norm and alias_norm in normalized:
+            if not alias_norm or alias_norm == ocr_norm:
+                continue
+            pattern = re.compile(rf"(?<!\w){re.escape(alias_norm)}(?!\w)", re.IGNORECASE)
+            if pattern.search(normalized):
                 return country
 
     return None

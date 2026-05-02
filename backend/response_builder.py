@@ -19,6 +19,22 @@ VISA_TYPE_NAMES = {
     20: "سمة دخول خاصة",
 }
 
+VISA_TYPE_NAMES_EN = {
+    1: "Government work entry visa",
+    2: "Private sector work entry visa",
+    3: "Domestic worker entry visa",
+    6: "Study entry visa",
+    7: "Medical treatment entry visa",
+    8: "Commercial visit entry visa",
+    9: "Government visit entry visa",
+    10: "Family visit entry visa",
+    11: "Embassy visit entry visa",
+    14: "Multiple-return visa",
+    16: "Tourism entry visa",
+    19: "Return visa",
+    20: "Special entry visa",
+}
+
 AR_FIELD_NAMES = {
     "country": "الدولة / الجنسية",
     "visa_type": "رقم الفيزا",
@@ -51,6 +67,13 @@ def visa_name_for(visa_type):
         return None
 
 
+def visa_name_en_for(visa_type):
+    try:
+        return VISA_TYPE_NAMES_EN.get(int(visa_type))
+    except (TypeError, ValueError):
+        return None
+
+
 def field_name(field, arabic: bool):
     names = AR_FIELD_NAMES if arabic else EN_FIELD_NAMES
     return names.get(str(field), str(field).replace("_", " "))
@@ -76,7 +99,12 @@ def status_text(status, arabic: bool):
 
 def country_display(session: dict, decision: dict | None = None, arabic: bool = True):
     decision = decision or {}
-    country = decision.get("country") or session.get("country") or session.get("country_en")
+    if arabic:
+        country = decision.get("country_ar") or decision.get("country") or session.get("country") or session.get("country_en")
+    else:
+        country = decision.get("country_en") or session.get("country_en") or decision.get("country") or session.get("country")
+        if isinstance(country, str) and country.isupper():
+            country = country.title()
     ocr_code = decision.get("ocr_code") or decision.get("country_ocr_code") or session.get("ocr_code")
 
     if country and ocr_code:
@@ -86,7 +114,7 @@ def country_display(session: dict, decision: dict | None = None, arabic: bool = 
 
 def format_visa_label(visa_type, visa_name=None, arabic: bool = True, with_check: bool = False):
     name = visa_name or visa_name_for(visa_type)
-    prefix = "✅ " if with_check else ""
+    prefix = "✓ " if with_check else ""
 
     if arabic:
         if visa_type and name:
@@ -95,11 +123,12 @@ def format_visa_label(visa_type, visa_name=None, arabic: bool = True, with_check
             return f"{prefix}فيزا رقم {visa_type}"
         return f"{prefix}{name or 'اسم الفيزا غير متوفر في البيانات'}"
 
-    if visa_type and name:
-        return f"{prefix}Visa No. {visa_type} - {name}"
+    english_name = visa_name_en_for(visa_type) or name
+    if visa_type and english_name:
+        return f"{prefix}Visa No. {visa_type} - {english_name}"
     if visa_type:
         return f"{prefix}Visa No. {visa_type}"
-    return f"{prefix}{name or 'Name not available in the data'}"
+    return f"{prefix}{english_name or 'Name not available in the data'}"
 
 
 def clean_items(items):
@@ -239,7 +268,7 @@ def build_visa_list_answer(user_message: str, decision: dict, session: dict):
         lines.extend(format_visa_label(v.get("visa_type"), v.get("visa_name"), arabic, True) for v in visa_types)
     else:
         lines.append(f"Available visa types in the current data for {country}:")
-        lines.extend(format_visa_label(v.get("visa_type"), v.get("visa_name"), arabic, True) for v in visa_types)
+        lines.extend(format_visa_label(v.get("visa_type"), v.get("visa_name_en"), arabic, True) for v in visa_types)
 
     return "\n".join(lines)
 
@@ -253,12 +282,12 @@ def build_visa_details_answer(user_message: str, decision: dict, session: dict):
     min_age, max_age = summary["age_rule"]
     occupation_names = allowed_names(
         summary["occupations"],
-        ["occupationNameAr", "ArabicDescription", "occupationNameEn", "DescriptionEn"],
+        ["occupationNameAr", "ArabicDescription", "occupationNameEn", "DescriptionEn"] if arabic else ["occupationNameEn", "DescriptionEn", "occupationNameAr", "ArabicDescription"],
         limit=8,
     )
     relationship_names = allowed_names(
         summary["relationships"],
-        ["relationNameAr", "arabicDescription", "relationNameEn"],
+        ["relationNameAr", "arabicDescription", "relationNameEn"] if arabic else ["relationNameEn", "relationNameAr", "arabicDescription"],
         limit=12,
     )
 

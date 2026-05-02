@@ -1,12 +1,30 @@
 import re
 
 
+VISA_TYPE_NAMES_EN = {
+    1: "Government work entry visa",
+    2: "Private sector work entry visa",
+    3: "Domestic worker entry visa",
+    6: "Study entry visa",
+    7: "Medical treatment entry visa",
+    8: "Commercial visit entry visa",
+    9: "Government visit entry visa",
+    10: "Family visit entry visa",
+    11: "Embassy visit entry visa",
+    14: "Multiple-return visa",
+    16: "Tourism entry visa",
+    19: "Return visa",
+    20: "Special entry visa",
+}
+
 OCCUPATION_VARIANTS = {
     "نائب": ["نائب", "نواب", "نائبه", "نائبة"],
     "عضو مجلس": ["عضو مجلس", "عضو مجالس", "اعضاء مجلس", "اعضاء مجالس", "مجالس"],
     "عضو المجالس": ["عضو مجلس", "عضو مجالس", "اعضاء مجلس", "اعضاء مجالس", "مجالس"],
     "رئيس": ["رئيس", "رؤساء", "رئيسه", "رئيسة"],
     "مساعد": ["مساعد", "مساعدين", "مساعديهم"],
+    "pilot": ["pilot", "طيار"],
+    "طيار": ["طيار", "pilot"],
 }
 
 
@@ -54,7 +72,8 @@ def build_visa_types_list(api_response):
     for item in data:
         visa_types.append({
             "visa_type": item.get("visaType"),
-            "visa_name": item.get("typeOfVisa") or "الاسم غير متوفر في البيانات"
+            "visa_name": item.get("typeOfVisa") or "الاسم غير متوفر في البيانات",
+            "visa_name_en": VISA_TYPE_NAMES_EN.get(item.get("visaType"), "Name not available in the data"),
         })
 
     return visa_types
@@ -75,6 +94,65 @@ def first_rule_list(*values):
         if isinstance(value, list) and value:
             return value
     return []
+
+
+def get_occupation_rules(visa_data):
+    if not visa_data:
+        return []
+
+    country_rule = visa_data.get("countryRule", {}) or {}
+    general_rules = visa_data.get("generalRules", {}) or {}
+    rules = country_rule.get("rules", {}) or {}
+
+    country_occupations = first_rule_list(
+        rules.get("occupations"),
+        rules.get("occupation"),
+        rules.get("newOccupation"),
+    )
+    general_occupations = first_rule_list(
+        general_rules.get("occupations"),
+        general_rules.get("occupation"),
+        general_rules.get("newOccupation"),
+    )
+
+    return country_occupations if country_occupations else general_occupations
+
+
+def build_occupation_list(visa_data):
+    occupations = []
+    seen = set()
+
+    for occupation in get_occupation_rules(visa_data):
+        if not isinstance(occupation, dict):
+            continue
+
+        if occupation.get("allowed", True) is False:
+            continue
+
+        name_ar = occupation.get("occupationNameAr") or occupation.get("ArabicDescription") or ""
+        name_en = occupation.get("occupationNameEn") or occupation.get("DescriptionEn") or ""
+        value = name_ar or name_en
+
+        if not value:
+            continue
+
+        label = value
+        if name_ar and name_en and normalize_text(name_ar) != normalize_text(name_en):
+            label = f"{name_ar} - {name_en}"
+
+        key = normalize_text(value)
+        if key in seen:
+            continue
+
+        seen.add(key)
+        occupations.append({
+            "value": value,
+            "label": label,
+            "occupation_name_ar": name_ar,
+            "occupation_name_en": name_en,
+        })
+
+    return occupations
 
 
 def occupation_matches(user_occupation: str, occupations: list):
@@ -161,7 +239,10 @@ def check_eligibility(visa_data, user_data):
         "status": "NEED_MORE_INFO",
         "visa_type": visa_data.get("visaType"),
         "visa_name": visa_data.get("typeOfVisa") or "الاسم غير متوفر في البيانات",
+        "visa_name_en": VISA_TYPE_NAMES_EN.get(visa_data.get("visaType"), "Name not available in the data"),
         "country": country_rule.get("ArabicDescription") or country_rule.get("LatinDescription"),
+        "country_ar": country_rule.get("ArabicDescription"),
+        "country_en": country_rule.get("LatinDescription"),
         "country_ocr_code": country_rule.get("OcrCode"),
         "checks": [],
         "missing_fields": [],
@@ -223,18 +304,7 @@ def check_eligibility(visa_data, user_data):
                 "message": "Gender is restricted for this visa."
             })
 
-    country_occupations = first_rule_list(
-        rules.get("occupations"),
-        rules.get("occupation"),
-        rules.get("newOccupation"),
-    )
-    general_occupations = first_rule_list(
-        general_rules.get("occupations"),
-        general_rules.get("occupation"),
-        general_rules.get("newOccupation"),
-    )
-
-    occupation_rules = country_occupations if country_occupations else general_occupations
+    occupation_rules = get_occupation_rules(visa_data)
 
     result["details"]["occupations"] = [
         o.get("ArabicDescription") or o.get("occupationNameAr") or o.get("DescriptionEn") or o.get("occupationNameEn")
