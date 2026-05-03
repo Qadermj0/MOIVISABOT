@@ -13,6 +13,7 @@ from .rules_engine import (
     check_eligibility,
     build_visa_types_list,
     build_occupation_list,
+    build_relationship_list,
 )
 from .intent_engine import analyze_message
 from .response_builder import build_chat_answer, visa_name_for
@@ -45,7 +46,7 @@ class FormCheckRequest(BaseModel):
     age: int | None = None
     occupation: str | None = None
     gender: str | None = None
-    relationship: str | None = None
+    relationship: str | list[str] | None = None
 
 
 def english_display_name(value):
@@ -100,6 +101,17 @@ def get_occupations(ocr_code: str, visa_type: int):
         "ocr_code": ocr_code,
         "visa_type": visa_type,
         "occupations": build_occupation_list(visa_data),
+    }
+
+
+@app.get("/api/relationships/{ocr_code}/{visa_type}")
+def get_relationships(ocr_code: str, visa_type: int):
+    details = visa_api.get_visa_details(ocr_code, visa_type)
+    visa_data = extract_first_visa_data(details)
+    return {
+        "ocr_code": ocr_code,
+        "visa_type": visa_type,
+        "relationships": build_relationship_list(visa_data),
     }
 
 

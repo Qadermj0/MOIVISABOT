@@ -155,6 +155,58 @@ def build_occupation_list(visa_data):
     return occupations
 
 
+def get_relationship_rules(visa_data):
+    if not visa_data:
+        return []
+
+    country_rule = visa_data.get("countryRule", {}) or {}
+    general_rules = visa_data.get("generalRules", {}) or {}
+    rules = country_rule.get("rules", {}) or {}
+
+    return first_rule_list(
+        rules.get("relationship"),
+        general_rules.get("relationship"),
+    )
+
+
+def build_relationship_list(visa_data):
+    relationships = []
+    seen = set()
+
+    for relationship in get_relationship_rules(visa_data):
+        if not isinstance(relationship, dict):
+            continue
+
+        if relationship.get("allowed", True) is False:
+            continue
+
+        name_ar = relationship.get("relationNameAr") or relationship.get("arabicDescription") or relationship.get("ArabicDescription") or ""
+        name_en = relationship.get("relationNameEn") or relationship.get("DescriptionEn") or ""
+        value = name_ar or name_en
+
+        if not value:
+            continue
+
+        label = value
+        if name_ar and name_en and normalize_text(name_ar) != normalize_text(name_en):
+            label = f"{name_ar} - {name_en}"
+
+        key = normalize_text(value)
+        if key in seen:
+            continue
+
+        seen.add(key)
+        relationships.append({
+            "value": value,
+            "label": label,
+            "relation_code": relationship.get("relationCode"),
+            "relation_name_ar": name_ar,
+            "relation_name_en": name_en,
+        })
+
+    return relationships
+
+
 def occupation_matches(user_occupation: str, occupations: list):
     if not user_occupation:
         return False, None
@@ -189,6 +241,33 @@ def occupation_matches(user_occupation: str, occupations: list):
                     return True, name
 
     return False, None
+
+
+def normalize_relationship_values(value):
+    if value is None:
+        return []
+
+    if isinstance(value, (list, tuple, set)):
+        values = value
+    else:
+        values = [value]
+
+    normalized = []
+    seen = set()
+
+    for item in values:
+        text = str(item or "").strip()
+        if not text:
+            continue
+
+        key = normalize_text(text)
+        if key in seen:
+            continue
+
+        seen.add(key)
+        normalized.append(text)
+
+    return normalized
 
 
 def relationship_matches(user_relationship: str, relationships: list):
@@ -325,16 +404,16 @@ def check_eligibility(visa_data, user_data):
                 "matched_value": matched_name
             })
 
-    relationship_rules = rules.get("relationship") or general_rules.get("relationship") or []
+    relationship_rules = get_relationship_rules(visa_data)
     result["details"]["relationships_count"] = len(relationship_rules)
 
-    if relationship:
-        matched_rel, matched_rel_name = relationship_matches(relationship, relationship_rules)
+    for relationship_value in normalize_relationship_values(relationship):
+        matched_rel, matched_rel_name = relationship_matches(relationship_value, relationship_rules)
 
         result["checks"].append({
             "passed": matched_rel,
             "field": "relationship",
-            "message": "Relationship is allowed." if matched_rel else "Relationship is not allowed.",
+            "message": f"Relationship {relationship_value} is allowed." if matched_rel else f"Relationship {relationship_value} is not allowed.",
             "matched_value": matched_rel_name
         })
 

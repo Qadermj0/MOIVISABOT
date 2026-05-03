@@ -124,7 +124,24 @@
 
             <div class="field-group hidden conditional-field">
               <label for="relationshipInput">Relationship / Companion</label>
-              <input id="relationshipInput" name="relationship" type="text" placeholder="Example: wife, child, companion" />
+              <div class="multi-select" id="relationshipMultiSelect">
+                <button
+                  class="multi-select-trigger"
+                  id="relationshipInput"
+                  type="button"
+                  aria-expanded="false"
+                  aria-haspopup="listbox"
+                  aria-controls="relationshipMenu"
+                >
+                  <span id="relationshipSelectionText">Select relationships</span>
+                </button>
+                <div
+                  class="multi-select-menu"
+                  id="relationshipMenu"
+                  role="listbox"
+                  aria-multiselectable="true"
+                ></div>
+              </div>
             </div>
           </div>
 

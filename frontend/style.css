@@ -399,6 +399,84 @@ textarea::placeholder {
   color: #777780;
 }
 
+.multi-select {
+  position: relative;
+}
+
+.multi-select-trigger {
+  width: 100%;
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid #c9c4b9;
+  border-radius: var(--radius-md);
+  background: #ffffff;
+  color: var(--text);
+  padding: 12px 13px;
+  line-height: 1.35;
+  text-align: left;
+}
+
+.multi-select-trigger span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.multi-select-trigger::after {
+  content: "";
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--muted);
+  border-bottom: 2px solid var(--muted);
+  transform: rotate(45deg) translateY(-2px);
+}
+
+.multi-select-menu {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 5px);
+  left: 0;
+  right: 0;
+  display: none;
+  max-height: 230px;
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: #ffffff;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.14);
+  padding: 6px;
+}
+
+.multi-select.is-open .multi-select-menu {
+  display: grid;
+  gap: 4px;
+}
+
+.multi-select-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  border-radius: var(--radius-sm);
+  padding: 9px 8px;
+  color: var(--text);
+  cursor: pointer;
+  line-height: 1.35;
+}
+
+.multi-select-option:hover {
+  background: var(--surface-muted);
+}
+
+.multi-select-option input {
+  width: auto;
+  margin: 2px 0 0;
+}
+
 .modal-backdrop {
   position: fixed;
   inset: 0;
