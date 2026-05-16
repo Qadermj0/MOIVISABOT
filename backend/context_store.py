@@ -10,7 +10,8 @@ DEFAULT_CONTEXT = {
     "occupation": None,
     "gender": None,
     "relationship": None,
-    "last_intent": None
+    "last_intent": None,
+    "language": None
 }
 
 

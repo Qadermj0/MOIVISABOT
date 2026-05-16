@@ -15,6 +15,7 @@ class VisaApiService:
         self.timeout = VISA_API_TIMEOUT_SECONDS
         self.cache_ttl = VISA_API_CACHE_TTL_SECONDS
         self._cache = {}
+        self._stale_cache = {}
         self._cache_lock = threading.Lock()
 
     def _cache_get(self, key):
@@ -33,13 +34,16 @@ class VisaApiService:
 
             return value
 
-    def _cache_set(self, key, value):
-        if self.cache_ttl <= 0:
-            return
-
-        expires_at = time.monotonic() + self.cache_ttl
+    def _stale_cache_get(self, key):
         with self._cache_lock:
-            self._cache[key] = (expires_at, value)
+            return self._stale_cache.get(key)
+
+    def _cache_set(self, key, value):
+        with self._cache_lock:
+            self._stale_cache[key] = value
+            if self.cache_ttl > 0:
+                expires_at = time.monotonic() + self.cache_ttl
+                self._cache[key] = (expires_at, value)
 
     def _get_rules(self, params: dict):
         cache_key = tuple(sorted(params.items()))
@@ -48,11 +52,25 @@ class VisaApiService:
             return cached
 
         url = f"{self.base_url}/getVisaTypesByCountry"
-        response = self.session.get(url, params=params, verify=False, timeout=self.timeout)
-        response.raise_for_status()
-        data = response.json()
-        self._cache_set(cache_key, data)
-        return data
+        last_error = None
+
+        for attempt in range(3):
+            try:
+                response = self.session.get(url, params=params, verify=False, timeout=self.timeout)
+                response.raise_for_status()
+                data = response.json()
+                self._cache_set(cache_key, data)
+                return data
+            except Exception as exc:
+                last_error = exc
+                if attempt < 2:
+                    time.sleep(0.35 * (attempt + 1))
+
+        stale = self._stale_cache_get(cache_key)
+        if stale is not None:
+            return stale
+
+        raise last_error
 
     def get_visa_types_by_country(self, ocr_code: str):
         params = {"ocrCode": ocr_code}
