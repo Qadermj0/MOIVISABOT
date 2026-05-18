@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Kuwait Visa AI Assistant</title>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="style.css?v=studio-responsive-3" />
   </head>
   <body>
     <div class="app-shell">
@@ -177,11 +177,12 @@
     </div>
 
     <div class="modal-backdrop" id="eligibilityModal" aria-hidden="true">
-      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="eligibilityTitle">
-        <div class="modal-header">
-          <div>
+      <div class="modal direct-check-modal" role="dialog" aria-modal="true" aria-labelledby="eligibilityTitle">
+        <div class="modal-header studio-header">
+          <div class="studio-heading">
             <p class="section-kicker" data-i18n="directService">Direct Service</p>
             <h2 id="eligibilityTitle" data-i18n="directEligibilityTitle">Direct Eligibility Check</h2>
+            <p data-i18n="directEligibilitySubtitle">A guided eligibility studio for faster, clearer decisions.</p>
           </div>
           <button class="icon-button" id="closeEligibilityButton" type="button" aria-label="Close modal" data-i18n-aria-label="closeModal">
             <span aria-hidden="true">&times;</span>
@@ -189,93 +190,240 @@
         </div>
 
         <form class="eligibility-form" id="eligibilityForm">
-          <div class="form-grid">
-            <div class="field-group" id="countryGroup">
-              <label for="countrySelect" data-i18n="countryLabel">Applicant Country / Nationality</label>
-              <select id="countrySelect" name="country" required>
-                <option value="">Select applicant country</option>
-              </select>
-            </div>
-
-            <div class="field-group hidden" id="visaTypeGroup">
-              <label for="visaTypeSelect" data-i18n="visaTypeLabel">Visa Type</label>
-              <select id="visaTypeSelect" name="visa_type">
-                <option value="">Select a visa type</option>
-              </select>
-            </div>
-
-            <div class="field-group hidden conditional-field">
-              <label for="ageInput" data-i18n="ageLabel">Age</label>
-              <input id="ageInput" name="age" type="number" min="0" max="120" inputmode="numeric" placeholder="Applicant age" data-i18n-placeholder="agePlaceholder" />
-            </div>
-
-            <div class="field-group hidden conditional-field">
-              <label for="occupationTrigger" data-i18n="occupationLabel">Occupation</label>
-              <select id="occupationInput" name="occupation" class="native-select-hidden" tabindex="-1" aria-hidden="true">
-                <option value="">Select an occupation</option>
-              </select>
-              <div class="single-select occupation-select" id="occupationSingleSelect">
-                <button
-                  class="single-select-trigger"
-                  id="occupationTrigger"
-                  type="button"
-                  aria-expanded="false"
-                  aria-haspopup="listbox"
-                  aria-controls="occupationMenu"
-                >
-                  <span id="occupationSelectionText">Select an occupation</span>
-                </button>
-                <div class="single-select-panel" id="occupationPanel">
-                  <label class="single-select-search" for="occupationSearchInput">
-                    <span class="sr-only" data-i18n="searchOccupations">Search occupations</span>
-                    <input id="occupationSearchInput" type="search" autocomplete="off" placeholder="Search occupations..." data-i18n-placeholder="searchOccupations" />
-                  </label>
-                  <div class="single-select-menu" id="occupationMenu" role="listbox"></div>
-                </div>
-              </div>
-            </div>
-
-            <div class="field-group hidden conditional-field">
-              <label for="genderSelect" data-i18n="genderLabel">Gender</label>
-              <select id="genderSelect" name="gender">
-                <option value="">Select gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-              </select>
-            </div>
-
-            <div class="field-group hidden conditional-field">
-              <label for="relationshipInput" data-i18n="relationshipLabel">Relationship / Companion</label>
-              <div class="multi-select" id="relationshipMultiSelect">
-                <button
-                  class="multi-select-trigger"
-                  id="relationshipInput"
-                  type="button"
-                  aria-expanded="false"
-                  aria-haspopup="listbox"
-                  aria-controls="relationshipMenu"
-                >
-                  <span id="relationshipSelectionText">Select relationships</span>
-                </button>
-                <div
-                  class="multi-select-menu"
-                  id="relationshipMenu"
-                  role="listbox"
-                  aria-multiselectable="true"
-                ></div>
-              </div>
-            </div>
+          <div class="wizard-progress" aria-label="Eligibility progress">
+            <button class="wizard-step is-active" type="button" data-step-target="country">
+              <span>01</span>
+              <strong data-i18n="stepCountry">Country</strong>
+            </button>
+            <button class="wizard-step" type="button" data-step-target="visa">
+              <span>02</span>
+              <strong data-i18n="stepVisa">Visa</strong>
+            </button>
+            <button class="wizard-step" type="button" data-step-target="details">
+              <span>03</span>
+              <strong data-i18n="stepDetails">Details</strong>
+            </button>
+            <button class="wizard-step" type="button" data-step-target="result">
+              <span>04</span>
+              <strong data-i18n="stepResult">Result</strong>
+            </button>
           </div>
 
-          <p class="status-line" id="eligibilityStatus" role="status" aria-live="polite"></p>
+          <div class="eligibility-studio">
+            <div class="wizard-main">
+              <section class="wizard-panel is-active" data-wizard-panel="country" aria-labelledby="countryPanelTitle">
+                <div class="panel-heading">
+                  <span class="panel-index">01</span>
+                  <div>
+                    <h3 id="countryPanelTitle" data-i18n="countryPanelTitle">Choose applicant country</h3>
+                    <p data-i18n="countryPanelDescription">Search and select the applicant nationality.</p>
+                  </div>
+                </div>
 
-          <div class="modal-actions">
-            <button class="button button-secondary hidden" id="checkEligibilityButton" type="submit">
-              <span data-i18n="checkEligibility">Check Eligibility</span>
-            </button>
-            <button class="button button-ghost" id="cancelEligibilityButton" type="button">
-              <span data-i18n="cancel">Cancel</span>
-            </button>
+                <div class="field-group" id="countryGroup">
+                  <label for="countryTrigger" data-i18n="countryLabel">Applicant Country / Nationality</label>
+                  <select id="countrySelect" name="country" class="native-select-hidden" tabindex="-1" aria-hidden="true">
+                    <option value="">Select applicant country</option>
+                  </select>
+                  <div class="smart-select country-select" id="countrySmartSelect" data-select-key="country">
+                    <button
+                      class="smart-select-trigger"
+                      id="countryTrigger"
+                      type="button"
+                      aria-expanded="false"
+                      aria-haspopup="listbox"
+                      aria-controls="countryMenu"
+                    >
+                      <span id="countrySelectionText">Select applicant country</span>
+                    </button>
+                    <div class="smart-select-panel" id="countryPanel">
+                      <label class="smart-select-search" for="countrySearchInput">
+                        <span class="sr-only" data-i18n="searchCountries">Search countries</span>
+                        <input id="countrySearchInput" type="search" autocomplete="off" placeholder="Search countries..." data-i18n-placeholder="searchCountries" />
+                      </label>
+                      <div class="smart-select-menu" id="countryMenu" role="listbox"></div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="wizard-panel hidden" data-wizard-panel="visa" aria-labelledby="visaPanelTitle">
+                <div class="panel-heading">
+                  <span class="panel-index">02</span>
+                  <div>
+                    <h3 id="visaPanelTitle" data-i18n="visaPanelTitle">Select visa type</h3>
+                    <p data-i18n="visaPanelDescription">Only visa types available for the selected country are shown.</p>
+                  </div>
+                </div>
+
+                <div class="field-group hidden" id="visaTypeGroup">
+                  <label for="visaTypeTrigger" data-i18n="visaTypeLabel">Visa Type</label>
+                  <select id="visaTypeSelect" name="visa_type" class="native-select-hidden" tabindex="-1" aria-hidden="true">
+                    <option value="">Select a visa type</option>
+                  </select>
+                  <div class="smart-select visa-type-select" id="visaTypeSmartSelect" data-select-key="visaType">
+                    <button
+                      class="smart-select-trigger"
+                      id="visaTypeTrigger"
+                      type="button"
+                      aria-expanded="false"
+                      aria-haspopup="listbox"
+                      aria-controls="visaTypeMenu"
+                    >
+                      <span id="visaTypeSelectionText">Select a visa type</span>
+                    </button>
+                    <div class="smart-select-panel" id="visaTypePanel">
+                      <label class="smart-select-search" for="visaTypeSearchInput">
+                        <span class="sr-only" data-i18n="searchVisaTypes">Search visa types</span>
+                        <input id="visaTypeSearchInput" type="search" autocomplete="off" placeholder="Search visa types..." data-i18n-placeholder="searchVisaTypes" />
+                      </label>
+                      <div class="smart-select-menu" id="visaTypeMenu" role="listbox"></div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="wizard-panel hidden" data-wizard-panel="details" aria-labelledby="detailsPanelTitle">
+                <div class="panel-heading">
+                  <span class="panel-index">03</span>
+                  <div>
+                    <h3 id="detailsPanelTitle" data-i18n="detailsPanelTitle">Complete applicant details</h3>
+                    <p data-i18n="detailsPanelDescription">Fill only the details that apply to this visa rule.</p>
+                  </div>
+                </div>
+
+                <div class="form-grid details-grid">
+                  <div class="field-group hidden conditional-field">
+                    <label for="ageInput" data-i18n="ageLabel">Age</label>
+                    <input id="ageInput" name="age" type="number" min="0" max="120" inputmode="numeric" placeholder="Applicant age" data-i18n-placeholder="agePlaceholder" />
+                  </div>
+
+                  <div class="field-group hidden conditional-field">
+                    <label for="occupationTrigger" data-i18n="occupationLabel">Occupation</label>
+                    <select id="occupationInput" name="occupation" class="native-select-hidden" tabindex="-1" aria-hidden="true">
+                      <option value="">Select an occupation</option>
+                    </select>
+                    <div class="single-select occupation-select" id="occupationSingleSelect">
+                      <button
+                        class="single-select-trigger"
+                        id="occupationTrigger"
+                        type="button"
+                        aria-expanded="false"
+                        aria-haspopup="listbox"
+                        aria-controls="occupationMenu"
+                      >
+                        <span id="occupationSelectionText">Select an occupation</span>
+                      </button>
+                      <div class="single-select-panel" id="occupationPanel">
+                        <label class="single-select-search" for="occupationSearchInput">
+                          <span class="sr-only" data-i18n="searchOccupations">Search occupations</span>
+                          <input id="occupationSearchInput" type="search" autocomplete="off" placeholder="Search occupations..." data-i18n-placeholder="searchOccupations" />
+                        </label>
+                        <div class="single-select-menu" id="occupationMenu" role="listbox"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="field-group hidden conditional-field">
+                    <label for="genderTrigger" data-i18n="genderLabel">Gender</label>
+                    <select id="genderSelect" name="gender" class="native-select-hidden" tabindex="-1" aria-hidden="true">
+                      <option value="">Select gender</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                    </select>
+                    <div class="smart-select gender-select" id="genderSmartSelect" data-select-key="gender">
+                      <button
+                        class="smart-select-trigger"
+                        id="genderTrigger"
+                        type="button"
+                        aria-expanded="false"
+                        aria-haspopup="listbox"
+                        aria-controls="genderMenu"
+                      >
+                        <span id="genderSelectionText">Select gender</span>
+                      </button>
+                      <div class="smart-select-panel" id="genderPanel">
+                        <label class="smart-select-search" for="genderSearchInput">
+                          <span class="sr-only" data-i18n="searchGenders">Search genders</span>
+                          <input id="genderSearchInput" type="search" autocomplete="off" placeholder="Search genders..." data-i18n-placeholder="searchGenders" />
+                        </label>
+                        <div class="smart-select-menu" id="genderMenu" role="listbox"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="field-group hidden conditional-field">
+                    <label for="relationshipInput" data-i18n="relationshipLabel">Relationship / Companion</label>
+                    <div class="multi-select" id="relationshipMultiSelect">
+                      <button
+                        class="multi-select-trigger"
+                        id="relationshipInput"
+                        type="button"
+                        aria-expanded="false"
+                        aria-haspopup="listbox"
+                        aria-controls="relationshipMenu"
+                      >
+                        <span id="relationshipSelectionText">Select relationships</span>
+                      </button>
+                      <div class="multi-select-panel" id="relationshipPanel">
+                        <label class="multi-select-search" for="relationshipSearchInput">
+                          <span class="sr-only" data-i18n="searchRelationships">Search relationships</span>
+                          <input id="relationshipSearchInput" type="search" autocomplete="off" placeholder="Search relationships..." data-i18n-placeholder="searchRelationships" />
+                        </label>
+                        <div
+                          class="multi-select-menu"
+                          id="relationshipMenu"
+                          role="listbox"
+                          aria-multiselectable="true"
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <aside class="eligibility-snapshot" aria-labelledby="snapshotTitle">
+              <p class="section-kicker" data-i18n="snapshotKicker">Live Summary</p>
+              <h3 id="snapshotTitle" data-i18n="snapshotTitle">Application Snapshot</h3>
+              <div class="snapshot-list">
+                <div class="snapshot-item">
+                  <span data-i18n="countryLabel">Applicant Country / Nationality</span>
+                  <strong id="snapshotCountry">Not provided</strong>
+                </div>
+                <div class="snapshot-item">
+                  <span data-i18n="visaTypeLabel">Visa Type</span>
+                  <strong id="snapshotVisa">Not provided</strong>
+                </div>
+                <div class="snapshot-item">
+                  <span data-i18n="ageLabel">Age</span>
+                  <strong id="snapshotAge">Not provided</strong>
+                </div>
+                <div class="snapshot-item">
+                  <span data-i18n="occupationLabel">Occupation</span>
+                  <strong id="snapshotOccupation">Not provided</strong>
+                </div>
+                <div class="snapshot-item">
+                  <span data-i18n="genderLabel">Gender</span>
+                  <strong id="snapshotGender">Not provided</strong>
+                </div>
+                <div class="snapshot-item">
+                  <span data-i18n="relationshipLabel">Relationship / Companion</span>
+                  <strong id="snapshotRelationship">Not provided</strong>
+                </div>
+              </div>
+
+              <p class="status-line" id="eligibilityStatus" role="status" aria-live="polite"></p>
+
+              <div class="modal-actions">
+                <button class="button button-secondary hidden" id="checkEligibilityButton" type="submit">
+                  <span data-i18n="checkEligibility">Check Eligibility</span>
+                </button>
+                <button class="button button-ghost" id="cancelEligibilityButton" type="button">
+                  <span data-i18n="cancel">Cancel</span>
+                </button>
+              </div>
+            </aside>
           </div>
         </form>
 
@@ -283,6 +431,6 @@
       </div>
     </div>
 
-    <script src="app.js"></script>
+    <script src="app.js?v=studio-responsive-3"></script>
   </body>
 </html>

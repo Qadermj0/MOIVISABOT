@@ -73,7 +73,10 @@ class FakeVisaApi:
                     16,
                     "سمة دخول للسياحة",
                     age=(0, 100),
-                    occupations=[],
+                    occupations=[
+                        ("أعضاء المجالس ونوابهم ومساعدوهم", "All related Titles for Members of Councils and their Deputies and Assistants"),
+                        ("الرؤساء ونوابهم ومساعدوهم بجميع مسمياتهم", "All related Titles for Presidents and their Deputies and Assistants"),
+                    ],
                 ),
                 visa_item(
                     "JOR",
@@ -437,10 +440,12 @@ class BotRegressionTests(unittest.TestCase):
 
         second = self.chat("indian", session_id=session_id, language="en")
 
-        self.assertEqual(second["extracted"]["intent"], "provide_country")
+        self.assertEqual(second["extracted"]["intent"], "eligibility_check")
         self.assertEqual(second["context"]["ocr_code"], "IND")
         self.assertEqual(second["context"]["visa_type"], 16)
-        self.assertIn("Visa No. 16", second["answer"])
+        self.assertEqual(second["decision"]["status"], "NEED_MORE_INFO")
+        self.assertIn("age", second["decision"]["missing_fields"])
+        self.assertIn("occupation", second["decision"]["missing_fields"])
 
         third = self.chat("okay i need to check if i can to apply", session_id=session_id, language="en")
 
@@ -449,6 +454,38 @@ class BotRegressionTests(unittest.TestCase):
         self.assertEqual(third["decision"]["status"], "NEED_MORE_INFO")
         self.assertIn("age", third["decision"]["missing_fields"])
         self.assertIn("occupation", third["decision"]["missing_fields"])
+
+    def test_apply_request_country_followup_keeps_eligibility_flow_and_language_switch(self):
+        session_id = "visa16-apply-country-language"
+        first = self.chat("hey i need to apply for visa 16", session_id=session_id, language="en")
+
+        self.assertEqual(first["extracted"]["intent"], "eligibility_check")
+        self.assertEqual(first["context"]["visa_type"], 16)
+        self.assertIn("country", first["decision"]["missing_fields"])
+
+        second = self.chat("jordanian", session_id=session_id, language="en")
+
+        self.assertEqual(second["extracted"]["intent"], "eligibility_check")
+        self.assertEqual(second["context"]["ocr_code"], "JOR")
+        self.assertEqual(second["context"]["visa_type"], 16)
+        self.assertEqual(second["decision"]["status"], "NEED_MORE_INFO")
+        self.assertIn("age", second["decision"]["missing_fields"])
+        self.assertIn("occupation", second["decision"]["missing_fields"])
+
+        confirmation = self.chat("yes i went", session_id=session_id, language="en")
+
+        self.assertEqual(confirmation["extracted"]["intent"], "eligibility_check")
+        self.assertEqual(confirmation["decision"]["status"], "NEED_MORE_INFO")
+        self.assertIn("age", confirmation["decision"]["missing_fields"])
+        self.assertIn("occupation", confirmation["decision"]["missing_fields"])
+
+        arabic = self.chat("give me result in arabic", session_id=session_id, language="en")
+
+        self.assertEqual(arabic["context"]["language"], "ar")
+        self.assertEqual(arabic["extracted"]["intent"], "eligibility_check")
+        self.assertIn("العمر", arabic["answer"])
+        self.assertIn("المهنة", arabic["answer"])
+        self.assertNotIn("Age Requirement", arabic["answer"])
 
     def test_country_change_keeps_selected_tourist_visa_without_using_old_applicant_data(self):
         session_id = "tourist-country-switch"

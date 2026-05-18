@@ -174,21 +174,22 @@ class GeminiService:
         return any(marker in text for marker in TRANSIENT_ERROR_MARKERS)
 
     def _response_language(self, user_message: str, preferred_language: str | None = None) -> str:
-        if ARABIC_RE.search(user_message or ""):
-            return "Arabic"
-
         normalized = str(preferred_language or "").strip().lower()
+        if normalized in {"ar", "ar-kw", "ar-sa", "arabic", "العربية"}:
+            return "Arabic"
+        if normalized in {"en", "en-us", "en-gb", "english"}:
+            return "English"
         if normalized in {"fr", "fr-fr", "french", "français", "francais"}:
             return "French"
         if normalized in {"de", "de-de", "german", "deutsch"}:
             return "German"
         if normalized in {"es", "es-es", "spanish", "español", "espanol"}:
             return "Spanish"
-        if re.search(r"[A-Za-z]", user_message or ""):
-            return "English"
-        if normalized in {"ar", "ar-kw", "ar-sa", "arabic", "العربية"}:
+
+        if ARABIC_RE.search(user_message or ""):
             return "Arabic"
-        if normalized in {"en", "en-us", "en-gb", "english"}:
+
+        if re.search(r"[A-Za-z]", user_message or ""):
             return "English"
         return "English"
 

@@ -11,7 +11,12 @@ from .visa_api import visa_api
 from .gemini_service import gemini_service
 from .context_store import get_session, update_session, reset_session
 from .countries import list_countries
-from .agentic_pipeline import apply_agent_metadata, understand_message
+from .agentic_pipeline import (
+    answer_agent_for_route,
+    apply_agent_metadata,
+    build_agent_trace,
+    understand_message,
+)
 from .rules_engine import (
     extract_first_visa_data,
     check_eligibility,
@@ -271,21 +276,81 @@ def attach_occupation_alternative_visas(
     return decision
 
 
+def language_requested_in_message(message: str):
+    text = str(message or "").strip().lower()
+    if not text:
+        return None
+
+    if any(
+        phrase in text
+        for phrase in (
+            "in english",
+            "english result",
+            "answer in english",
+            "بالانجليزي",
+            "بالإنجليزي",
+            "انجليزي",
+            "إنجليزي",
+        )
+    ):
+        return "en"
+
+    if any(
+        phrase in text
+        for phrase in (
+            "in arabic",
+            "arabic result",
+            "answer in arabic",
+            "بالعربي",
+            "بالعربية",
+            "العربي",
+            "العربية",
+            "عربي",
+        )
+    ):
+        return "ar"
+
+    return None
+
+
+def normalize_language_code(language: str | None):
+    normalized = str(language or "").strip().lower()
+    if normalized in {"ar", "ar-kw", "ar-sa", "arabic", "العربية"}:
+        return "ar"
+    if normalized in {"en", "en-us", "en-gb", "english"}:
+        return "en"
+    if normalized in {"fr", "fr-fr", "french", "français", "francais"}:
+        return "fr"
+    if normalized in {"de", "de-de", "german", "deutsch"}:
+        return "de"
+    if normalized in {"es", "es-es", "spanish", "español", "espanol"}:
+        return "es"
+    return normalized or None
+
+
 def resolve_message_language(message: str, preferred_language: str | None, session: dict):
+    requested = language_requested_in_message(message)
+    if requested:
+        return requested
+
+    normalized = normalize_language_code(preferred_language)
+
     if re.search(r"[\u0600-\u06ff]", message or ""):
         return "ar"
 
-    normalized = str(preferred_language or "").strip().lower()
     if re.search(r"[A-Za-z]", message or ""):
-        if normalized in {"fr", "fr-fr", "french", "français", "francais"}:
-            return "fr"
-        if normalized in {"de", "de-de", "german", "deutsch"}:
-            return "de"
-        if normalized in {"es", "es-es", "spanish", "español", "espanol"}:
-            return "es"
+        if normalized in {"fr", "de", "es"}:
+            return normalized
         return "en"
 
-    return session.get("language") or normalized or "en"
+    return normalize_language_code(session.get("language")) or normalized or "en"
+
+
+def retarget_extracted_intent(extracted: dict, intent: str, route: str):
+    extracted["intent"] = intent
+    extracted["task_type"] = route
+    extracted["answer_agent"] = answer_agent_for_route(route)
+    extracted["agent_trace"] = build_agent_trace(extracted, route)
 
 
 @app.get("/api/health")
@@ -413,6 +478,7 @@ def form_check(req: FormCheckRequest):
 @app.post("/api/chat")
 def chat(req: ChatRequest):
     session = get_session(req.session_id)
+    previous_last_intent = session.get("last_intent")
     message_language = resolve_message_language(req.message, req.language, session)
 
     extracted = understand_message(
@@ -459,6 +525,19 @@ def chat(req: ChatRequest):
     preloaded_visa_types_data = None
     preloaded_visa_types = None
     info_only_intents = {"chitchat", "context_question", "provide_country", "dependent_residency_inquiry", "residency_admin_inquiry", "inside_kuwait_visa_inquiry", "visa_comparison_inquiry", "system_support_inquiry"}
+    completes_pending_eligibility_country = (
+        intent == "provide_country"
+        and previous_last_intent == "eligibility_check"
+        and previous_visa_type
+        and not previous_ocr_code
+        and ocr_code
+        and visa_type
+    )
+    if completes_pending_eligibility_country:
+        intent = "eligibility_check"
+        extracted["visa_type"] = visa_type
+        retarget_extracted_intent(extracted, intent, "eligibility")
+        session["last_intent"] = intent
 
     if ocr_code and not extracted.get("visa_type") and intent not in info_only_intents:
         try:
@@ -480,7 +559,12 @@ def chat(req: ChatRequest):
             }
             session = update_session(req.session_id, {"visa_type": visa_name_match["visa_type"]})
             intent = intent_for_resolved_visa(req.message)
-            extracted["intent"] = intent
+            retarget_extracted_intent(
+                extracted,
+                intent,
+                "eligibility" if intent == "eligibility_check" else "inquiry",
+            )
+            session["last_intent"] = intent
             visa_type = session.get("visa_type")
 
     if intent == "relationship_reset":

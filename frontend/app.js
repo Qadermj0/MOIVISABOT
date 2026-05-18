@@ -2,6 +2,21 @@ const SESSION_KEY = "kuwaitVisaSmartAssistant.sessionId";
 const LANGUAGE_KEY = "kuwaitVisaSmartAssistant.language";
 const API_BASE = "";
 const DEFAULT_LANGUAGE = "en";
+const VISA_TYPE_NAMES_EN = {
+  1: "Government work entry visa",
+  2: "Private sector work entry visa",
+  3: "Domestic worker entry visa",
+  6: "Study entry visa",
+  7: "Medical treatment entry visa",
+  8: "Commercial visit entry visa",
+  9: "Government visit entry visa",
+  10: "Family visit entry visa",
+  11: "Embassy visit entry visa",
+  14: "Multiple-return visa",
+  16: "Tourism entry visa",
+  19: "Return visa",
+  20: "Special entry visa",
+};
 
 const translations = {
   en: {
@@ -34,7 +49,20 @@ const translations = {
     officialNote: "This is an official service of the Ministry of Interior, State of Kuwait.",
     directService: "Direct Service",
     directEligibilityTitle: "Direct Eligibility Check",
+    directEligibilitySubtitle: "A guided eligibility studio for faster, clearer decisions.",
     closeModal: "Close modal",
+    stepCountry: "Country",
+    stepVisa: "Visa",
+    stepDetails: "Details",
+    stepResult: "Result",
+    countryPanelTitle: "Choose applicant country",
+    countryPanelDescription: "Search and select the applicant nationality.",
+    visaPanelTitle: "Select visa type",
+    visaPanelDescription: "Only visa types available for the selected country are shown.",
+    detailsPanelTitle: "Complete applicant details",
+    detailsPanelDescription: "Fill only the details that apply to this visa rule.",
+    snapshotKicker: "Live Summary",
+    snapshotTitle: "Application Snapshot",
     countryLabel: "Applicant Country / Nationality",
     visaTypeLabel: "Visa Type",
     ageLabel: "Age",
@@ -46,6 +74,14 @@ const translations = {
     cancel: "Cancel",
     selectCountry: "Select applicant country",
     selectVisaType: "Select a visa type",
+    searchCountries: "Search countries...",
+    searchVisaTypes: "Search visa types...",
+    searchGenders: "Search genders...",
+    searchRelationships: "Search relationships...",
+    noCountryMatches: "No matching countries.",
+    noVisaTypeMatches: "No matching visa types.",
+    noGenderMatches: "No matching genders.",
+    noRelationshipMatches: "No matching relationships.",
     loadingCountries: "Loading countries...",
     loadingVisaTypes: "Loading visa types...",
     noVisaTypes: "No visa types were returned for this country.",
@@ -92,6 +128,11 @@ const translations = {
     information: "Information",
     visaNo: "Visa No.",
     visaTypeMissing: "Visa type not provided",
+    visaNameMissing: "Visa name not available",
+    occupationNameMissing: "Occupation name not available",
+    relationshipNameMissing: "Relationship name not available",
+    checkPassed: "passed",
+    checkFailed: "did not pass",
     genderMaleOnlyNote: "Note: this visa is available to male applicants only according to the visible gender restriction.",
     genderFemaleOnlyNote: "Note: this visa is available to female applicants only according to the visible gender restriction.",
     userAvatar: "You",
@@ -126,7 +167,20 @@ const translations = {
     officialNote: "هذه خدمة رسمية من وزارة الداخلية في دولة الكويت.",
     directService: "خدمة مباشرة",
     directEligibilityTitle: "فحص الأهلية المباشر",
+    directEligibilitySubtitle: "تجربة ذكية موجهة للوصول إلى نتيجة أوضح وأسرع.",
     closeModal: "إغلاق النافذة",
+    stepCountry: "الدولة",
+    stepVisa: "التأشيرة",
+    stepDetails: "التفاصيل",
+    stepResult: "النتيجة",
+    countryPanelTitle: "اختر دولة مقدم الطلب",
+    countryPanelDescription: "ابحث واختر جنسية مقدم الطلب.",
+    visaPanelTitle: "اختر نوع التأشيرة",
+    visaPanelDescription: "تظهر فقط أنواع التأشيرات المتاحة للدولة المختارة.",
+    detailsPanelTitle: "أكمل تفاصيل مقدم الطلب",
+    detailsPanelDescription: "أدخل فقط التفاصيل المطلوبة حسب قواعد هذه التأشيرة.",
+    snapshotKicker: "ملخص مباشر",
+    snapshotTitle: "ملخص الطلب",
     countryLabel: "دولة / جنسية مقدم الطلب",
     visaTypeLabel: "نوع التأشيرة",
     ageLabel: "العمر",
@@ -138,6 +192,14 @@ const translations = {
     cancel: "إلغاء",
     selectCountry: "اختر دولة مقدم الطلب",
     selectVisaType: "اختر نوع التأشيرة",
+    searchCountries: "ابحث عن دولة...",
+    searchVisaTypes: "ابحث عن نوع تأشيرة...",
+    searchGenders: "ابحث عن الجنس...",
+    searchRelationships: "ابحث عن صلة قرابة...",
+    noCountryMatches: "لا توجد دول مطابقة.",
+    noVisaTypeMatches: "لا توجد أنواع تأشيرات مطابقة.",
+    noGenderMatches: "لا توجد نتائج مطابقة.",
+    noRelationshipMatches: "لا توجد صلات قرابة مطابقة.",
     loadingCountries: "جاري تحميل الدول...",
     loadingVisaTypes: "جاري تحميل أنواع التأشيرات...",
     noVisaTypes: "لم يتم العثور على أنواع تأشيرات لهذه الدولة.",
@@ -184,6 +246,11 @@ const translations = {
     information: "معلومات",
     visaNo: "تأشيرة رقم",
     visaTypeMissing: "نوع التأشيرة غير متوفر",
+    visaNameMissing: "اسم التأشيرة غير متوفر",
+    occupationNameMissing: "اسم المهنة غير متوفر",
+    relationshipNameMissing: "اسم صلة القرابة غير متوفر",
+    checkPassed: "مطابق",
+    checkFailed: "غير مطابق",
     genderMaleOnlyNote: "ملاحظة: هذه التأشيرة متاحة للذكور فقط حسب قيود الجنس الظاهرة في البيانات.",
     genderFemaleOnlyNote: "ملاحظة: هذه التأشيرة متاحة للإناث فقط حسب قيود الجنس الظاهرة في البيانات.",
     userAvatar: "أنت",
@@ -200,6 +267,9 @@ const state = {
   selectedRelationships: [],
   selectedCountry: null,
   isCountriesLoaded: false,
+  isEligibilityLoading: false,
+  currentEligibilityStep: "country",
+  hasEligibilityResult: false,
   isOccupationsLoading: false,
   isRelationshipsLoading: false,
   isVoiceRecording: false,
@@ -230,8 +300,18 @@ const elements = {
   cancelEligibilityButton: document.getElementById("cancelEligibilityButton"),
   eligibilityForm: document.getElementById("eligibilityForm"),
   countrySelect: document.getElementById("countrySelect"),
+  countrySmartSelect: document.getElementById("countrySmartSelect"),
+  countryTrigger: document.getElementById("countryTrigger"),
+  countrySelectionText: document.getElementById("countrySelectionText"),
+  countrySearchInput: document.getElementById("countrySearchInput"),
+  countryMenu: document.getElementById("countryMenu"),
   visaTypeGroup: document.getElementById("visaTypeGroup"),
   visaTypeSelect: document.getElementById("visaTypeSelect"),
+  visaTypeSmartSelect: document.getElementById("visaTypeSmartSelect"),
+  visaTypeTrigger: document.getElementById("visaTypeTrigger"),
+  visaTypeSelectionText: document.getElementById("visaTypeSelectionText"),
+  visaTypeSearchInput: document.getElementById("visaTypeSearchInput"),
+  visaTypeMenu: document.getElementById("visaTypeMenu"),
   ageInput: document.getElementById("ageInput"),
   occupationInput: document.getElementById("occupationInput"),
   occupationSingleSelect: document.getElementById("occupationSingleSelect"),
@@ -240,13 +320,60 @@ const elements = {
   occupationSearchInput: document.getElementById("occupationSearchInput"),
   occupationMenu: document.getElementById("occupationMenu"),
   genderSelect: document.getElementById("genderSelect"),
+  genderSmartSelect: document.getElementById("genderSmartSelect"),
+  genderTrigger: document.getElementById("genderTrigger"),
+  genderSelectionText: document.getElementById("genderSelectionText"),
+  genderSearchInput: document.getElementById("genderSearchInput"),
+  genderMenu: document.getElementById("genderMenu"),
   relationshipMultiSelect: document.getElementById("relationshipMultiSelect"),
   relationshipInput: document.getElementById("relationshipInput"),
   relationshipSelectionText: document.getElementById("relationshipSelectionText"),
+  relationshipSearchInput: document.getElementById("relationshipSearchInput"),
   relationshipMenu: document.getElementById("relationshipMenu"),
   checkEligibilityButton: document.getElementById("checkEligibilityButton"),
   eligibilityStatus: document.getElementById("eligibilityStatus"),
   eligibilityResult: document.getElementById("eligibilityResult"),
+  wizardSteps: document.querySelectorAll(".wizard-step"),
+  wizardPanels: document.querySelectorAll("[data-wizard-panel]"),
+  snapshotCountry: document.getElementById("snapshotCountry"),
+  snapshotVisa: document.getElementById("snapshotVisa"),
+  snapshotAge: document.getElementById("snapshotAge"),
+  snapshotOccupation: document.getElementById("snapshotOccupation"),
+  snapshotGender: document.getElementById("snapshotGender"),
+  snapshotRelationship: document.getElementById("snapshotRelationship"),
+};
+
+const searchableSelects = {
+  country: {
+    select: elements.countrySelect,
+    container: elements.countrySmartSelect,
+    trigger: elements.countryTrigger,
+    text: elements.countrySelectionText,
+    search: elements.countrySearchInput,
+    menu: elements.countryMenu,
+    placeholder: () => t("selectCountry"),
+    empty: () => t("noCountryMatches"),
+  },
+  visaType: {
+    select: elements.visaTypeSelect,
+    container: elements.visaTypeSmartSelect,
+    trigger: elements.visaTypeTrigger,
+    text: elements.visaTypeSelectionText,
+    search: elements.visaTypeSearchInput,
+    menu: elements.visaTypeMenu,
+    placeholder: () => t("selectVisaType"),
+    empty: () => t("noVisaTypeMatches"),
+  },
+  gender: {
+    select: elements.genderSelect,
+    container: elements.genderSmartSelect,
+    trigger: elements.genderTrigger,
+    text: elements.genderSelectionText,
+    search: elements.genderSearchInput,
+    menu: elements.genderMenu,
+    placeholder: () => t("selectGender"),
+    empty: () => t("noGenderMatches"),
+  },
 };
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -270,6 +397,7 @@ function bindEvents() {
   elements.closeEligibilityButton.addEventListener("click", closeEligibilityModal);
   elements.cancelEligibilityButton.addEventListener("click", closeEligibilityModal);
   elements.eligibilityModal.addEventListener("click", handleBackdropClick);
+  bindSearchableSelectEvents();
   elements.countrySelect.addEventListener("change", handleCountryChange);
   elements.visaTypeSelect.addEventListener("change", handleVisaTypeChange);
   elements.occupationTrigger.addEventListener("click", toggleOccupationMenu);
@@ -278,10 +406,26 @@ function bindEvents() {
   elements.occupationSearchInput.addEventListener("keydown", handleOccupationSearchKeyDown);
   elements.occupationMenu.addEventListener("click", handleOccupationOptionClick);
   elements.relationshipInput.addEventListener("click", toggleRelationshipMenu);
+  elements.relationshipSearchInput.addEventListener("input", renderRelationshipOptions);
+  elements.relationshipSearchInput.addEventListener("keydown", handleRelationshipSearchKeyDown);
+  elements.ageInput.addEventListener("input", syncEligibilitySnapshot);
+  elements.genderSelect.addEventListener("change", syncEligibilitySnapshot);
+  elements.occupationInput.addEventListener("change", syncEligibilitySnapshot);
+  elements.wizardSteps.forEach((step) => {
+    step.addEventListener("click", handleWizardStepClick);
+  });
   elements.eligibilityForm.addEventListener("submit", handleEligibilitySubmit);
 
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && elements.eligibilityModal.classList.contains("is-open")) {
+      if (hasOpenDirectSelect()) {
+        closeAllSearchableSelects();
+        closeOccupationMenu();
+        closeRelationshipMenu();
+        return;
+      }
+
+      closeAllSearchableSelects();
       closeOccupationMenu();
       closeRelationshipMenu();
       closeEligibilityModal();
@@ -293,6 +437,8 @@ function bindEvents() {
   });
 
   document.addEventListener("click", (event) => {
+    closeSearchableSelectsOutside(event.target);
+
     if (!elements.occupationSingleSelect.contains(event.target)) {
       closeOccupationMenu();
     }
@@ -305,6 +451,364 @@ function bindEvents() {
       closeLanguageMenu();
     }
   });
+}
+
+function bindSearchableSelectEvents() {
+  Object.keys(searchableSelects).forEach((key) => {
+    const config = searchableSelects[key];
+    if (!config.container || !config.trigger || !config.search || !config.menu || !config.select) {
+      return;
+    }
+
+    config.trigger.addEventListener("click", (event) => toggleSearchableSelect(key, event));
+    config.trigger.addEventListener("keydown", (event) => handleSearchableTriggerKeyDown(key, event));
+    config.search.addEventListener("input", () => renderSearchableSelectOptions(key));
+    config.search.addEventListener("keydown", (event) => handleSearchableSearchKeyDown(key, event));
+    config.menu.addEventListener("click", (event) => handleSearchableOptionClick(key, event));
+  });
+}
+
+function handleWizardStepClick(event) {
+  const step = event.currentTarget.dataset.stepTarget;
+  if (!isWizardStepAvailable(step)) {
+    return;
+  }
+
+  setEligibilityStep(step);
+}
+
+function isWizardStepAvailable(step) {
+  if (step === "country") {
+    return true;
+  }
+
+  if (step === "visa") {
+    return Boolean(elements.countrySelect.value);
+  }
+
+  if (step === "details") {
+    return Boolean(elements.countrySelect.value && elements.visaTypeSelect.value);
+  }
+
+  if (step === "result") {
+    return state.hasEligibilityResult;
+  }
+
+  return false;
+}
+
+function getAutomaticEligibilityStep() {
+  if (state.hasEligibilityResult) {
+    return "result";
+  }
+
+  if (elements.visaTypeSelect.value) {
+    return "details";
+  }
+
+  if (elements.countrySelect.value) {
+    return "visa";
+  }
+
+  return "country";
+}
+
+function setEligibilityStep(step = getAutomaticEligibilityStep()) {
+  state.currentEligibilityStep = step;
+
+  elements.wizardSteps.forEach((button) => {
+    const target = button.dataset.stepTarget;
+    const isActive = target === step;
+    const isAvailable = isWizardStepAvailable(target);
+    button.classList.toggle("is-active", isActive);
+    button.classList.toggle("is-complete", isStepComplete(target));
+    button.disabled = !isAvailable;
+    button.setAttribute("aria-current", isActive ? "step" : "false");
+  });
+
+  elements.wizardPanels.forEach((panel) => {
+    const isActive = panel.dataset.wizardPanel === step || (step === "result" && panel.dataset.wizardPanel === "details");
+    panel.classList.toggle("hidden", !isActive);
+    panel.classList.toggle("is-active", isActive);
+  });
+}
+
+function isStepComplete(step) {
+  if (step === "country") {
+    return Boolean(elements.countrySelect.value);
+  }
+
+  if (step === "visa") {
+    return Boolean(elements.visaTypeSelect.value);
+  }
+
+  if (step === "details") {
+    return state.hasEligibilityResult;
+  }
+
+  if (step === "result") {
+    return state.hasEligibilityResult;
+  }
+
+  return false;
+}
+
+function syncEligibilityExperience(step = getAutomaticEligibilityStep()) {
+  syncEligibilitySnapshot();
+  setEligibilityStep(step);
+}
+
+function toggleSearchableSelect(key, event) {
+  event.stopPropagation();
+
+  const config = searchableSelects[key];
+  if (!config || config.trigger.disabled || config.select.disabled) {
+    return;
+  }
+
+  const shouldOpen = !config.container.classList.contains("is-open");
+  closeAllSearchableSelects(key);
+  closeOccupationMenu();
+  closeRelationshipMenu();
+  setSearchableSelectOpen(key, shouldOpen);
+}
+
+function openSearchableSelect(key) {
+  const config = searchableSelects[key];
+  if (!config || config.trigger.disabled || config.select.disabled) {
+    return;
+  }
+
+  closeAllSearchableSelects(key);
+  closeOccupationMenu();
+  closeRelationshipMenu();
+  setSearchableSelectOpen(key, true);
+}
+
+function closeSearchableSelect(key) {
+  setSearchableSelectOpen(key, false);
+}
+
+function closeAllSearchableSelects(exceptKey = "") {
+  Object.keys(searchableSelects).forEach((key) => {
+    if (key !== exceptKey) {
+      closeSearchableSelect(key);
+    }
+  });
+}
+
+function closeSearchableSelectsOutside(target) {
+  Object.entries(searchableSelects).forEach(([key, config]) => {
+    if (config.container && !config.container.contains(target)) {
+      closeSearchableSelect(key);
+    }
+  });
+}
+
+function hasOpenDirectSelect() {
+  return Boolean(
+    elements.eligibilityModal.querySelector(".smart-select.is-open, .single-select.is-open, .multi-select.is-open")
+  );
+}
+
+function setSearchableSelectOpen(key, isOpen) {
+  const config = searchableSelects[key];
+  if (!config) {
+    return;
+  }
+
+  config.container.classList.toggle("is-open", isOpen);
+  config.trigger.setAttribute("aria-expanded", String(isOpen));
+  setActiveSelectLayer(config.container, isOpen);
+  setModalSelectOpen(isOpen);
+
+  if (!isOpen) {
+    return;
+  }
+
+  config.search.value = "";
+  renderSearchableSelectOptions(key);
+  window.setTimeout(() => config.search.focus(), 0);
+}
+
+function handleSearchableTriggerKeyDown(key, event) {
+  if (["Enter", " ", "ArrowDown"].includes(event.key)) {
+    event.preventDefault();
+    openSearchableSelect(key);
+  }
+}
+
+function handleSearchableSearchKeyDown(key, event) {
+  if (event.key === "Escape") {
+    event.preventDefault();
+    event.stopPropagation();
+    closeSearchableSelect(key);
+    searchableSelects[key].trigger.focus();
+    return;
+  }
+
+  if (event.key !== "Enter") {
+    return;
+  }
+
+  const firstOption = searchableSelects[key].menu.querySelector(".smart-select-option");
+  if (!firstOption) {
+    return;
+  }
+
+  event.preventDefault();
+  setSearchableSelectValue(key, firstOption.dataset.value);
+  closeSearchableSelect(key);
+  searchableSelects[key].trigger.focus();
+}
+
+function handleSearchableOptionClick(key, event) {
+  const option = event.target.closest(".smart-select-option");
+  if (!option) {
+    return;
+  }
+
+  setSearchableSelectValue(key, option.dataset.value);
+  closeSearchableSelect(key);
+  searchableSelects[key].trigger.focus();
+}
+
+function setSearchableSelectValue(key, value) {
+  const config = searchableSelects[key];
+  config.select.value = value || "";
+  config.select.dispatchEvent(new Event("change", { bubbles: true }));
+  syncSearchableSelect(key);
+}
+
+function syncAllSearchableSelects() {
+  Object.keys(searchableSelects).forEach(syncSearchableSelect);
+}
+
+function syncSearchableSelect(key) {
+  syncSearchableSelectText(key);
+  renderSearchableSelectOptions(key);
+  syncSearchableSelectState(key);
+}
+
+function syncSearchableSelectText(key) {
+  const config = searchableSelects[key];
+  if (!config) {
+    return;
+  }
+
+  const selectedOption = config.select.selectedOptions[0];
+  const fallbackOption = config.select.querySelector("option[value='']");
+  const label = selectedOption?.value
+    ? getSearchableOptionPrimary(selectedOption)
+    : fallbackOption?.textContent || config.placeholder();
+
+  config.text.textContent = label;
+  config.trigger.title = label;
+}
+
+function syncSearchableSelectState(key) {
+  const config = searchableSelects[key];
+  if (!config) {
+    return;
+  }
+
+  const isDisabled = Boolean(config.select.disabled);
+  config.trigger.disabled = isDisabled;
+  config.container.classList.toggle("is-disabled", isDisabled);
+
+  if (isDisabled) {
+    closeSearchableSelect(key);
+  }
+}
+
+function renderSearchableSelectOptions(key) {
+  const config = searchableSelects[key];
+  if (!config) {
+    return;
+  }
+
+  config.menu.innerHTML = "";
+  const options = Array.from(config.select.options).filter((option) => option.value);
+
+  if (!options.length) {
+    const empty = document.createElement("div");
+    empty.className = "single-select-empty";
+    empty.textContent = config.select.options[0]?.textContent || config.placeholder();
+    config.menu.appendChild(empty);
+    return;
+  }
+
+  const query = normalizeDisplayText(config.search.value);
+  const filteredOptions = options.filter((option) => {
+    if (!query) {
+      return true;
+    }
+
+    return normalizeDisplayText(getSearchableOptionSearchText(option)).includes(query);
+  });
+
+  if (!filteredOptions.length) {
+    const empty = document.createElement("div");
+    empty.className = "single-select-empty";
+    empty.textContent = config.empty();
+    config.menu.appendChild(empty);
+    return;
+  }
+
+  filteredOptions.forEach((selectOption) => {
+    const option = document.createElement("button");
+    option.type = "button";
+    option.className = "single-select-option smart-select-option";
+    option.dataset.value = selectOption.value;
+    option.setAttribute("role", "option");
+    option.setAttribute("aria-selected", String(selectOption.value === config.select.value));
+
+    const row = document.createElement("span");
+    row.className = "smart-select-option-row";
+
+    const badgeText = selectOption.dataset.badge || "";
+    if (badgeText) {
+      const badge = document.createElement("span");
+      badge.className = "smart-select-option-badge";
+      badge.textContent = badgeText;
+      row.appendChild(badge);
+    }
+
+    const copy = document.createElement("span");
+    copy.className = "smart-select-option-copy";
+
+    const primary = document.createElement("span");
+    primary.className = "single-select-option-primary";
+    primary.textContent = getSearchableOptionPrimary(selectOption);
+    copy.appendChild(primary);
+
+    const secondaryText = selectOption.dataset.secondary || "";
+    if (secondaryText) {
+      const secondary = document.createElement("span");
+      secondary.className = "single-select-option-secondary";
+      secondary.textContent = secondaryText;
+      copy.appendChild(secondary);
+    }
+
+    row.appendChild(copy);
+    option.appendChild(row);
+    config.menu.appendChild(option);
+  });
+}
+
+function getSearchableOptionPrimary(option) {
+  return option.dataset.primary || option.textContent || "";
+}
+
+function getSearchableOptionSearchText(option) {
+  return [
+    option.textContent,
+    option.value,
+    option.dataset.primary,
+    option.dataset.secondary,
+    option.dataset.badge,
+    option.dataset.search,
+  ].join(" ");
 }
 
 function getOrCreateSessionId() {
@@ -361,6 +865,7 @@ function applyLanguage(language) {
   syncGenderOptions();
   syncInitialGreeting();
   refreshLanguageDependentControls();
+  syncEligibilityExperience(state.currentEligibilityStep);
   closeLanguageMenu();
 }
 
@@ -368,9 +873,17 @@ function syncGenderOptions() {
   const selected = elements.genderSelect.value;
   elements.genderSelect.innerHTML = "";
   elements.genderSelect.appendChild(createOption("", t("selectGender")));
-  elements.genderSelect.appendChild(createOption("male", t("male")));
-  elements.genderSelect.appendChild(createOption("female", t("female")));
+  const maleOption = createOption("male", t("male"));
+  maleOption.dataset.search = "male ذكر";
+  maleOption.dataset.primary = t("male");
+
+  const femaleOption = createOption("female", t("female"));
+  femaleOption.dataset.search = "female أنثى";
+  femaleOption.dataset.primary = t("female");
+
+  elements.genderSelect.append(maleOption, femaleOption);
   elements.genderSelect.value = selected;
+  syncSearchableSelect("gender");
 }
 
 function syncInitialGreeting() {
@@ -389,14 +902,17 @@ function refreshLanguageDependentControls() {
   if (state.isCountriesLoaded) {
     populateCountries();
     elements.countrySelect.value = selectedCountry;
+    syncSearchableSelect("country");
   }
 
   if (state.visaTypes.length) {
     populateVisaTypes();
     elements.visaTypeSelect.value = selectedVisaType;
+    syncSearchableSelect("visaType");
   } else {
     elements.visaTypeSelect.innerHTML = "";
     elements.visaTypeSelect.appendChild(createOption("", t("selectVisaType")));
+    syncSearchableSelect("visaType");
   }
 
   if (state.occupations.length) {
@@ -408,6 +924,7 @@ function refreshLanguageDependentControls() {
     resetOccupationOptions();
   }
 
+  renderRelationshipOptions();
   updateRelationshipSelectionText();
 }
 
@@ -955,6 +1472,7 @@ function autoSizeChatInput() {
 async function loadCountries() {
   setEligibilityStatus(t("loadingCountries"));
   elements.countrySelect.disabled = true;
+  syncSearchableSelect("country");
 
   try {
     const data = await apiRequest("/api/countries");
@@ -966,6 +1484,7 @@ async function loadCountries() {
     setEligibilityStatus(error.message, "error");
   } finally {
     elements.countrySelect.disabled = false;
+    syncSearchableSelect("country");
   }
 }
 
@@ -976,9 +1495,21 @@ function populateCountries() {
   state.countries.forEach((country) => {
     const label = formatCountryLabel(country);
     const option = createOption(country.ocr_code, label);
+    const primary = formatCountryName(country);
+
     option.dataset.countryName = country.country_name_en || country.ocr_code;
+    option.dataset.primary = primary;
+    option.dataset.secondary = state.language === "ar" ? "" : country.ocr_code;
+    option.dataset.badge = state.language === "ar" ? "" : country.ocr_code;
+    option.dataset.search = [
+      country.country_name_en,
+      country.country_name_ar,
+      country.ocr_code,
+    ].join(" ");
     elements.countrySelect.appendChild(option);
   });
+
+  syncSearchableSelect("country");
 }
 
 function normalizeCountries(data) {
@@ -997,17 +1528,19 @@ function normalizeCountries(data) {
 function openEligibilityModal() {
   elements.eligibilityModal.classList.add("is-open");
   elements.eligibilityModal.setAttribute("aria-hidden", "false");
+  syncEligibilityExperience();
 
   if (!state.isCountriesLoaded) {
     loadCountries();
   }
 
   window.setTimeout(() => {
-    elements.countrySelect.focus();
+    elements.countryTrigger.focus();
   }, 0);
 }
 
 function closeEligibilityModal() {
+  closeAllSearchableSelects();
   closeOccupationMenu();
   closeRelationshipMenu();
   elements.eligibilityModal.classList.remove("is-open");
@@ -1023,19 +1556,22 @@ function handleBackdropClick(event) {
 async function handleCountryChange() {
   const ocrCode = elements.countrySelect.value;
   state.selectedCountry = state.countries.find((country) => country.ocr_code === ocrCode) || null;
+  state.hasEligibilityResult = false;
 
   resetDirectCheckAfterCountry();
 
   if (!ocrCode) {
     elements.visaTypeGroup.classList.add("hidden");
     setEligibilityStatus("");
+    syncEligibilityExperience("country");
     return;
   }
 
-    elements.visaTypeGroup.classList.remove("hidden");
+  elements.visaTypeGroup.classList.remove("hidden");
   elements.visaTypeSelect.disabled = true;
   elements.visaTypeSelect.innerHTML = "";
   elements.visaTypeSelect.appendChild(createOption("", t("loadingVisaTypes")));
+  syncSearchableSelect("visaType");
   setEligibilityStatus(t("loadingVisaTypes"));
 
   try {
@@ -1043,17 +1579,21 @@ async function handleCountryChange() {
     state.visaTypes = normalizeVisaTypes(data);
     populateVisaTypes();
     setEligibilityStatus(state.visaTypes.length ? "" : t("noVisaTypes"));
+    syncEligibilityExperience("visa");
   } catch (error) {
     state.visaTypes = [];
     elements.visaTypeSelect.innerHTML = "";
     elements.visaTypeSelect.appendChild(createOption("", t("selectVisaType")));
+    syncSearchableSelect("visaType");
     setEligibilityStatus(error.message, "error");
   } finally {
     elements.visaTypeSelect.disabled = false;
+    syncSearchableSelect("visaType");
   }
 }
 
 function resetDirectCheckAfterCountry() {
+  state.hasEligibilityResult = false;
   state.visaTypes = [];
   state.occupations = [];
   state.relationships = [];
@@ -1062,11 +1602,13 @@ function resetDirectCheckAfterCountry() {
   state.isRelationshipsLoading = false;
   elements.visaTypeSelect.innerHTML = "";
   elements.visaTypeSelect.appendChild(createOption("", t("selectVisaType")));
+  syncSearchableSelect("visaType");
   resetOccupationOptions();
   resetRelationshipOptions();
   hideConditionalFields();
   clearDirectInputs();
   elements.eligibilityResult.innerHTML = "";
+  syncEligibilityExperience();
 }
 
 function populateVisaTypes() {
@@ -1074,14 +1616,26 @@ function populateVisaTypes() {
   elements.visaTypeSelect.appendChild(createOption("", t("selectVisaType")));
 
   state.visaTypes.forEach((visaType) => {
-    elements.visaTypeSelect.appendChild(
-      createOption(String(visaType.visa_type), formatVisaTypeLabel(visaType))
-    );
+    const option = createOption(String(visaType.visa_type), formatVisaTypeLabel(visaType));
+    option.dataset.primary = formatVisaTypeName(visaType);
+    option.dataset.secondary = `${t("visaNo")} ${visaType.visa_type}`;
+    option.dataset.badge = String(visaType.visa_type);
+    option.dataset.search = [
+      visaType.visa_type,
+      visaType.visa_name,
+      visaType.visa_name_en,
+      visaType.typeOfVisa,
+      visaType.name,
+    ].join(" ");
+    elements.visaTypeSelect.appendChild(option);
   });
+
+  syncSearchableSelect("visaType");
 }
 
 async function handleVisaTypeChange() {
   elements.eligibilityResult.innerHTML = "";
+  state.hasEligibilityResult = false;
   state.occupations = [];
   state.relationships = [];
   state.selectedRelationships = [];
@@ -1092,6 +1646,7 @@ async function handleVisaTypeChange() {
 
   if (elements.visaTypeSelect.value) {
     showConditionalFields();
+    syncEligibilityExperience("details");
     await Promise.all([
       loadOccupationsForSelectedVisa(),
       loadRelationshipsForSelectedVisa(),
@@ -1100,6 +1655,7 @@ async function handleVisaTypeChange() {
   }
 
   hideConditionalFields();
+  syncEligibilityExperience();
 }
 
 function showConditionalFields() {
@@ -1120,12 +1676,51 @@ function clearDirectInputs() {
   elements.ageInput.value = "";
   elements.occupationInput.value = "";
   elements.genderSelect.value = "";
+  syncSearchableSelect("gender");
   state.selectedRelationships = [];
   syncOccupationSelectionText();
   renderOccupationOptions();
   closeOccupationMenu();
   updateRelationshipSelectionText();
+  renderRelationshipOptions();
   closeRelationshipMenu();
+  syncEligibilitySnapshot();
+}
+
+function syncEligibilitySnapshot() {
+  const selectedVisa = getSelectedVisaType();
+  const selectedOccupation = getSelectedOccupation();
+  const selectedGenderOption = elements.genderSelect.selectedOptions[0];
+  const selectedRelationships = getSelectedRelationshipLabels();
+
+  setSnapshotValue(elements.snapshotCountry, formatCountryLabel(state.selectedCountry));
+  setSnapshotValue(elements.snapshotVisa, selectedVisa ? formatVisaTypeLabel(selectedVisa) : "");
+  setSnapshotValue(elements.snapshotAge, elements.ageInput.value);
+  setSnapshotValue(elements.snapshotOccupation, selectedOccupation ? formatOccupationLabel(selectedOccupation) : "");
+  setSnapshotValue(elements.snapshotGender, selectedGenderOption?.value ? selectedGenderOption.textContent : "");
+  setSnapshotValue(elements.snapshotRelationship, selectedRelationships.join(", "));
+}
+
+function setSnapshotValue(element, value) {
+  if (!element) {
+    return;
+  }
+
+  const label = String(value || "").trim() || t("notProvided");
+  element.textContent = label;
+  element.classList.toggle("is-empty", label === t("notProvided"));
+}
+
+function getSelectedOccupation() {
+  const selectedValue = elements.occupationInput.value;
+  return state.occupations.find((occupation) => occupation.value === selectedValue) || null;
+}
+
+function getSelectedRelationshipLabels() {
+  return state.selectedRelationships.map((value) => {
+    const relationship = state.relationships.find((item) => item.value === value);
+    return relationship ? formatRelationshipLabel(relationship) : value;
+  });
 }
 
 async function loadOccupationsForSelectedVisa() {
@@ -1233,8 +1828,10 @@ function toggleOccupationMenu(event) {
     return;
   }
 
+  closeAllSearchableSelects();
   const isOpen = elements.occupationSingleSelect.classList.toggle("is-open");
   elements.occupationTrigger.setAttribute("aria-expanded", String(isOpen));
+  setActiveSelectLayer(elements.occupationSingleSelect, isOpen);
   setModalSelectOpen(isOpen);
 
   if (isOpen) {
@@ -1249,8 +1846,10 @@ function openOccupationMenu() {
     return;
   }
 
+  closeAllSearchableSelects();
   elements.occupationSingleSelect.classList.add("is-open");
   elements.occupationTrigger.setAttribute("aria-expanded", "true");
+  setActiveSelectLayer(elements.occupationSingleSelect, true);
   setModalSelectOpen(true);
   renderOccupationOptions();
   window.setTimeout(() => elements.occupationSearchInput.focus(), 0);
@@ -1259,11 +1858,24 @@ function openOccupationMenu() {
 function closeOccupationMenu() {
   elements.occupationSingleSelect.classList.remove("is-open");
   elements.occupationTrigger.setAttribute("aria-expanded", "false");
+  setActiveSelectLayer(elements.occupationSingleSelect, false);
   setModalSelectOpen(false);
 }
 
-function setModalSelectOpen(isOpen) {
-  elements.eligibilityModal.querySelector(".modal")?.classList.toggle("has-open-select", isOpen);
+function setActiveSelectLayer(selectElement, isOpen) {
+  selectElement.closest(".field-group")?.classList.toggle("is-select-open", isOpen);
+}
+
+function setModalSelectOpen() {
+  const modal = elements.eligibilityModal.querySelector(".modal");
+  if (!modal) {
+    return;
+  }
+
+  const hasOpenSelect = Boolean(
+    modal.querySelector(".smart-select.is-open, .single-select.is-open, .multi-select.is-open")
+  );
+  modal.classList.toggle("has-open-select", hasOpenSelect);
 }
 
 function handleOccupationTriggerKeyDown(event) {
@@ -1276,6 +1888,7 @@ function handleOccupationTriggerKeyDown(event) {
 function handleOccupationSearchKeyDown(event) {
   if (event.key === "Escape") {
     event.preventDefault();
+    event.stopPropagation();
     closeOccupationMenu();
     elements.occupationTrigger.focus();
     return;
@@ -1312,6 +1925,7 @@ function setOccupationValue(value) {
   elements.occupationInput.dispatchEvent(new Event("change", { bubbles: true }));
   syncOccupationSelectionText();
   renderOccupationOptions();
+  syncEligibilitySnapshot();
 }
 
 function syncOccupationSelectionText() {
@@ -1399,14 +2013,14 @@ function getOccupationDisplayParts(occupation) {
 
   if (state.language === "ar") {
     return {
-      primary: nameAr || nameEn || fallback,
-      secondary: nameAr && nameEn && normalizeDisplayText(nameAr) !== normalizeDisplayText(nameEn) ? nameEn : "",
+      primary: nameAr || (containsArabic(fallback) ? fallback : "") || t("occupationNameMissing"),
+      secondary: "",
     };
   }
 
   return {
-    primary: nameEn || nameAr || fallback,
-    secondary: nameAr && nameEn && normalizeDisplayText(nameAr) !== normalizeDisplayText(nameEn) ? nameAr : "",
+    primary: nameEn || (!containsArabic(fallback) ? fallback : "") || t("occupationNameMissing"),
+    secondary: "",
   };
 }
 
@@ -1455,50 +2069,100 @@ async function loadRelationshipsForSelectedVisa() {
 
 function resetRelationshipOptions(label = t("selectRelationships")) {
   state.selectedRelationships = [];
+  elements.relationshipSearchInput.value = "";
   elements.relationshipMenu.innerHTML = "";
   updateRelationshipSelectionText(label);
+  renderRelationshipOptions(label);
   closeRelationshipMenu();
   syncRelationshipSelectState();
 }
 
 function populateRelationships() {
-  elements.relationshipMenu.innerHTML = "";
+  elements.relationshipSearchInput.value = "";
   state.selectedRelationships = [];
 
   if (!state.relationships.length) {
     updateRelationshipSelectionText(t("noRelationshipRestriction"));
+    renderRelationshipOptions(t("noRelationshipRestriction"));
     closeRelationshipMenu();
     syncRelationshipSelectState();
     return;
   }
 
-  state.relationships.forEach((relationship) => {
-    const option = document.createElement("label");
-    option.className = "multi-select-option";
-    option.setAttribute("role", "option");
-
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.value = relationship.value;
-    checkbox.addEventListener("change", handleRelationshipSelectionChange);
-
-    const text = document.createElement("span");
-    text.textContent = relationship.label;
-
-    option.append(checkbox, text);
-    elements.relationshipMenu.appendChild(option);
-  });
-
+  renderRelationshipOptions();
   updateRelationshipSelectionText();
   syncRelationshipSelectState();
 }
 
-function handleRelationshipSelectionChange() {
-  state.selectedRelationships = Array.from(
-    elements.relationshipMenu.querySelectorAll("input[type='checkbox']:checked")
-  ).map((checkbox) => checkbox.value);
+function renderRelationshipOptions(emptyText = "") {
+  elements.relationshipMenu.innerHTML = "";
+
+  if (!state.relationships.length) {
+    const empty = document.createElement("div");
+    empty.className = "single-select-empty";
+    empty.textContent = emptyText || elements.relationshipSelectionText.textContent || t("noRelationshipRestriction");
+    elements.relationshipMenu.appendChild(empty);
+    return;
+  }
+
+  const query = normalizeDisplayText(elements.relationshipSearchInput.value);
+  const filteredRelationships = state.relationships.filter((relationship) => {
+    if (!query) {
+      return true;
+    }
+
+    return normalizeDisplayText([
+      formatRelationshipLabel(relationship),
+      relationship.value,
+      relationship.relation_name_ar,
+      relationship.relation_name_en,
+    ].join(" ")).includes(query);
+  });
+
+  if (!filteredRelationships.length) {
+    const empty = document.createElement("div");
+    empty.className = "single-select-empty";
+    empty.textContent = t("noRelationshipMatches");
+    elements.relationshipMenu.appendChild(empty);
+    return;
+  }
+
+  filteredRelationships.forEach((relationship) => {
+    const option = document.createElement("label");
+    const isSelected = state.selectedRelationships.includes(relationship.value);
+    option.className = "multi-select-option";
+    option.setAttribute("role", "option");
+    option.setAttribute("aria-selected", String(isSelected));
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.value = relationship.value;
+    checkbox.checked = isSelected;
+    checkbox.addEventListener("change", handleRelationshipSelectionChange);
+
+    const text = document.createElement("span");
+    text.textContent = formatRelationshipLabel(relationship);
+
+    option.append(checkbox, text);
+    elements.relationshipMenu.appendChild(option);
+  });
+}
+
+function handleRelationshipSelectionChange(event) {
+  const { value, checked } = event.currentTarget;
+  const nextSelection = new Set(state.selectedRelationships);
+
+  if (checked) {
+    nextSelection.add(value);
+  } else {
+    nextSelection.delete(value);
+  }
+
+  state.selectedRelationships = Array.from(nextSelection);
 
   updateRelationshipSelectionText();
+  renderRelationshipOptions();
+  syncEligibilitySnapshot();
 }
 
 function toggleRelationshipMenu(event) {
@@ -1508,33 +2172,61 @@ function toggleRelationshipMenu(event) {
     return;
   }
 
+  closeAllSearchableSelects();
   closeOccupationMenu();
   const isOpen = elements.relationshipMultiSelect.classList.toggle("is-open");
   elements.relationshipInput.setAttribute("aria-expanded", String(isOpen));
+  setActiveSelectLayer(elements.relationshipMultiSelect, isOpen);
+  setModalSelectOpen(isOpen);
+
+  if (isOpen) {
+    elements.relationshipSearchInput.value = "";
+    renderRelationshipOptions();
+    window.setTimeout(() => elements.relationshipSearchInput.focus(), 0);
+  }
 }
 
 function closeRelationshipMenu() {
   elements.relationshipMultiSelect.classList.remove("is-open");
   elements.relationshipInput.setAttribute("aria-expanded", "false");
+  setActiveSelectLayer(elements.relationshipMultiSelect, false);
+  setModalSelectOpen(false);
 }
 
 function updateRelationshipSelectionText(placeholder = t("selectRelationships")) {
   if (!state.selectedRelationships.length) {
     elements.relationshipSelectionText.textContent = placeholder;
+    elements.relationshipInput.title = placeholder;
     return;
   }
 
-  const labels = state.selectedRelationships
-    .map((value) => state.relationships.find((relationship) => relationship.value === value)?.label || value);
+  const labels = getSelectedRelationshipLabels();
 
   elements.relationshipSelectionText.textContent = labels.join(", ");
+  elements.relationshipInput.title = labels.join(", ");
 }
 
 function syncRelationshipSelectState() {
   elements.relationshipInput.disabled =
+    state.isEligibilityLoading ||
     state.isRelationshipsLoading ||
     !elements.visaTypeSelect.value ||
     !state.relationships.length;
+  elements.relationshipSearchInput.disabled = elements.relationshipInput.disabled;
+  elements.relationshipMultiSelect.classList.toggle("is-disabled", elements.relationshipInput.disabled);
+
+  if (elements.relationshipInput.disabled) {
+    closeRelationshipMenu();
+  }
+}
+
+function handleRelationshipSearchKeyDown(event) {
+  if (event.key === "Escape") {
+    event.preventDefault();
+    event.stopPropagation();
+    closeRelationshipMenu();
+    elements.relationshipInput.focus();
+  }
 }
 
 function syncDirectCheckButtonState() {
@@ -1570,6 +2262,8 @@ async function handleEligibilitySubmit(event) {
     });
 
     renderEligibilityResult(data);
+    state.hasEligibilityResult = true;
+    syncEligibilityExperience("result");
     setEligibilityStatus("");
   } catch (error) {
     setEligibilityStatus(error.message, "error");
@@ -1579,6 +2273,7 @@ async function handleEligibilitySubmit(event) {
 }
 
 function setEligibilityLoading(isLoading, status = "") {
+  state.isEligibilityLoading = isLoading;
   elements.checkEligibilityButton.disabled = isLoading || state.isOccupationsLoading || state.isRelationshipsLoading;
   elements.countrySelect.disabled = isLoading;
   elements.visaTypeSelect.disabled = isLoading;
@@ -1591,6 +2286,9 @@ function setEligibilityLoading(isLoading, status = "") {
   );
   elements.genderSelect.disabled = isLoading;
   elements.relationshipInput.disabled = isLoading || state.isRelationshipsLoading || !state.relationships.length;
+  elements.relationshipSearchInput.disabled = elements.relationshipInput.disabled;
+  syncAllSearchableSelects();
+  syncRelationshipSelectState();
   setEligibilityStatus(status);
 }
 
@@ -1608,8 +2306,10 @@ function renderEligibilityResult(data) {
   elements.eligibilityResult.innerHTML = "";
 
   const visaTypes = normalizeVisaTypes(data);
+  const status = data?.status || "NEED_MORE_INFO";
+  const statusTone = getStatusTone(status);
   const card = document.createElement("section");
-  card.className = "result-card";
+  card.className = `result-card result-card-${statusTone}`;
 
   if (isVisaTypesOnlyResponse(data, visaTypes)) {
     renderVisaTypesOnlyResult(card, visaTypes);
@@ -1617,24 +2317,21 @@ function renderEligibilityResult(data) {
     return;
   }
 
-  const status = data?.status || "NEED_MORE_INFO";
   const checks = normalizeChecks(data?.checks);
   const passedChecks = checks.filter((check) => check.passed === true);
   const failedChecks = checks.filter((check) => check.passed === false);
   const missingFields = normalizeList(data?.missing_fields);
   const selectedVisa = getSelectedVisaType();
 
-  const heading = document.createElement("h3");
-  heading.textContent = t("eligibilityResult");
-  card.appendChild(heading);
+  card.appendChild(createResultHeader(t("eligibilityResult"), formatStatus(status), statusTone));
 
   const summary = document.createElement("div");
   summary.className = "result-summary";
 
   summary.appendChild(createSummaryItem(t("status"), formatStatus(status), getStatusBadgeClass(status)));
   summary.appendChild(createSummaryItem(t("visaNumber"), data?.visa_type || selectedVisa?.visa_type || t("notProvided")));
-  summary.appendChild(createSummaryItem(t("visaName"), data?.visa_name || selectedVisa?.visa_name || t("notProvided")));
-  summary.appendChild(createSummaryItem(t("applicantCountry"), data?.country || formatCountryLabel(state.selectedCountry) || t("notProvided")));
+  summary.appendChild(createSummaryItem(t("visaName"), formatVisaTypeName({ ...selectedVisa, ...data }) || t("notProvided")));
+  summary.appendChild(createSummaryItem(t("applicantCountry"), formatCountryLabel(state.selectedCountry) || t("notProvided")));
 
   card.appendChild(summary);
 
@@ -1654,9 +2351,8 @@ function renderEligibilityResult(data) {
 }
 
 function renderVisaTypesOnlyResult(card, visaTypes) {
-  const heading = document.createElement("h3");
-  heading.textContent = t("availableVisaTypesTitle");
-  card.appendChild(heading);
+  card.classList.add("result-card-info");
+  card.appendChild(createResultHeader(t("availableVisaTypesTitle"), t("information"), "info"));
 
   if (!visaTypes.length) {
     const note = document.createElement("p");
@@ -1681,6 +2377,28 @@ function renderVisaTypesOnlyResult(card, visaTypes) {
   });
 
   card.appendChild(list);
+}
+
+function createResultHeader(title, subtitle, tone) {
+  const header = document.createElement("div");
+  header.className = "result-card-header";
+
+  const icon = document.createElement("span");
+  icon.className = `result-status-icon result-status-${tone}`;
+  icon.textContent = getResultToneIcon(tone);
+
+  const copy = document.createElement("span");
+  copy.className = "result-card-title";
+
+  const heading = document.createElement("h3");
+  heading.textContent = title;
+
+  const description = document.createElement("p");
+  description.textContent = subtitle;
+
+  copy.append(heading, description);
+  header.append(icon, copy);
+  return header;
 }
 
 function renderCheckSection(card, title, checks, markType, emptyText) {
@@ -1709,7 +2427,7 @@ function renderCheckSection(card, title, checks, markType, emptyText) {
     mark.className = `mark ${markType === "pass" ? "mark-pass" : "mark-fail"}`;
     mark.textContent = markType === "pass" ? "\u2713" : "\u2715";
     const text = document.createElement("span");
-    text.textContent = check.message || formatFieldName(check.field);
+    text.textContent = formatCheckMessage(check, markType);
     item.append(mark, text);
     list.appendChild(item);
   });
@@ -1769,6 +2487,18 @@ function createSummaryItem(label, value, badgeClass = "") {
   return item;
 }
 
+function formatCheckMessage(check, markType) {
+  const field = formatFieldName(check?.field);
+  const result = markType === "pass" ? t("checkPassed") : t("checkFailed");
+
+  if (state.language === "ar") {
+    return `${field}: ${result}`;
+  }
+
+  const message = check?.message || "";
+  return message && !containsArabic(message) ? message : `${field}: ${result}`;
+}
+
 function normalizeVisaTypes(data) {
   const items =
     data?.visa_types ||
@@ -1783,15 +2513,19 @@ function normalizeVisaTypes(data) {
   return items
     .map((item) => {
       if (typeof item === "number" || typeof item === "string") {
+        const numericType = Number(item);
         return {
           visa_type: item,
           visa_name: item === 16 || item === "16" ? "\u0633\u0645\u0629 \u062f\u062e\u0648\u0644 \u0644\u0644\u0633\u064a\u0627\u062d\u0629" : "",
+          visa_name_en: VISA_TYPE_NAMES_EN[numericType] || "",
         };
       }
 
+      const visaType = item.visa_type ?? item.visaType ?? item.id ?? item.number ?? "";
       return {
-        visa_type: item.visa_type ?? item.visaType ?? item.id ?? item.number ?? "",
-        visa_name: item.visa_name || item.typeOfVisa || item.name || item.description || "",
+        visa_type: visaType,
+        visa_name: item.visa_name || item.typeOfVisa || item.name_ar || item.description_ar || item.description || "",
+        visa_name_en: item.visa_name_en || item.visaNameEn || item.name_en || item.description_en || VISA_TYPE_NAMES_EN[Number(visaType)] || "",
       };
     })
     .filter((item) => item.visa_type !== "");
@@ -1889,14 +2623,10 @@ function formatOccupationLabel(occupation, fallback = "") {
     "";
 
   if (state.language === "ar") {
-    return nameAr || nameEn || fallback || t("occupationLabel");
+    return nameAr || (containsArabic(fallback) ? fallback : "") || t("occupationNameMissing");
   }
 
-  if (nameEn && nameAr && normalizeDisplayText(nameEn) !== normalizeDisplayText(nameAr)) {
-    return `${nameEn} - ${nameAr}`;
-  }
-
-  return nameEn || nameAr || fallback || t("occupationLabel");
+  return nameEn || (!containsArabic(fallback) ? fallback : "") || t("occupationNameMissing");
 }
 
 function normalizeDisplayText(value) {
@@ -1909,6 +2639,10 @@ function normalizeDisplayText(value) {
     .replace(/[^\w\s\u0600-\u06ff]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function containsArabic(value) {
+  return /[\u0600-\u06ff]/.test(String(value || ""));
 }
 
 function normalizeRelationships(data) {
@@ -1944,7 +2678,12 @@ function normalizeRelationships(data) {
 
 function normalizeRelationship(item) {
   if (typeof item === "string") {
-    return { value: item, label: item };
+    return {
+      value: item,
+      label: item,
+      relation_name_ar: containsArabic(item) ? item : "",
+      relation_name_en: containsArabic(item) ? "" : item,
+    };
   }
 
   if (!item || typeof item !== "object") {
@@ -1965,28 +2704,40 @@ function normalizeRelationship(item) {
 
   return {
     value,
-    label: item.label || formatRelationshipLabel(item, value),
+    label: formatRelationshipLabel({
+      ...item,
+      relation_name_ar: nameArFromRelationship(item),
+      relation_name_en: nameEnFromRelationship(item),
+    }, value),
+    relation_name_ar: nameArFromRelationship(item),
+    relation_name_en: nameEnFromRelationship(item),
   };
 }
 
 function formatRelationshipLabel(relationship, fallback = "") {
-  const nameAr =
-    relationship.relation_name_ar ||
-    relationship.relationNameAr ||
-    relationship.arabicDescription ||
-    relationship.ArabicDescription ||
-    "";
-  const nameEn =
-    relationship.relation_name_en ||
-    relationship.relationNameEn ||
-    relationship.DescriptionEn ||
-    "";
+  const nameAr = nameArFromRelationship(relationship);
+  const nameEn = nameEnFromRelationship(relationship);
 
-  if (nameAr && nameEn && nameAr !== nameEn) {
-    return `${nameAr} - ${nameEn}`;
+  if (state.language === "ar") {
+    return nameAr || (containsArabic(fallback) ? fallback : "") || t("relationshipNameMissing");
   }
 
-  return nameAr || nameEn || fallback || "Relationship";
+  return nameEn || (!containsArabic(fallback) ? fallback : "") || t("relationshipNameMissing");
+}
+
+function nameArFromRelationship(relationship) {
+  return relationship?.relation_name_ar ||
+    relationship?.relationNameAr ||
+    relationship?.arabicDescription ||
+    relationship?.ArabicDescription ||
+    "";
+}
+
+function nameEnFromRelationship(relationship) {
+  return relationship?.relation_name_en ||
+    relationship?.relationNameEn ||
+    relationship?.DescriptionEn ||
+    "";
 }
 
 function isVisaTypesOnlyResponse(data, visaTypes) {
@@ -2004,7 +2755,7 @@ function getSelectedVisaType() {
 
 function formatVisaTypeLabel(visaType) {
   const number = visaType?.visa_type || visaType?.visaType || "";
-  const name = visaType?.visa_name || visaType?.typeOfVisa || visaType?.name || "";
+  const name = formatVisaTypeName(visaType);
   const prefix = t("visaNo");
 
   if (number && name) {
@@ -2018,16 +2769,57 @@ function formatVisaTypeLabel(visaType) {
   return name || t("visaTypeMissing");
 }
 
+function formatVisaTypeName(visaType) {
+  if (!visaType) {
+    return "";
+  }
+
+  const number = Number(visaType.visa_type || visaType.visaType || "");
+  const arabicName =
+    visaType.visa_name ||
+    visaType.typeOfVisa ||
+    visaType.name_ar ||
+    visaType.description_ar ||
+    "";
+  const englishName =
+    visaType.visa_name_en ||
+    visaType.visaNameEn ||
+    visaType.name_en ||
+    visaType.description_en ||
+    VISA_TYPE_NAMES_EN[number] ||
+    "";
+
+  if (state.language === "ar") {
+    return arabicName && containsArabic(arabicName) ? arabicName : t("visaNameMissing");
+  }
+
+  return englishName && !containsArabic(englishName) ? englishName : t("visaNameMissing");
+}
+
 function formatCountryLabel(country) {
   if (!country) {
     return "";
   }
 
-  const name =
-    state.language === "ar"
-      ? country.country_name_ar || country.country_name_en || country.name || country.ocr_code
-      : country.country_name_en || country.name || country.ocr_code;
+  const name = formatCountryName(country);
+  if (state.language === "ar") {
+    return name;
+  }
+
   return country.ocr_code ? `${name} (${country.ocr_code})` : name;
+}
+
+function formatCountryName(country) {
+  if (!country) {
+    return "";
+  }
+
+  if (state.language === "ar") {
+    return country.country_name_ar || country.ocr_code;
+  }
+
+  const englishName = country.country_name_en || country.name || "";
+  return englishName && !containsArabic(englishName) ? englishName : country.ocr_code;
 }
 
 function formatStatus(status) {
@@ -2064,6 +2856,32 @@ function getStatusBadgeClass(status) {
   }
 
   return "status-more-info";
+}
+
+function getStatusTone(status) {
+  const normalized = String(status || "").toUpperCase();
+
+  if (normalized === "APPROVED") {
+    return "approved";
+  }
+
+  if (normalized === "NOT_APPROVED") {
+    return "denied";
+  }
+
+  return "info";
+}
+
+function getResultToneIcon(tone) {
+  if (tone === "approved") {
+    return "\u2713";
+  }
+
+  if (tone === "denied") {
+    return "!";
+  }
+
+  return "i";
 }
 
 function formatGenderPolicyNote(data) {

@@ -1374,6 +1374,41 @@ def extract_occupation(text: str):
                 return "president"
             return occupation
 
+    # Words that should never be treated as occupations when extracted via
+    # the generic "i am ..." pattern.  These are common eligibility/check
+    # words that appear after "i am" in visa-related questions.
+    NON_OCCUPATION_WORDS = {
+        "allowed",
+        "eligible",
+        "interested",
+        "able",
+        "ready",
+        "qualified",
+        "approved",
+        "looking",
+        "trying",
+        "planning",
+        "going",
+        "asking",
+        "wondering",
+        "checking",
+        "applying",
+        "want",
+        "wanting",
+        "hoping",
+        "living",
+        "staying",
+        "traveling",
+        "travelling",
+        "visiting",
+        "coming",
+        "based",
+        "located",
+        "currently",
+        "from",
+        "not",
+    }
+
     patterns = [
         r"(?:مهنتي|وظيفتي|اعمل ك|أعمل ك|انا اعمل ك|انا أعمل ك|اعمل بمهنة|أعمل بمهنة|بمهنة|مهنة)\s*[\(:：]?\s*([^\d،,.!?)]{2,40})",
         r"(?:اشتغل|أشتغل|انا اشتغل|انا أشتغل|اعمل|أعمل|شغلي|عملي)\s+([^\d،,.!?]{2,40})",
@@ -1392,6 +1427,10 @@ def extract_occupation(text: str):
         candidate_norm = normalize_text(candidate)
         candidate_norm = re.sub(r"^(هي|هو|اني|انا)\s+", "", candidate_norm).strip()
         if resolve_country(candidate_norm):
+            continue
+        # Reject candidates whose first word is a non-occupation word
+        first_word = candidate_norm.split()[0] if candidate_norm else ""
+        if first_word in NON_OCCUPATION_WORDS:
             continue
         if (
             not candidate_norm.startswith("من ")
