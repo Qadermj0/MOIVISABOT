@@ -2,6 +2,7 @@ from .intent_engine import (
     analyze_message,
     is_kuwait_current_location_reference,
     is_non_applicant_country_reference,
+    is_simple_courtesy,
 )
 
 
@@ -158,8 +159,9 @@ def _merge_understanding(primary: dict, rewritten: dict | None, rewrite_model: d
 def understand_message(user_message: str, context: dict, gemini_service):
     rewrite_model = {}
     rewritten_extracted = None
+    simple_courtesy = is_simple_courtesy(user_message)
 
-    if gemini_service and hasattr(gemini_service, "rewrite_query"):
+    if not simple_courtesy and gemini_service and hasattr(gemini_service, "rewrite_query"):
         rewrite_model = gemini_service.rewrite_query(user_message, context) or {}
 
     extracted = analyze_message(
@@ -187,7 +189,7 @@ def understand_message(user_message: str, context: dict, gemini_service):
     route = route_for_intent(extracted.get("intent"))
     router_model = {}
 
-    if gemini_service and hasattr(gemini_service, "route_task"):
+    if not simple_courtesy and gemini_service and hasattr(gemini_service, "route_task"):
         router_model = gemini_service.route_task(user_message, context, extracted) or {}
         model_route = router_model.get("task_type")
         if extracted.get("intent") == "general_question" and model_route in {"inquiry", "eligibility", "chitchat"}:

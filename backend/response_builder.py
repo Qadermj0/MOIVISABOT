@@ -85,6 +85,26 @@ def is_arabic(text: str, session: dict | None = None) -> bool:
     return language in {"ar", "ar-kw", "ar-sa", "arabic", "العربية"}
 
 
+def normalize_chat_text(text: str) -> str:
+    normalized = str(text or "").strip().lower()
+    normalized = re.sub(r"[\u064b-\u065f\u0670]", "", normalized)
+    replacements = {
+        "أ": "ا",
+        "إ": "ا",
+        "آ": "ا",
+        "ى": "ي",
+        "ة": "ه",
+        "ؤ": "و",
+        "ئ": "ي",
+        "ـ": "",
+    }
+    for old, new in replacements.items():
+        normalized = normalized.replace(old, new)
+    normalized = re.sub(r"[^\w\s\u0600-\u06ff]", " ", normalized)
+    normalized = re.sub(r"\s+", " ", normalized).strip()
+    return normalized
+
+
 def asks_about_passport_upload(text: str) -> bool:
     normalized = str(text or "").lower()
     normalized = (
@@ -348,7 +368,26 @@ def extract_rule_summary(raw_visa_details: dict):
 
 
 def build_chitchat_answer(user_message: str):
-    if is_arabic(user_message):
+    normalized = normalize_chat_text(user_message)
+    arabic = is_arabic(user_message)
+    thanks_markers = ["شكرا", "يعطيك العافيه", "مشكور", "thanks", "thank you"]
+    farewell_markers = ["مع السلامه", "سلام", "وداعا", "باي", "bye", "goodbye", "see you"]
+
+    if any(marker in normalized for marker in thanks_markers):
+        return (
+            "العفو، حاضر. إذا احتجت أي استفسار ثاني عن التأشيرات أنا موجود."
+            if arabic
+            else "You're welcome. I am here if you need anything else about Kuwait visas."
+        )
+
+    if any(marker in normalized for marker in farewell_markers):
+        return (
+            "مع السلامة، بالتوفيق."
+            if arabic
+            else "Goodbye, and best of luck."
+        )
+
+    if arabic:
         return "هلا فيك، أنا بخير. أنا مساعد التأشيرات الذكي، اسألني عن الفيز المتاحة للكويت أو شروط أي فيزا حسب دولتك."
     return "Hello. I am ready to help with Kuwait visa types and requirements based on your country."
 

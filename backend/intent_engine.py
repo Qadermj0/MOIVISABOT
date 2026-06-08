@@ -519,10 +519,14 @@ CHECK_WORDS = [
     "التقديم",
     "يمكنني التقديم",
     "هل يمكنني التقديم",
+    "فحص الاهلية",
+    "فحص الأهلية",
     "مؤهل",
     "مؤهلة",
     "apply",
     "eligible",
+    "eligibility check",
+    "check eligibility",
     "can i",
     "allowed",
 ]
@@ -563,7 +567,11 @@ STRONG_CHECK_WORDS = [
     "بدي أطلع",
     "يمكنني التقديم",
     "هل يمكنني التقديم",
+    "فحص الاهلية",
+    "فحص الأهلية",
     "can i",
+    "eligibility check",
+    "check eligibility",
     "eligible",
     "allowed",
 ]
@@ -585,11 +593,24 @@ GREETING_WORDS = [
 
 THANKS_WORDS = [
     "شكرا",
+    "شكراً",
     "يعطيك العافيه",
     "يعطيك العافية",
     "مشكور",
     "thanks",
     "thank you",
+]
+
+FAREWELL_WORDS = [
+    "مع السلامه",
+    "مع السلامة",
+    "سلام",
+    "وداعا",
+    "وداعاً",
+    "باي",
+    "bye",
+    "goodbye",
+    "see you",
 ]
 
 CONTEXT_COUNTRY_QUESTIONS = [
@@ -617,6 +638,13 @@ KNOWN_OCCUPATIONS = [
     "مهندس برمجيات",
     "مهندسة برمجيات",
     "مطور برمجيات",
+    "مطورة برمجيات",
+    "مطور تطبيقات",
+    "مطورة تطبيقات",
+    "مطور برامج",
+    "مطورة برامج",
+    "مطور مواقع",
+    "مطورة مواقع",
     "مبرمج برمجيات",
     "فل ستاك",
     "فول ستاك",
@@ -699,6 +727,9 @@ KNOWN_OCCUPATIONS = [
     "backend developer",
     "back end developer",
     "software developer",
+    "app developer",
+    "application developer",
+    "mobile app developer",
     "software eng",
     "software programmer",
     "devops engineer",
@@ -1407,14 +1438,38 @@ def extract_occupation(text: str):
         "currently",
         "from",
         "not",
+        "بدي",
+        "ابي",
+        "ابغي",
+        "اريد",
+        "عايز",
+        "حاب",
+        "محتاج",
+        "مقيم",
+        "داخل",
+        "موجود",
+        "متواجد",
+        "مو",
+        "مش",
+        "لست",
+        "ليس",
+        "مهتم",
+        "اقدم",
+        "اسجل",
+        "اطلع",
+        "اروح",
+        "يمكنني",
+        "اقدر",
+        "بقدر",
     }
 
     patterns = [
         r"(?:مهنتي|وظيفتي|اعمل ك|أعمل ك|انا اعمل ك|انا أعمل ك|اعمل بمهنة|أعمل بمهنة|بمهنة|مهنة)\s*[\(:：]?\s*([^\d،,.!?)]{2,40})",
         r"(?:اشتغل|أشتغل|انا اشتغل|انا أشتغل|اعمل|أعمل|شغلي|عملي)\s+([^\d،,.!?]{2,40})",
+        r"(?:^|[\s،,.!?؛])(?:أنا|انا|إني|أني|اني)\s+([^\d،,.!?؛]{2,40})",
         r"(?:لو مهنتي|اذا مهنتي|إذا مهنتي|مهنتي|لو كنت|اذا كنت|إذا كنت|كنت)\s+([^\d،,.!?]{2,40})",
         r"\bas\s+([a-zA-Z][a-zA-Z\s-]{1,40})",
-        r"(?:i am|i'm|im)\s+(?:a|an)?\s*([a-zA-Z][a-zA-Z\s-]{1,40})",
+        r"(?:i am|i'm|im)\s+(?:(?:a|an)\s+)?([a-zA-Z][a-zA-Z\s-]{1,40})",
         r"(?:my job is|i work as|occupation is)\s+([a-zA-Z\s]{2,40})",
     ]
 
@@ -1426,6 +1481,8 @@ def extract_occupation(text: str):
         candidate = clean_occupation_candidate(match.group(1))
         candidate_norm = normalize_text(candidate)
         candidate_norm = re.sub(r"^(هي|هو|اني|انا)\s+", "", candidate_norm).strip()
+        if not candidate_norm:
+            continue
         if resolve_country(candidate_norm):
             continue
         # Reject candidates whose first word is a non-occupation word
@@ -1445,7 +1502,7 @@ def extract_occupation(text: str):
 def clean_occupation_candidate(candidate: str):
     text = str(candidate or "").strip()
     text = re.split(
-        r"\b(?:and|with|my age|age is|age|visa|for|from|country|nationality)\b|\s+(?:عمري|العمر|سني|سنّي|هل|هل يمكنني|مسموح|مسموحة|اقدر|أقدر|يمكنني|على|لفيزا|للتقديم|من|في)\s+|[,،.!?;]",
+        r"\b(?:and|with|my age|age is|age|visa|for|from|country|nationality|allowed|eligible|apply|check)\b|\s+(?:عمري|العمر|سني|سنّي|هل|هل يمكنني|مسموح|مسموحة|اقدر|أقدر|يمكنني|على|لفيزا|للتقديم|من|في)\s+|[,،.!?;]",
         text,
         maxsplit=1,
         flags=re.IGNORECASE,
@@ -1500,6 +1557,9 @@ def is_system_support_question(text: str) -> bool:
 
 
 def is_chitchat(text: str, country) -> bool:
+    if is_simple_courtesy(text):
+        return True
+
     if country:
         return False
 
@@ -1509,7 +1569,27 @@ def is_chitchat(text: str, country) -> bool:
     if extract_visa_type(text) or extract_age(text) or extract_occupation(text):
         return False
 
-    return has_any(text, GREETING_WORDS + THANKS_WORDS)
+    return has_any(text, GREETING_WORDS + THANKS_WORDS + FAREWELL_WORDS)
+
+
+def is_simple_courtesy(text: str) -> bool:
+    normalized = normalize_text(text)
+    if not normalized:
+        return False
+
+    if has_any(text, VISA_WORDS + LIST_WORDS + DETAILS_WORDS + CHECK_WORDS):
+        return False
+
+    if extract_visa_type(text) or extract_age(text) or extract_occupation(text):
+        return False
+
+    if resolve_country(normalized):
+        return False
+
+    if not has_any(text, GREETING_WORDS + THANKS_WORDS + FAREWELL_WORDS):
+        return False
+
+    return len(normalized.split()) <= 6
 
 
 def detect_intent(

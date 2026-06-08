@@ -562,6 +562,7 @@ Strict rules:
 - Match only against the provided allowed occupation list.
 - Do not invent a new allowed occupation.
 - Accept clear synonyms, job families, typos, and ownership phrasing when they belong to an allowed category.
+- Educational roles are interchangeable within the same family: "teacher", "instructor", "educator", "professor", "lecturer" all belong to the same educational/academic professional category. If any educational role is in the allowed list, match other educational roles to it.
 - Examples:
   - "software programmer" can match an information systems / networks / computers / websites category.
   - "full stack developer", "DevOps engineer", "data scientist", "systems analyst", or "نظم معلومات" can match an information systems / networks / computers / websites category.
@@ -572,6 +573,8 @@ Strict rules:
   - "I have real estate", "real state", "property owner", or "I own property" can match "Real estate Owners".
   - "president" can match a presidents/deputies/assistants category.
   - "member of council" can match a members of councils category.
+  - "teacher" can match a professor/أستاذ category since they are in the same educational profession family.
+  - "instructor" or "educator" can match professor/teacher categories.
 - If the user wording is too vague or not semantically equivalent to any allowed category, return matched=false.
 - Keep confidence conservative. Use 0.85 or higher only for strong matches.
 

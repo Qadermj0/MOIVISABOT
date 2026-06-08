@@ -4,171 +4,173 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Kuwait Visa AI Assistant</title>
-    <link rel="stylesheet" href="style.css?v=studio-responsive-3" />
+    <script>
+      (function () {
+        var storedTheme = localStorage.getItem("kuwaitVisaUi.theme");
+        var theme = storedTheme === "dark" ? "dark" : "light";
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="preload" href="assets/video/tile1-bg-video.mp4" as="video" type="video/mp4" />
+    <link rel="preload" href="assets/video/tile1-bg-dark-video.mp4" as="video" type="video/mp4" />
+    <link rel="stylesheet" href="style.css?v=kuwait-ui-9" />
   </head>
   <body>
     <div class="app-shell">
+      <!-- Header -->
       <header class="site-header">
         <div class="header-inner">
           <a class="brand-mark" href="/" aria-label="Kuwait Visa AI Assistant home">
-            <img src="logo.svg" alt="Kuwait Ministry of Interior logo" />
+            <img src="logo.svg?v=kuwait-ui-1" alt="Kuwait Visa logo" />
+            <span class="brand-lockup">
+              <strong>Kuwait</strong>
+              <span>Visa AI</span>
+            </span>
           </a>
 
-          <span class="brand-divider" aria-hidden="true"></span>
-
-          <div class="brand-copy">
-            <p data-i18n="stateName">STATE OF KUWAIT</p>
-            <h1 data-i18n="ministryName">MINISTRY OF INTERIOR</h1>
-          </div>
-
-          <div class="language-switcher">
-            <button
-              class="language-button"
-              id="languageButton"
-              type="button"
-              aria-haspopup="listbox"
-              aria-expanded="false"
-              aria-controls="languageMenu"
-              data-i18n-aria-label="selectedLanguageAria"
-            >
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z" />
-                <path d="M3.6 9h16.8M3.6 15h16.8M12 3a13.8 13.8 0 0 1 0 18M12 3a13.8 13.8 0 0 0 0 18" />
-              </svg>
-              <span id="languageLabel">English</span>
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="m6 9 6 6 6-6" />
-              </svg>
-            </button>
-            <div class="language-menu" id="languageMenu" role="listbox" aria-label="Language">
-              <button type="button" role="option" data-language="en" aria-selected="true">English</button>
-              <button type="button" role="option" data-language="ar" aria-selected="false">العربية</button>
+          <nav class="header-actions" aria-label="Kuwait Visa actions">
+            <div class="header-portal-links">
+              <a href="https://kuwaitvisa.moi.gov.kw/" target="_blank" rel="noopener" data-i18n="kuwaitPortalTitle">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                Kuwait Visa Portal
+              </a>
+              <a href="https://visitkuwait.gov.kw/" target="_blank" rel="noopener" data-i18n="visitKuwaitTitle">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                Visit Kuwait
+              </a>
             </div>
-          </div>
+            <div class="language-switcher">
+              <button class="language-button" id="languageButton" type="button" aria-expanded="false" aria-controls="languageMenu" data-i18n-aria-label="selectedLanguageAria">
+                <img src="globe.svg" alt="" />
+                <span id="languageLabel">&#1575;&#1604;&#1593;&#1585;&#1576;&#1610;&#1577;</span>
+              </button>
+              <div class="language-menu" id="languageMenu" role="listbox" aria-label="Language" hidden>
+                <button type="button" role="option" data-language="en" aria-selected="true">English</button>
+                <button type="button" role="option" data-language="ar" aria-selected="false">العربية</button>
+              </div>
+            </div>
+            <button class="theme-toggle" id="themeToggleButton" type="button" aria-label="Switch to dark mode">
+              <img id="themeToggleIcon" src="night-theme.svg" alt="" />
+            </button>
+          </nav>
         </div>
       </header>
 
+      <!-- Main Content -->
       <main class="main-content">
-        <section class="hero-panel" aria-labelledby="assistant-title">
-          <img class="hero-skyline" src="kuwait-towers.png" alt="" aria-hidden="true" />
-          <div class="hero-copy">
-            <h2 id="assistant-title"><span data-i18n="heroTitleLead">Kuwait Visa</span><span data-i18n="heroTitleAccent">AI Assistant</span></h2>
-            <p data-i18n="heroSubtitle">Your smart guide for visa information and eligibility support</p>
+        <!-- Hero Video Banner -->
+        <section class="hero-banner" aria-label="Kuwait Visa assistant">
+          <video class="hero-video hero-video-light" id="heroLightVideo" playsinline autoplay loop muted preload="auto" poster="assets/video/tile1-bg-thumb.png" src="assets/video/tile1-bg-video.mp4"></video>
+          <video class="hero-video hero-video-dark" id="heroDarkVideo" playsinline autoplay loop muted preload="auto" poster="assets/video/tile1-bg-dark-thumb.png" src="assets/video/tile1-bg-dark-video.mp4"></video>
+          <div class="hero-overlay"></div>
+          <div class="hero-content">
+            <div class="hero-text">
+              <h1 class="hero-title" data-i18n="heroTitleLead">
+                <span class="hero-title-main">Kuwait Visa</span>
+                <span class="hero-title-accent">AI Assistant</span>
+              </h1>
+              <p class="hero-subtitle" data-i18n="heroSubtitle">Your smart guide for visa information and eligibility support</p>
+            </div>
+            <button class="hero-cta-button" id="openEligibilityButton" type="button">
+              <span class="cta-icon">
+                <svg viewBox="0 0 24 24"><path d="M9 5h6"/><path d="M9 3h6a2 2 0 0 1 2 2v1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h1V5a2 2 0 0 1 2-2Z"/><path d="M9 13h6M9 17h5"/></svg>
+              </span>
+              <span class="cta-text">
+                <strong data-i18n="startEligibility">Direct Check</strong>
+                <small data-i18n="eligibilityDescription">Answer a few questions and get instant eligibility result.</small>
+              </span>
+              <span class="cta-arrow">
+                <img src="double-arrow-white.svg" alt="" />
+              </span>
+            </button>
           </div>
         </section>
 
-        <section class="eligibility-promo" aria-label="Eligibility check">
-          <div class="promo-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24">
-              <path d="M9 5h6" />
-              <path d="M9 3h6a2 2 0 0 1 2 2v1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h1V5a2 2 0 0 1 2-2Z" />
-              <path d="M9 13h6M9 17h5" />
-            </svg>
-          </div>
-
-          <div class="promo-copy">
-            <h2 data-i18n="eligibilityTitle">Check Your Eligibility</h2>
-            <p data-i18n="eligibilityDescription">Answer a few questions and get instant eligibility result.</p>
-          </div>
-
-          <button class="button cta-button" id="openEligibilityButton" type="button">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="m12 3 1.4 4.1L17.5 8.5l-4.1 1.4L12 14l-1.4-4.1-4.1-1.4 4.1-1.4L12 3Z" />
-              <path d="m19 13 .8 2.2L22 16l-2.2.8L19 19l-.8-2.2L16 16l2.2-.8L19 13Z" />
-              <path d="m5 14 .8 2.2L8 17l-2.2.8L5 20l-.8-2.2L2 17l2.2-.8L5 14Z" />
-            </svg>
-            <span data-i18n="startEligibility">Start Eligibility Check</span>
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M5 12h14M13 5l7 7-7 7" />
-            </svg>
-          </button>
-        </section>
-
-        <section class="chat-card" aria-labelledby="chat-title">
-          <div class="chat-toolbar">
-            <div class="secure-heading">
-              <span class="shield-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24">
-                  <path d="M12 3 5 6v5c0 4.5 2.9 8.6 7 10 4.1-1.4 7-5.5 7-10V6l-7-3Z" />
-                  <path d="M12 11.2v4M9.8 11.2a2.2 2.2 0 1 1 4.4 0" />
+        <!-- Chat Section - Primary Focus -->
+        <section class="chat-section" aria-labelledby="chat-title">
+          <div class="chat-card" id="chatCard">
+            <div class="chat-toolbar">
+              <div class="secure-heading">
+                <span class="shield-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M12 3 5 6v5c0 4.5 2.9 8.6 7 10 4.1-1.4 7-5.5 7-10V6l-7-3Z"/>
+                    <path d="M12 11.2v4M9.8 11.2a2.2 2.2 0 1 1 4.4 0"/>
+                  </svg>
+                </span>
+                <span>
+                  <h2 id="chat-title" data-i18n="secureChatTitle">Secure Chat Session</h2>
+                  <p data-i18n="secureChatDescription">Your data is safe and protected</p>
+                </span>
+              </div>
+              <button class="button reset-button" id="resetChatButton" type="button">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M3 12a9 9 0 1 0 3-6.7"/>
+                  <path d="M3 4v6h6"/>
                 </svg>
-              </span>
-              <span>
-                <h2 id="chat-title" data-i18n="secureChatTitle">Secure Chat Session</h2>
-                <p data-i18n="secureChatDescription">Your data is safe and protected</p>
-              </span>
+                <span data-i18n="resetConversation">Reset</span>
+              </button>
             </div>
 
-            <button class="button reset-button" id="resetChatButton" type="button">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M3 12a9 9 0 1 0 3-6.7" />
-                <path d="M3 4v6h6" />
-              </svg>
-              <span data-i18n="resetConversation">Reset Conversation</span>
-            </button>
-          </div>
-
-          <div class="chat-messages" id="chatMessages" aria-live="polite">
-            <article class="message assistant-message">
-              <div class="message-avatar message-avatar-image" aria-hidden="true">
-                <img src="logo.svg" alt="" />
-              </div>
-              <div class="message-content">
-                <div class="message-bubble">
-                  <p data-i18n="welcomeMessage">
-                    Welcome! I am your Kuwait Visa Assistant. Please share the applicant nationality, visa type, age, occupation, gender, and any companion or relationship details that apply.
-                  </p>
+            <div class="chat-messages" id="chatMessages" aria-live="polite">
+              <article class="message assistant-message animate-in">
+                <div class="message-avatar message-avatar-image" aria-hidden="true">
+                  <img src="logo.svg?v=kuwait-ui-1" alt="" />
                 </div>
-                <span class="message-time">10:30 AM</span>
+                <div class="message-content">
+                  <div class="message-bubble">
+                    <p data-i18n="welcomeMessage">
+                      Welcome! I am your Kuwait Visa Assistant. Please share the applicant nationality, visa type, age, occupation, gender, and any companion or relationship details that apply.
+                    </p>
+                  </div>
+                  <span class="message-time">10:30 AM</span>
+                </div>
+              </article>
+            </div>
+
+            <div class="typing-row" id="typingPreview" aria-hidden="true">
+              <div class="message-avatar message-avatar-image">
+                <img src="logo.svg?v=kuwait-ui-1" alt="" />
               </div>
-            </article>
-          </div>
-
-          <div class="typing-row" id="typingPreview" aria-hidden="true">
-            <div class="message-avatar message-avatar-image">
-              <img src="logo.svg" alt="" />
+              <div class="typing-bubble">
+                <span data-i18n="typingLabel">MOI Assistant is typing</span>
+                <div class="typing-dots">
+                  <i></i><i></i><i></i>
+                </div>
+              </div>
             </div>
-            <div class="typing-bubble">
-              <span data-i18n="typingLabel">MOI Assistant is typing</span>
-              <i></i><i></i><i></i>
-            </div>
+
+            <form class="chat-form" id="chatForm">
+              <label class="sr-only" for="chatInput">Message</label>
+              <textarea id="chatInput" name="message" rows="1" placeholder="Ask about visas..." data-i18n-placeholder="chatPlaceholder" autocomplete="off" required></textarea>
+              <div class="chat-form-actions">
+                <button class="composer-icon" id="voiceInputButton" type="button" aria-label="Voice input" aria-pressed="false" data-i18n-aria-label="voiceInput">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3Z"/>
+                    <path d="M19 11a7 7 0 0 1-14 0M12 18v4M8 22h8"/>
+                  </svg>
+                </button>
+                <button class="send-button" id="sendChatButton" type="submit" aria-label="Send message" data-i18n-aria-label="sendMessage">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="m22 2-7 20-4-9-9-4 20-7Z"/>
+                    <path d="M22 2 11 13"/>
+                  </svg>
+                </button>
+              </div>
+            </form>
+            <p class="status-line" id="chatStatus" role="status" aria-live="polite"></p>
           </div>
-
-
-
-          <form class="chat-form" id="chatForm">
-            <label class="sr-only" for="chatInput">Message</label>
-            <textarea
-              id="chatInput"
-              name="message"
-              rows="1"
-              placeholder="Ask about visas..."
-              data-i18n-placeholder="chatPlaceholder"
-              autocomplete="off"
-              required
-            ></textarea>
-            <button class="composer-icon" id="voiceInputButton" type="button" aria-label="Voice input" aria-pressed="false" data-i18n-aria-label="voiceInput">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3Z" />
-                <path d="M19 11a7 7 0 0 1-14 0M12 18v4M8 22h8" />
-              </svg>
-            </button>
-            <button class="send-button" id="sendChatButton" type="submit" aria-label="Send message" data-i18n-aria-label="sendMessage">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="m22 2-7 20-4-9-9-4 20-7Z" />
-                <path d="M22 2 11 13" />
-              </svg>
-            </button>
-          </form>
-          <p class="status-line" id="chatStatus" role="status" aria-live="polite"></p>
         </section>
 
-        <footer class="official-note">
+        <!-- Footer -->
+        <footer class="site-footer">
           <span class="lock-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24">
-              <path d="M6 10h12v10H6z" />
-              <path d="M8 10V8a4 4 0 0 1 8 0v2" />
-              <path d="M12 14v2" />
+              <path d="M6 10h12v10H6z"/>
+              <path d="M8 10V8a4 4 0 0 1 8 0v2"/>
+              <path d="M12 14v2"/>
             </svg>
           </span>
           <p data-i18n="officialNote">This is an official service of the Ministry of Interior, State of Kuwait.</p>
@@ -176,16 +178,17 @@
       </main>
     </div>
 
+    <!-- Direct Check Modal -->
     <div class="modal-backdrop" id="eligibilityModal" aria-hidden="true">
       <div class="modal direct-check-modal" role="dialog" aria-modal="true" aria-labelledby="eligibilityTitle">
-        <div class="modal-header studio-header">
-          <div class="studio-heading">
-            <p class="section-kicker" data-i18n="directService">Direct Service</p>
+        <div class="modal-header">
+          <div class="modal-heading">
+            <span class="modal-badge" data-i18n="directService">Direct Service</span>
             <h2 id="eligibilityTitle" data-i18n="directEligibilityTitle">Direct Eligibility Check</h2>
             <p data-i18n="directEligibilitySubtitle">A guided eligibility studio for faster, clearer decisions.</p>
           </div>
-          <button class="icon-button" id="closeEligibilityButton" type="button" aria-label="Close modal" data-i18n-aria-label="closeModal">
-            <span aria-hidden="true">&times;</span>
+          <button class="modal-close" id="closeEligibilityButton" type="button" aria-label="Close modal" data-i18n-aria-label="closeModal">
+            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
 
@@ -226,14 +229,7 @@
                     <option value="">Select applicant country</option>
                   </select>
                   <div class="smart-select country-select" id="countrySmartSelect" data-select-key="country">
-                    <button
-                      class="smart-select-trigger"
-                      id="countryTrigger"
-                      type="button"
-                      aria-expanded="false"
-                      aria-haspopup="listbox"
-                      aria-controls="countryMenu"
-                    >
+                    <button class="smart-select-trigger" id="countryTrigger" type="button" aria-expanded="false" aria-haspopup="listbox" aria-controls="countryMenu">
                       <span id="countrySelectionText">Select applicant country</span>
                     </button>
                     <div class="smart-select-panel" id="countryPanel">
@@ -262,14 +258,7 @@
                     <option value="">Select a visa type</option>
                   </select>
                   <div class="smart-select visa-type-select" id="visaTypeSmartSelect" data-select-key="visaType">
-                    <button
-                      class="smart-select-trigger"
-                      id="visaTypeTrigger"
-                      type="button"
-                      aria-expanded="false"
-                      aria-haspopup="listbox"
-                      aria-controls="visaTypeMenu"
-                    >
+                    <button class="smart-select-trigger" id="visaTypeTrigger" type="button" aria-expanded="false" aria-haspopup="listbox" aria-controls="visaTypeMenu">
                       <span id="visaTypeSelectionText">Select a visa type</span>
                     </button>
                     <div class="smart-select-panel" id="visaTypePanel">
@@ -304,14 +293,7 @@
                       <option value="">Select an occupation</option>
                     </select>
                     <div class="single-select occupation-select" id="occupationSingleSelect">
-                      <button
-                        class="single-select-trigger"
-                        id="occupationTrigger"
-                        type="button"
-                        aria-expanded="false"
-                        aria-haspopup="listbox"
-                        aria-controls="occupationMenu"
-                      >
+                      <button class="single-select-trigger" id="occupationTrigger" type="button" aria-expanded="false" aria-haspopup="listbox" aria-controls="occupationMenu">
                         <span id="occupationSelectionText">Select an occupation</span>
                       </button>
                       <div class="single-select-panel" id="occupationPanel">
@@ -332,14 +314,7 @@
                       <option value="female">Female</option>
                     </select>
                     <div class="smart-select gender-select" id="genderSmartSelect" data-select-key="gender">
-                      <button
-                        class="smart-select-trigger"
-                        id="genderTrigger"
-                        type="button"
-                        aria-expanded="false"
-                        aria-haspopup="listbox"
-                        aria-controls="genderMenu"
-                      >
+                      <button class="smart-select-trigger" id="genderTrigger" type="button" aria-expanded="false" aria-haspopup="listbox" aria-controls="genderMenu">
                         <span id="genderSelectionText">Select gender</span>
                       </button>
                       <div class="smart-select-panel" id="genderPanel">
@@ -355,14 +330,7 @@
                   <div class="field-group hidden conditional-field">
                     <label for="relationshipInput" data-i18n="relationshipLabel">Relationship / Companion</label>
                     <div class="multi-select" id="relationshipMultiSelect">
-                      <button
-                        class="multi-select-trigger"
-                        id="relationshipInput"
-                        type="button"
-                        aria-expanded="false"
-                        aria-haspopup="listbox"
-                        aria-controls="relationshipMenu"
-                      >
+                      <button class="multi-select-trigger" id="relationshipInput" type="button" aria-expanded="false" aria-haspopup="listbox" aria-controls="relationshipMenu">
                         <span id="relationshipSelectionText">Select relationships</span>
                       </button>
                       <div class="multi-select-panel" id="relationshipPanel">
@@ -370,25 +338,25 @@
                           <span class="sr-only" data-i18n="searchRelationships">Search relationships</span>
                           <input id="relationshipSearchInput" type="search" autocomplete="off" placeholder="Search relationships..." data-i18n-placeholder="searchRelationships" />
                         </label>
-                        <div
-                          class="multi-select-menu"
-                          id="relationshipMenu"
-                          role="listbox"
-                          aria-multiselectable="true"
-                        ></div>
+                        <div class="multi-select-menu" id="relationshipMenu" role="listbox" aria-multiselectable="true"></div>
                       </div>
                     </div>
                   </div>
                 </div>
               </section>
+
+              <!-- Result appears here, replacing wizard panels -->
+              <div class="result-region hidden" id="eligibilityResult" aria-live="polite"></div>
             </div>
 
             <aside class="eligibility-snapshot" aria-labelledby="snapshotTitle">
-              <p class="section-kicker" data-i18n="snapshotKicker">Live Summary</p>
-              <h3 id="snapshotTitle" data-i18n="snapshotTitle">Application Snapshot</h3>
+              <div class="snapshot-header">
+                <p class="section-kicker" data-i18n="snapshotKicker">Live Summary</p>
+                <h3 id="snapshotTitle" data-i18n="snapshotTitle">Application Snapshot</h3>
+              </div>
               <div class="snapshot-list">
                 <div class="snapshot-item">
-                  <span data-i18n="countryLabel">Applicant Country / Nationality</span>
+                  <span data-i18n="countryLabel">Country</span>
                   <strong id="snapshotCountry">Not provided</strong>
                 </div>
                 <div class="snapshot-item">
@@ -408,7 +376,7 @@
                   <strong id="snapshotGender">Not provided</strong>
                 </div>
                 <div class="snapshot-item">
-                  <span data-i18n="relationshipLabel">Relationship / Companion</span>
+                  <span data-i18n="relationshipLabel">Relationship</span>
                   <strong id="snapshotRelationship">Not provided</strong>
                 </div>
               </div>
@@ -426,11 +394,9 @@
             </aside>
           </div>
         </form>
-
-        <div class="result-region" id="eligibilityResult" aria-live="polite"></div>
       </div>
     </div>
 
-    <script src="app.js?v=studio-responsive-3"></script>
+    <script src="app.js?v=kuwait-ui-9"></script>
   </body>
 </html>

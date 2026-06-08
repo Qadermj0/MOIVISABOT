@@ -455,6 +455,26 @@ class BotRegressionTests(unittest.TestCase):
         self.assertIn("age", third["decision"]["missing_fields"])
         self.assertIn("occupation", third["decision"]["missing_fields"])
 
+    def test_clickable_visa_list_selection_starts_eligibility_check(self):
+        session_id = "clickable-visa-selection"
+        list_response = self.chat("what visas are available for jordan", session_id=session_id, language="en")
+
+        self.assertEqual(list_response["decision"]["intent"], "list_visa_types")
+        self.assertTrue(list_response["decision"]["visa_types"])
+
+        selected = self.chat(
+            "I want to check eligibility for Visa No. 10",
+            session_id=session_id,
+            language="en",
+        )
+
+        self.assertEqual(selected["extracted"]["intent"], "eligibility_check")
+        self.assertEqual(selected["context"]["ocr_code"], "JOR")
+        self.assertEqual(selected["context"]["visa_type"], 10)
+        self.assertEqual(selected["decision"]["status"], "NEED_MORE_INFO")
+        self.assertIn("age", selected["decision"]["missing_fields"])
+        self.assertIn("occupation", selected["decision"]["missing_fields"])
+
     def test_apply_request_country_followup_keeps_eligibility_flow_and_language_switch(self):
         session_id = "visa16-apply-country-language"
         first = self.chat("hey i need to apply for visa 16", session_id=session_id, language="en")
@@ -707,6 +727,66 @@ class BotRegressionTests(unittest.TestCase):
         self.assertEqual(data["context"]["visa_type"], 10)
         self.assertEqual(data["decision"]["status"], "APPROVED")
         self.assertTrue(any(check["field"] == "occupation" and check["passed"] for check in data["decision"]["checks"]))
+
+    def test_arabic_age_first_app_developer_extracts_age_and_occupation(self):
+        session_id = "arabic-age-first-app-developer"
+        self.chat("مرحبا بدي اقدم على فيزا 10", session_id=session_id)
+        self.chat("من الاردن", session_id=session_id)
+
+        data = self.chat("33 انا مطور تطبيقات", session_id=session_id)
+
+        self.assertEqual(data["extracted"]["intent"], "eligibility_check")
+        self.assertEqual(data["extracted"]["age"], 33)
+        self.assertEqual(data["extracted"]["occupation"], "مطور تطبيقات")
+        self.assertEqual(data["context"]["occupation"], "مطور تطبيقات")
+        self.assertEqual(data["decision"]["status"], "APPROVED")
+        self.assertNotIn("occupation", data["decision"]["missing_fields"])
+        self.assertTrue(any(check["field"] == "occupation" and check["passed"] for check in data["decision"]["checks"]))
+
+    def test_thanks_after_eligibility_result_is_chitchat_not_repeated_result(self):
+        session_id = "thanks-after-result"
+        self.chat("مرحبا بدي اقدم على فيزا 10", session_id=session_id)
+        self.chat("من الاردن", session_id=session_id)
+        self.chat("33 انا مطور تطبيقات", session_id=session_id)
+
+        data = self.chat("شكرا", session_id=session_id)
+
+        self.assertEqual(data["extracted"]["intent"], "chitchat")
+        self.assertEqual(data["decision"]["intent"], "chitchat")
+        self.assertEqual(data["decision"]["status"], "INFO")
+        self.assertIn("العفو", data["answer"])
+        self.assertNotIn("الحالة", data["answer"])
+        self.assertNotIn("سمة دخول", data["answer"])
+
+    def test_simple_courtesy_bypasses_rewrite_and_router_models(self):
+        class NoisyGemini:
+            def rewrite_query(self, user_message, context):
+                return {
+                    "rewritten_query": "اعطني نتيجة الاهلية لفيزا 10 من لبنان العمر 33 المهنة اصحاب العقارات"
+                }
+
+            def route_task(self, user_message, context, extracted):
+                return {"task_type": "eligibility"}
+
+        extracted = understand_message(
+            "شكرا",
+            {
+                "country": "لبنان",
+                "country_en": "Lebanon",
+                "ocr_code": "LBN",
+                "visa_type": 10,
+                "age": 33,
+                "occupation": "أصحاب العقارات",
+                "last_intent": "eligibility_check",
+                "language": "ar",
+            },
+            NoisyGemini(),
+        )
+
+        self.assertEqual(extracted["intent"], "chitchat")
+        self.assertEqual(extracted["task_type"], "chitchat")
+        self.assertEqual(extracted["rewrite_model"], {})
+        self.assertEqual(extracted["router_model"], {})
 
     def test_real_estate_first_message_preserves_visa_and_occupation_when_country_is_added(self):
         session_id = "real-estate-country-followup"

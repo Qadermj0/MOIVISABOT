@@ -1,7 +1,9 @@
 const SESSION_KEY = "kuwaitVisaSmartAssistant.sessionId";
 const LANGUAGE_KEY = "kuwaitVisaSmartAssistant.language";
+const THEME_KEY = "kuwaitVisaUi.theme";
 const API_BASE = "";
 const DEFAULT_LANGUAGE = "en";
+const DEFAULT_THEME = "light";
 const VISA_TYPE_NAMES_EN = {
   1: "Government work entry visa",
   2: "Private sector work entry visa",
@@ -18,6 +20,84 @@ const VISA_TYPE_NAMES_EN = {
   20: "Special entry visa",
 };
 
+const RELATIONSHIP_EXACT_TRANSLATIONS_EN = {
+  "الأب": "Father",
+  "الاب": "Father",
+  "الأم": "Mother",
+  "الام": "Mother",
+  "الأخ": "Brother",
+  "الاخ": "Brother",
+  "الأخت": "Sister",
+  "الاخت": "Sister",
+  "الابن": "Son",
+  "الإبن": "Son",
+  "الابنة": "Daughter",
+  "الإبنة": "Daughter",
+  "الزوج": "Husband",
+  "الزوجة": "Wife",
+  "الزوجة الثانية": "Second wife",
+  "الزوجة الثالثة": "Third wife",
+  "العم": "Paternal uncle",
+  "العمة": "Paternal aunt",
+  "الخال": "Maternal uncle",
+  "الخالة": "Maternal aunt",
+  "الجد": "Grandfather",
+  "الجدة": "Grandmother",
+  "ولىالامر": "Guardian",
+  "ولي الامر": "Guardian",
+  "قريب": "Relative",
+  "صديق": "Friend",
+  "رجل دين": "Cleric",
+  "غير محددة": "Unspecified relationship",
+  "قريب -قوة الشرطة": "Police force relative",
+  "قريب-قوة الشرطة": "Police force relative",
+  "قريب-قوة الجيش": "Army force relative",
+  "قريب -قوة الجيش": "Army force relative",
+  "قريب-قوةالحرس الوطني": "National Guard relative",
+  "قريب-قوةالحرس​الوطنى": "National Guard relative",
+};
+
+const RELATIONSHIP_WORD_TRANSLATIONS_EN = {
+  "اب": "father",
+  "ابو": "father",
+  "والد": "father",
+  "ام": "mother",
+  "والده": "mother",
+  "اخ": "brother",
+  "شقيق": "brother",
+  "اخت": "sister",
+  "ابن": "son",
+  "ابنه": "daughter",
+  "بنت": "daughter",
+  "زوج": "husband",
+  "زوجه": "wife",
+  "عم": "paternal uncle",
+  "عمه": "paternal aunt",
+  "خال": "maternal uncle",
+  "خاله": "maternal aunt",
+  "جد": "grandfather",
+  "جده": "grandmother",
+  "حفيد": "grandson",
+  "حفيده": "granddaughter",
+  "والدته": "mother",
+  "والده": "mother",
+  "والد": "father",
+  "الوالده": "mother",
+  "الوالد": "father",
+  "حفيدت": "granddaughter",
+  "الحفيد": "grandson",
+  "الحفيده": "granddaughter",
+  "الحفيدت": "granddaughter",
+  "ثانيه": "second",
+  "الثانيه": "second",
+  "ثالثه": "third",
+  "الثالثه": "third",
+  "قريب": "relative",
+  "صديق": "friend",
+  "رجل": "man",
+  "دين": "religion",
+};
+
 const translations = {
   en: {
     pageTitle: "Kuwait Visa AI Assistant",
@@ -29,7 +109,20 @@ const translations = {
     heroSubtitle: "Your smart guide for visa information and eligibility support",
     eligibilityTitle: "Check Your Eligibility",
     eligibilityDescription: "Answer a few questions and get instant eligibility result.",
-    startEligibility: "Start Eligibility Check",
+    guideChatSupport: "Chat guidance",
+    guideDirectCheck: "Direct check",
+    guideOfficialLinks: "Official links",
+    kuwaitPortalTitle: "Kuwait Visa Portal",
+    kuwaitPortalText: "Official visa applications and account access",
+    visitKuwaitTitle: "Visit Kuwait",
+    visitKuwaitText: "Tourism experiences and destination guide",
+    touristVisaStat: "Tourist Visa",
+    familyVisaStat: "Family Visa",
+    businessVisaStat: "Business Visa",
+    governmentVisaStat: "Government Visa",
+    thousand: "Thousand",
+    visasIssued2025: "Visas issued in 2025",
+    startEligibility: "Direct Check",
     secureChatTitle: "Secure Chat Session",
     secureChatDescription: "Your data is safe and protected",
     resetConversation: "Reset Conversation",
@@ -72,6 +165,7 @@ const translations = {
     relationshipLabel: "Relationship / Companion",
     checkEligibility: "Check Eligibility",
     cancel: "Cancel",
+    startOver: "Start Over",
     selectCountry: "Select applicant country",
     selectVisaType: "Select a visa type",
     searchCountries: "Search countries...",
@@ -107,6 +201,7 @@ const translations = {
     noReadableResponse: "No readable response was returned.",
     unreadableAnswer: "I received the response, but no readable answer was provided.",
     availableVisaTypes: "Available visa types:",
+    chooseVisaToCheck: "Choose a visa to check eligibility:",
     status: "Status",
     visa: "Visa",
     applicantCountry: "Applicant Country",
@@ -147,7 +242,20 @@ const translations = {
     heroSubtitle: "دليلك الذكي لمعلومات التأشيرات ودعم فحص الأهلية",
     eligibilityTitle: "تحقق من أهليتك",
     eligibilityDescription: "أجب عن بعض الأسئلة واحصل على نتيجة أهلية فورية.",
-    startEligibility: "ابدأ فحص الأهلية",
+    guideChatSupport: "إرشاد المحادثة",
+    guideDirectCheck: "فحص مباشر",
+    guideOfficialLinks: "روابط رسمية",
+    kuwaitPortalTitle: "بوابة تأشيرة الكويت",
+    kuwaitPortalText: "طلبات التأشيرات الرسمية والوصول للحساب",
+    visitKuwaitTitle: "زوروا الكويت",
+    visitKuwaitText: "دليل السياحة والتجارب في الكويت",
+    touristVisaStat: "تأشيرة سياحية",
+    familyVisaStat: "تأشيرة عائلية",
+    businessVisaStat: "تأشيرة أعمال",
+    governmentVisaStat: "تأشيرة حكومية",
+    thousand: "ألف",
+    visasIssued2025: "تأشيرات صدرت في 2025",
+    startEligibility: "الفحص المباشر",
     secureChatTitle: "جلسة محادثة آمنة",
     secureChatDescription: "بياناتك آمنة ومحمية",
     resetConversation: "إعادة ضبط المحادثة",
@@ -190,6 +298,7 @@ const translations = {
     relationshipLabel: "صلة القرابة / المرافق",
     checkEligibility: "فحص الأهلية",
     cancel: "إلغاء",
+    startOver: "البدء من جديد",
     selectCountry: "اختر دولة مقدم الطلب",
     selectVisaType: "اختر نوع التأشيرة",
     searchCountries: "ابحث عن دولة...",
@@ -225,6 +334,7 @@ const translations = {
     noReadableResponse: "لم يتم إرجاع رد قابل للقراءة.",
     unreadableAnswer: "وصلني الرد، لكن لا توجد إجابة قابلة للعرض.",
     availableVisaTypes: "أنواع التأشيرات المتاحة:",
+    chooseVisaToCheck: "اختر فيزا لبدء فحص الأهلية:",
     status: "الحالة",
     visa: "التأشيرة",
     applicantCountry: "دولة مقدم الطلب",
@@ -260,6 +370,7 @@ const translations = {
 const state = {
   sessionId: getOrCreateSessionId(),
   language: getStoredLanguage(),
+  theme: getStoredTheme(),
   countries: [],
   visaTypes: [],
   occupations: [],
@@ -294,6 +405,10 @@ const elements = {
   languageLabel: document.getElementById("languageLabel"),
   languageMenu: document.getElementById("languageMenu"),
   languageOptions: document.querySelectorAll("[data-language]"),
+  themeToggleButton: document.getElementById("themeToggleButton"),
+  themeToggleIcon: document.getElementById("themeToggleIcon"),
+  heroLightVideo: document.getElementById("heroLightVideo"),
+  heroDarkVideo: document.getElementById("heroDarkVideo"),
   openEligibilityButton: document.getElementById("openEligibilityButton"),
   eligibilityModal: document.getElementById("eligibilityModal"),
   closeEligibilityButton: document.getElementById("closeEligibilityButton"),
@@ -378,6 +493,7 @@ const searchableSelects = {
 
 document.addEventListener("DOMContentLoaded", () => {
   bindEvents();
+  applyTheme(state.theme);
   applyLanguage(state.language);
   loadCountries();
 });
@@ -388,10 +504,11 @@ function bindEvents() {
   elements.chatInput.addEventListener("input", autoSizeChatInput);
   elements.chatInput.addEventListener("keydown", handleChatInputKeyDown);
   elements.voiceInputButton.addEventListener("click", handleVoiceInputClick);
-  elements.languageButton.addEventListener("click", toggleLanguageMenu);
+  elements.languageButton.addEventListener("click", handleLanguageToggle);
   elements.languageOptions.forEach((button) => {
     button.addEventListener("click", handleLanguageSelection);
   });
+  elements.themeToggleButton?.addEventListener("click", toggleTheme);
 
   elements.openEligibilityButton.addEventListener("click", openEligibilityModal);
   elements.closeEligibilityButton.addEventListener("click", closeEligibilityModal);
@@ -527,10 +644,21 @@ function setEligibilityStep(step = getAutomaticEligibilityStep()) {
   });
 
   elements.wizardPanels.forEach((panel) => {
-    const isActive = panel.dataset.wizardPanel === step || (step === "result" && panel.dataset.wizardPanel === "details");
+    const isActive = panel.dataset.wizardPanel === step;
     panel.classList.toggle("hidden", !isActive);
     panel.classList.toggle("is-active", isActive);
   });
+
+  // When result step is active, hide all wizard panels and show result in their place
+  if (step === "result") {
+    elements.wizardPanels.forEach((panel) => {
+      panel.classList.add("hidden");
+      panel.classList.remove("is-active");
+    });
+    elements.eligibilityResult.classList.remove("hidden");
+  } else {
+    elements.eligibilityResult.classList.add("hidden");
+  }
 }
 
 function isStepComplete(step) {
@@ -830,8 +958,55 @@ function getStoredLanguage() {
   return translations[stored] ? stored : DEFAULT_LANGUAGE;
 }
 
+function getStoredTheme() {
+  const stored = localStorage.getItem(THEME_KEY);
+  return stored === "dark" ? "dark" : DEFAULT_THEME;
+}
+
 function t(key) {
   return translations[state.language]?.[key] || translations[DEFAULT_LANGUAGE][key] || key;
+}
+
+function normalizeActionLanguage(language) {
+  return String(language || "").toLowerCase().startsWith("ar") ? "ar" : "en";
+}
+
+function tForLanguage(key, language) {
+  const normalized = normalizeActionLanguage(language);
+  return translations[normalized]?.[key] || translations[DEFAULT_LANGUAGE][key] || key;
+}
+
+function applyTheme(theme) {
+  const nextTheme = theme === "dark" ? "dark" : DEFAULT_THEME;
+  state.theme = nextTheme;
+  localStorage.setItem(THEME_KEY, nextTheme);
+  document.documentElement.dataset.theme = nextTheme;
+
+  const isDark = nextTheme === "dark";
+  if (elements.themeToggleButton) {
+    elements.themeToggleButton.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to dark mode");
+    elements.themeToggleButton.setAttribute("aria-pressed", String(isDark));
+  }
+
+  if (elements.themeToggleIcon) {
+    elements.themeToggleIcon.src = isDark ? "day-theme.svg" : "night-theme.svg";
+    elements.themeToggleIcon.alt = "";
+  }
+
+  [elements.heroLightVideo, elements.heroDarkVideo].forEach((video) => {
+    if (!video) {
+      return;
+    }
+    video.muted = true;
+    const shouldPlay = (isDark && video === elements.heroDarkVideo) || (!isDark && video === elements.heroLightVideo);
+    if (shouldPlay) {
+      video.play?.().catch(() => {});
+    }
+  });
+}
+
+function toggleTheme() {
+  applyTheme(state.theme === "dark" ? "light" : "dark");
 }
 
 function applyLanguage(language) {
@@ -857,8 +1032,14 @@ function applyLanguage(language) {
     node.setAttribute("aria-label", t(node.dataset.i18nAriaLabel));
   });
 
-  elements.languageLabel.textContent = isArabic ? "العربية" : "English";
+  elements.languageLabel.textContent = isArabic ? "English" : "\u0627\u0644\u0639\u0631\u0628\u064a\u0629";
   elements.languageOptions.forEach((option) => {
+    if (option.dataset.language === "ar") {
+      option.textContent = "\u0627\u0644\u0639\u0631\u0628\u064a\u0629";
+    }
+    if (option.dataset.language === "en") {
+      option.textContent = "English";
+    }
     option.setAttribute("aria-selected", String(option.dataset.language === nextLanguage));
   });
 
@@ -941,6 +1122,11 @@ function closeLanguageMenu() {
   elements.languageButton.setAttribute("aria-expanded", "false");
 }
 
+function handleLanguageToggle(event) {
+  event.stopPropagation();
+  applyLanguage(state.language === "ar" ? "en" : "ar");
+}
+
 function handleLanguageSelection(event) {
   event.stopPropagation();
   applyLanguage(event.currentTarget.dataset.language);
@@ -1013,7 +1199,10 @@ async function submitChatMessage(message, language = detectMessageLanguage(messa
       }),
     });
 
-    appendMessage("assistant", getAssistantReply(data));
+    appendMessage("assistant", getAssistantReply(data), {
+      decision: data?.decision,
+      responseLanguage: data?.context?.language || language,
+    });
     setChatStatus("");
   } catch (error) {
     appendMessage(
@@ -1250,14 +1439,14 @@ function appendLoadingMessage(role, text) {
   return message;
 }
 
-function appendMessage(role, text) {
-  const message = createMessageElement(role, text);
+function appendMessage(role, text, metadata = {}) {
+  const message = createMessageElement(role, text, metadata);
   elements.chatMessages.appendChild(message);
   scrollChatToBottom();
   return message;
 }
 
-function createMessageElement(role, text) {
+function createMessageElement(role, text, metadata = {}) {
   const article = document.createElement("article");
   article.className = `message ${role === "user" ? "user-message" : "assistant-message"}`;
 
@@ -1269,7 +1458,7 @@ function createMessageElement(role, text) {
     avatar.textContent = t("userAvatar");
   } else {
     const image = document.createElement("img");
-    image.src = "logo.svg";
+    image.src = "logo.svg?v=kuwait-ui-1";
     image.alt = "";
     avatar.appendChild(image);
   }
@@ -1279,7 +1468,7 @@ function createMessageElement(role, text) {
 
   const bubble = document.createElement("div");
   bubble.className = "message-bubble";
-  renderFormattedText(bubble, text);
+  renderFormattedText(bubble, text, role === "assistant" ? metadata : {});
 
   const time = document.createElement("span");
   time.className = "message-time";
@@ -1290,7 +1479,144 @@ function createMessageElement(role, text) {
   return article;
 }
 
-function renderFormattedText(container, text) {
+function createMessageActionPanel(metadata = {}) {
+  const decision = metadata?.decision || {};
+  const visaTypes = normalizeVisaTypes(decision);
+  if (!visaTypes.length) {
+    return null;
+  }
+
+  const panelLanguage = normalizeActionLanguage(metadata.responseLanguage || state.language);
+  const panel = document.createElement("div");
+  panel.className = "visa-action-panel";
+
+  const hint = document.createElement("p");
+  hint.className = "visa-action-hint";
+  hint.textContent = tForLanguage("chooseVisaToCheck", panelLanguage);
+
+  const grid = document.createElement("div");
+  grid.className = "visa-action-grid";
+
+  visaTypes.forEach((visaType) => {
+    const number = String(visaType.visa_type || visaType.visaType || "").trim();
+    if (!number) {
+      return;
+    }
+
+    const button = document.createElement("button");
+    const name = formatVisaTypeNameForLanguage(visaType, panelLanguage);
+    const label = formatVisaTypeLabelForLanguage(visaType, panelLanguage);
+    button.className = "visa-action-button";
+    button.type = "button";
+    button.dataset.visaType = number;
+    button.dataset.visaLabel = label;
+    button.dataset.responseLanguage = panelLanguage;
+    button.setAttribute("aria-label", `${tForLanguage("chooseVisaToCheck", panelLanguage)} ${label}`);
+
+    const numberSpan = document.createElement("span");
+    numberSpan.className = "visa-action-number";
+    numberSpan.textContent = `${tForLanguage("visaNo", panelLanguage)} ${number}`;
+
+    const nameSpan = document.createElement("span");
+    nameSpan.className = "visa-action-name";
+    nameSpan.textContent = name || tForLanguage("visaNameMissing", panelLanguage);
+
+    const arrow = document.createElement("span");
+    arrow.className = "visa-action-arrow";
+    arrow.setAttribute("aria-hidden", "true");
+    arrow.textContent = panelLanguage === "ar" ? "←" : "→";
+
+    button.append(numberSpan, nameSpan, arrow);
+    button.addEventListener("click", handleVisaActionClick);
+    grid.appendChild(button);
+  });
+
+  if (!grid.children.length) {
+    return null;
+  }
+
+  panel.append(hint, grid);
+  return panel;
+}
+
+function getVisaActionContext(metadata = {}) {
+  const decision = metadata?.decision || {};
+  const visaTypes = normalizeVisaTypes(decision);
+  if (!visaTypes.length) {
+    return null;
+  }
+
+  const language = normalizeActionLanguage(metadata.responseLanguage || state.language);
+  const byNumber = new Map();
+
+  visaTypes.forEach((visaType) => {
+    const number = String(visaType.visa_type || visaType.visaType || "").trim();
+    if (!number) {
+      return;
+    }
+
+    byNumber.set(number, {
+      language,
+      number,
+      label: formatVisaTypeLabelForLanguage(visaType, language),
+    });
+  });
+
+  return byNumber.size ? { byNumber, language } : null;
+}
+
+function getVisaActionForLine(line, actionContext) {
+  if (!actionContext?.byNumber?.size) {
+    return null;
+  }
+
+  const text = String(line || "");
+  const match =
+    text.match(/\bVisa\s*No\.?\s*(\d+)\b/i) ||
+    text.match(/(?:فيزا|تأشيرة|التأشيرة|سمة|رقم)[^\d]{0,18}(\d+)/i);
+
+  return match ? actionContext.byNumber.get(match[1]) || null : null;
+}
+
+function createInlineVisaAction(displayHtml, action) {
+  const button = document.createElement("button");
+  button.className = "inline-visa-action";
+  button.type = "button";
+  button.dataset.visaType = action.number;
+  button.dataset.visaLabel = action.label;
+  button.dataset.responseLanguage = action.language;
+  button.setAttribute("aria-label", `${tForLanguage("chooseVisaToCheck", action.language)} ${action.label}`);
+
+  const label = document.createElement("span");
+  label.className = "inline-visa-label";
+  label.innerHTML = displayHtml;
+
+  const arrow = document.createElement("span");
+  arrow.className = "inline-visa-arrow";
+  arrow.setAttribute("aria-hidden", "true");
+  arrow.textContent = action.language === "ar" ? "\u2190" : "\u2192";
+
+  button.append(label, arrow);
+  button.addEventListener("click", handleVisaActionClick);
+  return button;
+}
+
+async function handleVisaActionClick(event) {
+  const button = event.currentTarget;
+  const visaType = button.dataset.visaType;
+  if (!visaType || elements.sendChatButton.disabled || state.isVoiceRecording || state.isVoiceProcessing) {
+    return;
+  }
+
+  const language = normalizeActionLanguage(button.dataset.responseLanguage || state.language);
+  const message = language === "ar"
+    ? `أريد فحص الأهلية لفيزا رقم ${visaType}`
+    : `I want to check eligibility for Visa No. ${visaType}`;
+
+  await submitChatMessage(message, language);
+}
+
+function renderFormattedText(container, text, metadata = {}) {
   container.innerHTML = "";
 
   const cleanText = String(text || "").trim();
@@ -1303,6 +1629,7 @@ function renderFormattedText(container, text) {
   }
 
   const lines = cleanText.split("\n").map((line) => line.trim());
+  const visaActionContext = getVisaActionContext(metadata);
 
   let currentList = null;
 
@@ -1333,15 +1660,23 @@ function renderFormattedText(container, text) {
 
     // Bullet list
     if (/^[-*\u2022]\s+/.test(line)) {
+      const listText = line.replace(/^[-*\u2022]\s+/, "");
+      const formattedLine = formatInlineMarkdown(listText);
+      const visaAction = getVisaActionForLine(listText, visaActionContext);
+
       if (!currentList) {
         currentList = document.createElement("ul");
         container.appendChild(currentList);
       }
 
       const li = document.createElement("li");
-      li.innerHTML = formatInlineMarkdown(
-        line.replace(/^[-*\u2022]\s+/, "")
-      );
+
+      if (visaAction) {
+        li.className = "visa-inline-item";
+        li.appendChild(createInlineVisaAction(formattedLine, visaAction));
+      } else {
+        li.innerHTML = formattedLine;
+      }
 
       currentList.appendChild(li);
       return;
@@ -1350,7 +1685,15 @@ function renderFormattedText(container, text) {
     currentList = null;
 
     const p = document.createElement("p");
-    p.innerHTML = formatInlineMarkdown(line);
+    const formattedLine = formatInlineMarkdown(line);
+    const visaAction = getVisaActionForLine(line, visaActionContext);
+
+    if (visaAction) {
+      p.className = "visa-inline-line";
+      p.appendChild(createInlineVisaAction(formattedLine, visaAction));
+    } else {
+      p.innerHTML = formattedLine;
+    }
     container.appendChild(p);
   });
 }
@@ -1444,6 +1787,9 @@ function setChatLoading(isLoading, status = "", showTyping = false) {
   elements.sendChatButton.disabled = isLoading;
   elements.resetChatButton.disabled = isLoading;
   elements.chatInput.disabled = isLoading;
+  elements.chatMessages.querySelectorAll(".visa-action-button, .inline-visa-action").forEach((button) => {
+    button.disabled = isLoading;
+  });
   elements.chatCard.classList.toggle("is-typing", isLoading && showTyping);
   updateVoiceButtonState();
   setChatStatus(status);
@@ -1707,8 +2053,11 @@ function setSnapshotValue(element, value) {
   }
 
   const label = String(value || "").trim() || t("notProvided");
+  const item = element.closest(".snapshot-item");
   element.textContent = label;
   element.classList.toggle("is-empty", label === t("notProvided"));
+  item?.classList.toggle("is-empty", label === t("notProvided"));
+  item?.classList.toggle("has-value", label !== t("notProvided"));
 }
 
 function getSelectedOccupation() {
@@ -2347,6 +2696,22 @@ function renderEligibilityResult(data) {
   renderCheckSection(card, t("failedChecks"), failedChecks, "fail", data?.reason || t("noFailedChecks"));
   renderMissingFields(card, missingFields);
 
+  // Add Start Over button
+  const actions = document.createElement("div");
+  actions.className = "result-actions";
+  const resetBtn = document.createElement("button");
+  resetBtn.className = "result-reset-button";
+  resetBtn.type = "button";
+  resetBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v6h6"/></svg><span>' + t("startOver") + '</span>';
+  resetBtn.addEventListener("click", function() {
+    elements.countrySelect.value = "";
+    syncSearchableSelect("country");
+    handleCountryChange();
+    syncEligibilityExperience("country");
+  });
+  actions.appendChild(resetBtn);
+  card.appendChild(actions);
+
   elements.eligibilityResult.appendChild(card);
 }
 
@@ -2377,6 +2742,22 @@ function renderVisaTypesOnlyResult(card, visaTypes) {
   });
 
   card.appendChild(list);
+
+  // Add Start Over button
+  const actions = document.createElement("div");
+  actions.className = "result-actions";
+  const resetBtn = document.createElement("button");
+  resetBtn.className = "result-reset-button";
+  resetBtn.type = "button";
+  resetBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v6h6"/></svg><span>' + t("startOver") + '</span>';
+  resetBtn.addEventListener("click", function() {
+    elements.countrySelect.value = "";
+    syncSearchableSelect("country");
+    handleCountryChange();
+    syncEligibilityExperience("country");
+  });
+  actions.appendChild(resetBtn);
+  card.appendChild(actions);
 }
 
 function createResultHeader(title, subtitle, tone) {
@@ -2645,6 +3026,175 @@ function containsArabic(value) {
   return /[\u0600-\u06ff]/.test(String(value || ""));
 }
 
+function normalizeArabicRelationshipKey(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[\u064b-\u065f\u0670]/g, "")
+    .replace(/[\u200b-\u200f]/g, "")
+    .replace(/ـ/g, "")
+    .replace(/[أإآ]/g, "ا")
+    .replace(/ى/g, "ي")
+    .replace(/ؤ/g, "و")
+    .replace(/ئ/g, "ي")
+    .replace(/ة/g, "ه")
+    .replace(/[()]/g, " ")
+    .replace(/[^\w\s\u0600-\u06ff]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function stripArabicArticle(value) {
+  return String(value || "").replace(/^ال/, "");
+}
+
+function getExactRelationshipTranslationEn(value) {
+  const normalizedValue = normalizeArabicRelationshipKey(value);
+  if (!normalizedValue) {
+    return "";
+  }
+
+  return Object.entries(RELATIONSHIP_EXACT_TRANSLATIONS_EN).find(([arabicName]) => (
+    normalizeArabicRelationshipKey(arabicName) === normalizedValue
+  ))?.[1] || "";
+}
+
+function getRelationshipCode(relationship) {
+  return String(
+    relationship?.relation_code ||
+    relationship?.relationCode ||
+    relationship?.code ||
+    ""
+  ).trim();
+}
+
+function relationshipWordTranslationEn(value) {
+  const normalized = stripArabicArticle(normalizeArabicRelationshipKey(value));
+  return RELATIONSHIP_WORD_TRANSLATIONS_EN[normalized] || "";
+}
+
+function formatGeneratedRelationshipLabel(value) {
+  const label = String(value || "").replace(/\s+/g, " ").trim();
+  if (!label || containsArabic(label)) {
+    return "";
+  }
+
+  return label.charAt(0).toUpperCase() + label.slice(1);
+}
+
+function translateArabicRelationshipNounPhrase(value, depth = 0) {
+  if (depth > 8) {
+    return "";
+  }
+
+  const text = normalizeArabicRelationshipKey(value);
+  if (!text) {
+    return "";
+  }
+
+  const exact = getExactRelationshipTranslationEn(text);
+  if (exact) {
+    return exact.toLowerCase();
+  }
+
+  const directWord = relationshipWordTranslationEn(text);
+  if (directWord) {
+    return directWord;
+  }
+
+  const generated = translateArabicRelationshipPhraseEn(text, depth + 1);
+  if (generated) {
+    return generated.toLowerCase();
+  }
+
+  const translatedWords = text
+    .split(/\s+/)
+    .map((word) => relationshipWordTranslationEn(word))
+    .filter(Boolean);
+
+  return translatedWords.join(" ");
+}
+
+function translateArabicRelationshipPhraseEn(value, depth = 0) {
+  if (depth > 8) {
+    return "";
+  }
+
+  const text = normalizeArabicRelationshipKey(value);
+  if (!text) {
+    return "";
+  }
+
+  const exact = getExactRelationshipTranslationEn(text);
+  if (exact) {
+    return exact;
+  }
+
+  const normalizedPrefixes = [
+    ["والده", "mother of"],
+    ["والد", "father of"],
+    ["زوجه", "wife of"],
+    ["زوج", "husband of"],
+    ["ابنه", "daughter of"],
+    ["بنت", "daughter of"],
+    ["ابن", "son of"],
+    ["اخت", "sister of"],
+    ["اخ", "brother of"],
+    ["شقيق", "brother of"],
+    ["ام", "mother of"],
+    ["اب", "father of"],
+    ["حفيدت", "granddaughter of"],
+    ["حفيده", "granddaughter of"],
+    ["حفيد", "grandson of"],
+  ];
+
+  for (const [prefix, englishPrefix] of normalizedPrefixes) {
+    if (text === prefix || text === `ال${prefix}`) {
+      return formatGeneratedRelationshipLabel(relationshipWordTranslationEn(text) || englishPrefix.replace(/ of$/, ""));
+    }
+
+    const withoutArticle = stripArabicArticle(text);
+    const matchText = withoutArticle.startsWith(prefix) ? withoutArticle : "";
+    if (!matchText || matchText.length <= prefix.length) {
+      continue;
+    }
+
+    const rest = matchText.slice(prefix.length).trim();
+    if (!rest) {
+      continue;
+    }
+
+    const translatedRest = translateArabicRelationshipNounPhrase(rest, depth + 1) || "relative";
+    return formatGeneratedRelationshipLabel(`${englishPrefix} ${translatedRest}`);
+  }
+
+  const translated = relationshipWordTranslationEn(text);
+  if (translated) {
+    return formatGeneratedRelationshipLabel(translated);
+  }
+
+  return "";
+}
+
+function translateRelationshipNameToEnglish(nameAr, relationship = {}) {
+  if (!nameAr || !containsArabic(nameAr)) {
+    return "";
+  }
+
+  const exact = getExactRelationshipTranslationEn(nameAr);
+  if (exact) {
+    return exact;
+  }
+
+  const generated = translateArabicRelationshipPhraseEn(nameAr);
+  if (generated) {
+    return generated;
+  }
+
+  const code = getRelationshipCode(relationship);
+  return code ? `Relationship code ${code}` : "Family relationship";
+}
+
 function normalizeRelationships(data) {
   const items =
     data?.relationships ||
@@ -2678,11 +3228,13 @@ function normalizeRelationships(data) {
 
 function normalizeRelationship(item) {
   if (typeof item === "string") {
+    const translatedName = containsArabic(item) ? translateRelationshipNameToEnglish(item) : item;
     return {
       value: item,
-      label: item,
+      label: state.language === "ar" ? item : translatedName,
       relation_name_ar: containsArabic(item) ? item : "",
-      relation_name_en: containsArabic(item) ? "" : item,
+      relation_name_en: translatedName,
+      relation_code: "",
     };
   }
 
@@ -2690,15 +3242,17 @@ function normalizeRelationship(item) {
     return { value: "", label: "" };
   }
 
+  const relationCode = getRelationshipCode(item);
+  const relationNameAr = nameArFromRelationship(item);
+  const relationNameEn = nameEnFromRelationship({
+    ...item,
+    relation_code: relationCode,
+    relation_name_ar: relationNameAr,
+  });
   const value =
     item.value ||
-    item.relation_name_ar ||
-    item.relationNameAr ||
-    item.arabicDescription ||
-    item.ArabicDescription ||
-    item.relation_name_en ||
-    item.relationNameEn ||
-    item.DescriptionEn ||
+    relationNameAr ||
+    relationNameEn ||
     item.label ||
     "";
 
@@ -2706,11 +3260,13 @@ function normalizeRelationship(item) {
     value,
     label: formatRelationshipLabel({
       ...item,
-      relation_name_ar: nameArFromRelationship(item),
-      relation_name_en: nameEnFromRelationship(item),
+      relation_code: relationCode,
+      relation_name_ar: relationNameAr,
+      relation_name_en: relationNameEn,
     }, value),
-    relation_name_ar: nameArFromRelationship(item),
-    relation_name_en: nameEnFromRelationship(item),
+    relation_code: relationCode,
+    relation_name_ar: relationNameAr,
+    relation_name_en: relationNameEn,
   };
 }
 
@@ -2734,10 +3290,17 @@ function nameArFromRelationship(relationship) {
 }
 
 function nameEnFromRelationship(relationship) {
-  return relationship?.relation_name_en ||
+  const directName =
+    relationship?.relation_name_en ||
     relationship?.relationNameEn ||
     relationship?.DescriptionEn ||
     "";
+
+  if (directName && normalizeDisplayText(directName) !== normalizeDisplayText(translations.en.relationshipNameMissing)) {
+    return directName;
+  }
+
+  return translateRelationshipNameToEnglish(nameArFromRelationship(relationship), relationship);
 }
 
 function isVisaTypesOnlyResponse(data, visaTypes) {
@@ -2769,11 +3332,33 @@ function formatVisaTypeLabel(visaType) {
   return name || t("visaTypeMissing");
 }
 
+function formatVisaTypeLabelForLanguage(visaType, language) {
+  const normalized = normalizeActionLanguage(language);
+  const number = visaType?.visa_type || visaType?.visaType || "";
+  const name = formatVisaTypeNameForLanguage(visaType, normalized);
+  const prefix = tForLanguage("visaNo", normalized);
+
+  if (number && name) {
+    return `${prefix} ${number} - ${name}`;
+  }
+
+  if (number) {
+    return `${prefix} ${number}`;
+  }
+
+  return name || tForLanguage("visaTypeMissing", normalized);
+}
+
 function formatVisaTypeName(visaType) {
+  return formatVisaTypeNameForLanguage(visaType, state.language);
+}
+
+function formatVisaTypeNameForLanguage(visaType, language) {
   if (!visaType) {
     return "";
   }
 
+  const normalized = normalizeActionLanguage(language);
   const number = Number(visaType.visa_type || visaType.visaType || "");
   const arabicName =
     visaType.visa_name ||
@@ -2789,11 +3374,11 @@ function formatVisaTypeName(visaType) {
     VISA_TYPE_NAMES_EN[number] ||
     "";
 
-  if (state.language === "ar") {
-    return arabicName && containsArabic(arabicName) ? arabicName : t("visaNameMissing");
+  if (normalized === "ar") {
+    return arabicName && containsArabic(arabicName) ? arabicName : tForLanguage("visaNameMissing", normalized);
   }
 
-  return englishName && !containsArabic(englishName) ? englishName : t("visaNameMissing");
+  return englishName && !containsArabic(englishName) ? englishName : tForLanguage("visaNameMissing", normalized);
 }
 
 function formatCountryLabel(country) {
