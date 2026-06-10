@@ -843,12 +843,23 @@ def is_occupation_confirmation_question(text: str, context: dict) -> bool:
 def is_relationship_decline(text: str, relationship, context: dict) -> bool:
     has_relationship_context = bool(relationship) or bool(context.get("relationship"))
     follows_relationship_answer = context.get("last_intent") == "relationship_check"
+    normalized = normalize_text(text)
+    short_decline = normalized in {
+        "no",
+        "no thanks",
+        "not now",
+        "لا",
+        "لا شكرا",
+        "لا شكراً",
+    }
     if (
         is_family_visit_application_question(text)
         and has_any(text, RELATIONSHIP_SWITCH_QUESTION_WORDS)
     ):
         return False
-    return (has_relationship_context or follows_relationship_answer) and has_any(text, RELATIONSHIP_DECLINE_WORDS)
+    return (has_relationship_context or follows_relationship_answer) and (
+        short_decline or has_any(text, RELATIONSHIP_DECLINE_WORDS)
+    )
 
 
 def has_explicit_age_cue(text: str) -> bool:
@@ -1331,6 +1342,19 @@ def extract_contextual_visa_type(text: str, context: dict):
     return int(match.group(1))
 
 
+def should_keep_context_visa_type_for_followup(text: str, context: dict, explicit_visa_type) -> bool:
+    if explicit_visa_type or not context.get("visa_type"):
+        return False
+
+    if context.get("last_intent") not in {"eligibility_check", "relationship_check"}:
+        return False
+
+    if is_family_visit_application_question(text):
+        return False
+
+    return not has_any(text, VISA_WORDS + DETAILS_WORDS + LIST_WORDS + VISA_QUERY_WORDS)
+
+
 def extract_age(text: str):
     if (
         has_any(text, ["اعمارهم", "أعمارهم", "اعمار الاطفال", "أعمار الأطفال", "ابنائي", "أبنائي", "اطفالي", "أطفالي"])
@@ -1536,6 +1560,171 @@ def extract_relationship(text: str):
                 return relation
 
     return None
+
+
+RELATIONSHIP_PERSON_ALIASES = {
+    "\u0627\u0644\u0632\u0648\u062c\u0629": ["wife", "my wife", "spouse", "\u0632\u0648\u062c\u062a\u064a", "\u0645\u0631\u062a\u064a", "\u0627\u0644\u0632\u0648\u062c\u0629", "\u0632\u0648\u062c\u0629"],
+    "\u0627\u0644\u0632\u0648\u062c": ["husband", "my husband", "\u0632\u0648\u062c\u064a", "\u0627\u0644\u0632\u0648\u062c", "\u0632\u0648\u062c"],
+    "\u0627\u0644\u0627\u0628\u0646": ["son", "my son", "\u0627\u0628\u0646\u064a", "\u0625\u0628\u0646\u064a", "\u0648\u0644\u062f\u064a", "\u0627\u0644\u0627\u0628\u0646", "\u0627\u0628\u0646"],
+    "\u0627\u0644\u0627\u0628\u0646\u0629": ["daughter", "my daughter", "\u0628\u0646\u062a\u064a", "\u0627\u0628\u0646\u062a\u064a", "\u0625\u0628\u0646\u062a\u064a", "\u0627\u0644\u0627\u0628\u0646\u0629"],
+    "\u0627\u0644\u0623\u0645": ["mother", "my mother", "\u0627\u0645\u064a", "\u0623\u0645\u064a", "\u0648\u0627\u0644\u062f\u062a\u064a", "\u0627\u0644\u0623\u0645"],
+    "\u0627\u0644\u0623\u0628": ["father", "my father", "\u0627\u0628\u0648\u064a", "\u0623\u0628\u0648\u064a", "\u0648\u0627\u0644\u062f\u064a", "\u0627\u0644\u0623\u0628"],
+    "\u0627\u0644\u0623\u062e": ["brother", "my brother", "\u0627\u062e\u064a", "\u0623\u062e\u064a", "\u0627\u0644\u0623\u062e"],
+    "\u0627\u0644\u0623\u062e\u062a": ["sister", "my sister", "\u0627\u062e\u062a\u064a", "\u0623\u062e\u062a\u064a", "\u0627\u0644\u0623\u062e\u062a"],
+}
+
+RELATIONSHIP_GENDER_HINTS = {
+    "\u0627\u0644\u0632\u0648\u062c\u0629": "female",
+    "\u0627\u0644\u0632\u0648\u062c": "male",
+    "\u0627\u0644\u0627\u0628\u0646": "male",
+    "\u0627\u0644\u0627\u0628\u0646\u0629": "female",
+    "\u0627\u0644\u0623\u0645": "female",
+    "\u0627\u0644\u0623\u0628": "male",
+    "\u0627\u0644\u0623\u062e": "male",
+    "\u0627\u0644\u0623\u062e\u062a": "female",
+}
+
+
+def _relationship_from_person_text(text: str):
+    normalized = normalize_text(text)
+    for relationship, aliases in RELATIONSHIP_PERSON_ALIASES.items():
+        for alias in aliases:
+            alias_norm = normalize_text(alias)
+            if alias_norm and re.search(rf"(?<!\w){re.escape(alias_norm)}(?!\w)", normalized, re.IGNORECASE):
+                return relationship
+    return None
+
+
+def _applicant_label_for(relationship: str | None, index: int):
+    labels = {
+        "\u0627\u0644\u0632\u0648\u062c\u0629": "Wife",
+        "\u0627\u0644\u0632\u0648\u062c": "Husband",
+        "\u0627\u0644\u0627\u0628\u0646": "Son",
+        "\u0627\u0644\u0627\u0628\u0646\u0629": "Daughter",
+        "\u0627\u0644\u0623\u0645": "Mother",
+        "\u0627\u0644\u0623\u0628": "Father",
+        "\u0627\u0644\u0623\u062e": "Brother",
+        "\u0627\u0644\u0623\u062e\u062a": "Sister",
+    }
+    return labels.get(relationship) or ("Applicant" if index == 0 else f"Applicant {index + 1}")
+
+
+def _clean_person_occupation(value: str):
+    candidate = clean_occupation_candidate(value)
+    if not candidate:
+        return None
+    if resolve_country(candidate):
+        return None
+    if has_any(candidate, VISA_WORDS + LIST_WORDS + CHECK_WORDS):
+        return None
+    return normalize_text(candidate)
+
+
+APPLICATION_ACTION_PATTERN = (
+    r"(?:went\s+to\s+apply|want(?:s)?\s+to\s+apply|need(?:s)?\s+to\s+apply|"
+    r"am\s+applying|is\s+applying|are\s+applying|will\s+apply|going\s+to\s+apply|apply(?:ing)?)"
+)
+
+
+def _assign_applicant_visa_types(text: str, ensure_person):
+    visa_pattern = r"(?:for|to)?\s+(?:visa|visa\s+no\.?)\s*(?:no\.?)?[:#\-]?\s*(?P<visa>\d{1,4})"
+    self_pattern = re.compile(
+        rf"\b(?:i|i'm|im|me|myself)\s+(?:also\s+|too\s+)?{APPLICATION_ACTION_PATTERN}\s+{visa_pattern}",
+        re.IGNORECASE,
+    )
+    relationship_pattern = re.compile(
+        rf"(?:my\s+)?(?P<person>wife|husband|son|daughter|father|mother|brother|sister)\s+"
+        rf"(?:also\s+|too\s+)?{APPLICATION_ACTION_PATTERN}\s+{visa_pattern}",
+        re.IGNORECASE,
+    )
+
+    for match in self_pattern.finditer(text):
+        ensure_person("self", None, "Applicant")["visa_type"] = int(match.group("visa"))
+
+    for match in relationship_pattern.finditer(text):
+        relationship = _relationship_from_person_text(match.group("person"))
+        if not relationship:
+            continue
+        applicant = ensure_person(relationship, relationship)
+        applicant["visa_type"] = int(match.group("visa"))
+        applicant["own_application"] = True
+
+
+def extract_applicants(text: str):
+    applicants = {}
+
+    def ensure_person(key: str, relationship: str | None = None, label: str | None = None):
+        if key not in applicants:
+            applicants[key] = {
+                "label": label or _applicant_label_for(relationship, len(applicants)),
+                "relationship": relationship,
+                "age": None,
+                "occupation": None,
+                "gender": RELATIONSHIP_GENDER_HINTS.get(relationship),
+                "visa_type": None,
+                "own_application": False,
+            }
+        elif relationship and not applicants[key].get("relationship"):
+            applicants[key]["relationship"] = relationship
+            applicants[key]["gender"] = applicants[key].get("gender") or RELATIONSHIP_GENDER_HINTS.get(relationship)
+        return applicants[key]
+
+    _assign_applicant_visa_types(text, ensure_person)
+
+    self_age_patterns = [
+        r"(?:my\s+age\s+is|age\s+is)\s*(\d{1,3})",
+        r"\b(?:i\s+am|i'm)\s+(?:a\s+)?(\d{1,3})\s*(?:year|years)?[\s-]*(?:old)?\b",
+        r"(?:\u0639\u0645\u0631\u064a|\u0639\u0645\u0631\u0649|\u0633\u0646\u064a|\u0633\u0646\u0651\u064a)\s*(\d{1,3})",
+    ]
+    for pattern in self_age_patterns:
+        match = re.search(pattern, text, re.IGNORECASE)
+        if match:
+            ensure_person("self", None, "Applicant")["age"] = int(match.group(1))
+            break
+
+    self_occupation = extract_occupation(text)
+    if self_occupation and not _relationship_from_person_text(text[: max(0, text.lower().find(str(self_occupation).lower()))]):
+        ensure_person("self", None, "Applicant")["occupation"] = self_occupation
+
+    self_gender = extract_gender(text)
+    if self_gender and "self" in applicants:
+        applicants["self"]["gender"] = self_gender
+
+    relationship_age_patterns = [
+        r"(?:my\s+)?(?P<person>wife|husband|son|daughter|father|mother|brother|sister)'?s?\s+age\s+(?:is\s*)?(?P<age>\d{1,3})",
+        r"(?:my\s+)?(?P<person>wife|husband|son|daughter|father|mother|brother|sister)\s+(?:is\s+)?(?P<age>\d{1,3})\s*(?:year|years)?[\s-]*(?:old)?\b",
+        r"(?P<person>\u0632\u0648\u062c\u062a\u064a|\u0645\u0631\u062a\u064a|\u0632\u0648\u062c\u064a|\u0627\u0628\u0646\u064a|\u0625\u0628\u0646\u064a|\u0628\u0646\u062a\u064a|\u0627\u0645\u064a|\u0623\u0645\u064a|\u0627\u0628\u0648\u064a|\u0623\u0628\u0648\u064a|\u0627\u062e\u064a|\u0623\u062e\u064a|\u0627\u062e\u062a\u064a|\u0623\u062e\u062a\u064a)\s+(?:\u0639\u0645\u0631\u0647\u0627|\u0639\u0645\u0631\u0647|\u0639\u0645\u0631)?\s*(?P<age>\d{1,3})",
+        r"(?:\u0639\u0645\u0631|\u0639\u0645\u0631\u0647\u0627|\u0639\u0645\u0631\u0647)\s+(?P<person>\u0632\u0648\u062c\u062a\u064a|\u0645\u0631\u062a\u064a|\u0632\u0648\u062c\u064a|\u0627\u0628\u0646\u064a|\u0625\u0628\u0646\u064a|\u0628\u0646\u062a\u064a|\u0627\u0645\u064a|\u0623\u0645\u064a|\u0627\u0628\u0648\u064a|\u0623\u0628\u0648\u064a|\u0627\u062e\u064a|\u0623\u062e\u064a|\u0627\u062e\u062a\u064a|\u0623\u062e\u062a\u064a)\s*(?P<age>\d{1,3})",
+    ]
+    for pattern in relationship_age_patterns:
+        for match in re.finditer(pattern, text, re.IGNORECASE):
+            relationship = _relationship_from_person_text(match.group("person"))
+            if not relationship:
+                continue
+            ensure_person(relationship, relationship)["age"] = int(match.group("age"))
+
+    relationship_occupation_patterns = [
+        r"(?:my\s+)?(?P<person>wife|husband|son|daughter|father|mother|brother|sister)'?s?\s+(?:occupation|job)\s+is\s+(?P<occupation>[a-zA-Z][a-zA-Z\s-]{1,40})",
+        r"(?:my\s+)?(?P<person>wife|husband|son|daughter|father|mother|brother|sister)\s+(?:is\s+)?(?:a|an)\s+(?P<occupation>[a-zA-Z][a-zA-Z\s-]{1,40})",
+        r"(?:my\s+)?(?P<person>wife|husband|son|daughter|father|mother|brother|sister)\s+(?:works\s+as|is\s+(?:a|an)\s+)(?P<occupation>[a-zA-Z][a-zA-Z\s-]{1,40})",
+        r"(?P<person>\u0632\u0648\u062c\u062a\u064a|\u0645\u0631\u062a\u064a|\u0632\u0648\u062c\u064a|\u0627\u0628\u0646\u064a|\u0625\u0628\u0646\u064a|\u0628\u0646\u062a\u064a|\u0627\u0645\u064a|\u0623\u0645\u064a|\u0627\u0628\u0648\u064a|\u0623\u0628\u0648\u064a|\u0627\u062e\u064a|\u0623\u062e\u064a|\u0627\u062e\u062a\u064a|\u0623\u062e\u062a\u064a)\s+(?:\u0645\u0647\u0646\u062a\u0647\u0627|\u0645\u0647\u0646\u062a\u0647|\u062a\u0639\u0645\u0644|\u064a\u0639\u0645\u0644|\u0628\u0645\u0647\u0646\u0629)\s+(?P<occupation>[^\d\u060c,.!?]{2,40})",
+    ]
+    for pattern in relationship_occupation_patterns:
+        for match in re.finditer(pattern, text, re.IGNORECASE):
+            relationship = _relationship_from_person_text(match.group("person"))
+            occupation = _clean_person_occupation(match.group("occupation"))
+            if relationship and occupation:
+                ensure_person(relationship, relationship)["occupation"] = occupation
+
+    result = []
+    for applicant in applicants.values():
+        if any(applicant.get(field) for field in ("age", "occupation", "gender", "relationship", "visa_type", "own_application")):
+            result.append(applicant)
+
+    if len(result) < 2 and not any(applicant.get("own_application") for applicant in result):
+        return []
+
+    return result
 
 
 def is_context_country_question(text: str) -> bool:
@@ -1749,10 +1938,16 @@ def should_consult_gemini(intent: str, text: str, occupation, gender) -> bool:
 
 def analyze_message(user_message: str, context: dict, gemini_service):
     local_country = resolve_applicant_country(user_message)
+    explicit_visa_type = extract_visa_type(user_message)
+    keep_context_visa_type = should_keep_context_visa_type_for_followup(
+        user_message,
+        context,
+        explicit_visa_type,
+    )
     local_visa_type = (
-        extract_visa_type(user_message)
-        or extract_visa_type_by_name(user_message)
-        or extract_generic_visit_visa_type(user_message)
+        explicit_visa_type
+        or (None if keep_context_visa_type else extract_visa_type_by_name(user_message))
+        or (None if keep_context_visa_type else extract_generic_visit_visa_type(user_message))
         or (10 if is_family_visit_application_question(user_message) else None)
         or extract_contextual_visa_type(user_message, context)
     )
@@ -1762,6 +1957,7 @@ def analyze_message(user_message: str, context: dict, gemini_service):
     local_relationship = extract_relationship(user_message)
     local_occupation = extract_occupation(user_message)
     local_gender = extract_gender(user_message)
+    local_applicants = extract_applicants(user_message)
     allow_gemini_age = has_explicit_age_cue(user_message)
     allow_gemini_occupation = bool(local_occupation) or has_explicit_occupation_cue(user_message)
     allow_gemini_gender = bool(local_gender) or has_explicit_gender_cue(user_message)
@@ -1816,5 +2012,6 @@ def analyze_message(user_message: str, context: dict, gemini_service):
         "occupation": occupation,
         "gender": gender,
         "relationship": relationship,
+        "applicants": local_applicants,
         "is_follow_up": bool(context.get("ocr_code") or context.get("visa_type")),
     }

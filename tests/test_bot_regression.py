@@ -10,6 +10,7 @@ from backend import main
 from backend.agentic_pipeline import understand_message
 from backend.context_store import sessions
 from backend.intent_engine import resolve_applicant_country
+from backend.response_builder import build_relationship_details_answer
 
 
 def visa_item(ocr_code, country_ar, country_en, visa_type, visa_name, *, age=(0, 100), occupations=None, relationships=None, gender=None):
@@ -1156,6 +1157,373 @@ class BotRegressionTests(unittest.TestCase):
         self.assertEqual(data["extracted"]["gender"], "male")
         self.assertEqual(data["decision"]["status"], "APPROVED")
         self.assertTrue(any(check["field"] == "occupation" and check["passed"] for check in data["decision"]["checks"]))
+
+
+    def test_master_data_endpoints_can_force_fresh_visa_api_data(self):
+        class RecordingVisaApi(FakeVisaApi):
+            def __init__(self):
+                super().__init__()
+                self.type_refresh_flags = []
+                self.detail_refresh_flags = []
+
+            def get_visa_types_by_country(self, ocr_code, force_refresh=False):
+                self.type_refresh_flags.append(force_refresh)
+                return super().get_visa_types_by_country(ocr_code)
+
+            def get_visa_details(self, ocr_code, visa_type, force_refresh=False):
+                self.detail_refresh_flags.append(force_refresh)
+                return super().get_visa_details(ocr_code, visa_type)
+
+        original = main.visa_api
+        recording_api = RecordingVisaApi()
+        main.visa_api = recording_api
+        try:
+            self.assertEqual(self.client.get("/api/visa-types/JOR?fresh=page-refresh").status_code, 200)
+            self.assertEqual(self.client.get("/api/occupations/JOR/8?fresh=page-refresh").status_code, 200)
+            self.assertEqual(self.client.get("/api/relationships/JOR/10?fresh=page-refresh").status_code, 200)
+            response = self.client.post(
+                "/api/form-check",
+                json={
+                    "ocr_code": "JOR",
+                    "visa_type": 8,
+                    "age": 30,
+                    "occupation": "judge",
+                    "fresh_master_data": "page-refresh",
+                },
+            )
+            self.assertEqual(response.status_code, 200)
+        finally:
+            main.visa_api = original
+
+        self.assertTrue(any(recording_api.type_refresh_flags))
+        self.assertTrue(any(recording_api.detail_refresh_flags))
+
+    def test_relationship_details_chat_uses_same_full_relationship_list_as_direct_check(self):
+        direct = self.client.get("/api/relationships/JOR/10").json()["relationships"]
+        data = self.chat("what relationships are allowed for visa 10 from jordan", language="en")
+
+        self.assertEqual(data["extracted"]["intent"], "relationship_details")
+        for relationship in direct:
+            self.assertIn(relationship["relation_name_en"], data["answer"])
+
+    def test_english_relationship_details_translate_arabic_or_mojibake_names(self):
+        raw = visa_item(
+            "JOR",
+            "الأردن",
+            "JORDAN",
+            10,
+            "سمة دخول زيارة عائلية",
+            relationships=[],
+        )
+        raw["countryRule"]["rules"]["relationship"] = [
+            {"relationNameAr": "زوجة الاب", "relationCode": "100"},
+            {"relationNameAr": "قريب-قوة الجيش", "relationCode": "200"},
+            {"relationNameAr": "غير محددة", "relationCode": "300"},
+            {"relationNameAr": "Ø²ÙˆØ¬Ø© Ø§Ù„Ø§Ø¨", "relationCode": "400"},
+            {"relationNameAr": "علاقة غير مترجمة تماما", "relationCode": "999"},
+            {"relationNameEn": "Wifeâ€™s Niece", "relationCode": "500"},
+        ]
+        decision = {
+            "status": "INFO",
+            "intent": "relationship_details",
+            "visa_type": 10,
+            "visa_name": raw["typeOfVisa"],
+            "country_ar": "الأردن",
+            "country_en": "JORDAN",
+            "ocr_code": "JOR",
+            "raw_visa_details": raw,
+        }
+
+        answer = build_relationship_details_answer(
+            "give me all allowed relationships in visa 10",
+            decision,
+            {"country_en": "JORDAN", "ocr_code": "JOR", "language": "en"},
+        )
+
+        self.assertIn("Father's wife", answer)
+        self.assertIn("Army force relative", answer)
+        self.assertIn("Unspecified relationship", answer)
+        self.assertIn("Relationship code 999", answer)
+        self.assertIn("Wife's Niece", answer)
+        self.assertNotRegex(answer, r"[\u0600-\u06ff]")
+        self.assertNotRegex(answer, r"[ØÙÃÂâ�]")
+
+    def test_eligibility_answer_uses_eligible_not_approved_wording(self):
+        data = self.chat(
+            "I am from Jordan. My occupation is judge. My age is 30. Can I apply for visa 8?",
+            language="en",
+        )
+
+        self.assertEqual(data["decision"]["status"], "APPROVED")
+        self.assertIn("Eligible", data["answer"])
+        self.assertNotIn("Approved", data["answer"])
+        self.assertNotIn("Not Approved", data["answer"])
+
+    def test_chat_evaluates_all_people_mentioned_in_one_eligibility_query(self):
+        data = self.chat(
+            "I am from Jordan for family visa. My age is 25 and my wife's age is 23.",
+            language="en",
+        )
+
+        self.assertIn(data["extracted"]["intent"], {"eligibility_check", "relationship_check"})
+        self.assertEqual(len(data["extracted"]["applicants"]), 2)
+        self.assertEqual(len(data["decision"]["applicants"]), 2)
+        self.assertEqual(data["decision"]["applicants"][0]["applicant_data"]["age"], 25)
+        self.assertEqual(data["decision"]["applicants"][1]["applicant_data"]["age"], 23)
+        self.assertIn("Applicant", data["answer"])
+        self.assertIn("Wife", data["answer"])
+        self.assertIn("25", data["answer"])
+        self.assertIn("23", data["answer"])
+
+    def test_country_followup_after_multi_person_relationship_check_continues_eligibility(self):
+        session_id = "multi-person-country-followup"
+        first = self.chat(
+            "i'm 40 years old and my son is 17 years old can we apply to visa 10",
+            session_id=session_id,
+            language="en",
+        )
+
+        self.assertEqual(first["extracted"]["intent"], "relationship_check")
+        self.assertEqual(first["context"]["visa_type"], 10)
+        self.assertEqual(len(first["context"]["applicants"]), 2)
+        self.assertIn("country", first["decision"]["missing_fields"])
+
+        second = self.chat("jordanian", session_id=session_id, language="en")
+
+        self.assertEqual(second["extracted"]["intent"], "relationship_check")
+        self.assertEqual(second["context"]["ocr_code"], "JOR")
+        self.assertEqual(second["context"]["visa_type"], 10)
+        self.assertEqual(len(second["decision"]["applicants"]), 2)
+        self.assertEqual(second["decision"]["applicants"][0]["applicant_data"]["age"], 40)
+        self.assertEqual(second["decision"]["applicants"][1]["applicant_data"]["age"], 17)
+        self.assertIn("Eligibility result for all mentioned applicants", second["answer"])
+        self.assertNotEqual(second["decision"]["intent"], "provide_country")
+        self.assertNotEqual(second["decision"]["intent"], "visa_details")
+
+        third = self.chat("no", session_id=session_id, language="en")
+
+        self.assertNotEqual(third["decision"]["intent"], "visa_details")
+        self.assertNotIn("Visa details", third["answer"])
+
+    def test_companion_student_followup_does_not_switch_to_study_visa_or_require_occupation(self):
+        session_id = "son-student-family-followup"
+        first = self.chat(
+            "i am jordanian and my age is 44 and my son 16 can we apply for visa 10",
+            session_id=session_id,
+            language="en",
+        )
+
+        son_first = first["decision"]["applicants"][1]
+        self.assertEqual(first["context"]["visa_type"], 10)
+        self.assertNotIn("occupation", son_first["missing_fields"])
+        self.assertIn("occupation", first["decision"]["applicants"][0]["missing_fields"])
+        self.assertNotRegex(first["answer"], r"Relationship\s+[\u0600-\u06ff]+")
+
+        second = self.chat(
+            "i am software engineer and my son student",
+            session_id=session_id,
+            language="en",
+        )
+
+        self.assertEqual(second["context"]["visa_type"], 10)
+        self.assertEqual(second["decision"]["visa_type"], 10)
+        self.assertNotIn("Study entry visa", second["answer"])
+        self.assertEqual(second["decision"]["status"], "APPROVED")
+        self.assertNotIn("occupation", second["decision"]["applicants"][1]["missing_fields"])
+        self.assertNotIn("Missing information: occupation", "\n".join(second["answer"].splitlines()[-8:]))
+
+    def test_companion_wife_without_work_does_not_need_occupation(self):
+        session_id = "wife-no-work-family-followup"
+        first = self.chat(
+            "i am jordanian and my age is 44 and my wife 37 can we apply for visa 10",
+            session_id=session_id,
+            language="en",
+        )
+
+        self.assertEqual(first["context"]["visa_type"], 10)
+        self.assertNotIn("occupation", first["decision"]["applicants"][1]["missing_fields"])
+
+        second = self.chat(
+            "i am software engineer and my wife doesn't have a work",
+            session_id=session_id,
+            language="en",
+        )
+
+        self.assertEqual(second["context"]["visa_type"], 10)
+        self.assertEqual(second["decision"]["visa_type"], 10)
+        self.assertEqual(second["decision"]["status"], "APPROVED")
+        self.assertNotIn("occupation", second["decision"]["applicants"][1]["missing_fields"])
+        self.assertNotIn("Missing information: occupation", "\n".join(second["answer"].splitlines()[-8:]))
+
+    def test_different_visa_for_wife_is_independent_applicant_not_companion(self):
+        session_id = "mixed-visa-independent-wife"
+        first = self.chat(
+            "hello i went to apply for visa 10 and my wife went to apply for visa 16 i am 33 and my wife 26",
+            session_id=session_id,
+            language="en",
+        )
+
+        self.assertEqual(first["context"]["visa_type"], 10)
+        self.assertEqual(first["context"].get("relationship"), None)
+        self.assertEqual(first["context"]["applicants"][0]["visa_type"], 10)
+        self.assertEqual(first["context"]["applicants"][1]["visa_type"], 16)
+        self.assertTrue(first["context"]["applicants"][1]["own_application"])
+        self.assertIn("country", first["decision"]["missing_fields"])
+
+        second = self.chat("jordanian", session_id=session_id, language="en")
+
+        self.assertTrue(second["decision"]["mixed_visa_types"])
+        self.assertEqual(second["decision"]["applicants"][0]["visa_type"], 10)
+        self.assertEqual(second["decision"]["applicants"][1]["visa_type"], 16)
+        self.assertIsNone(second["decision"]["applicants"][1]["applicant_data"]["relationship"])
+        self.assertIn("occupation", second["decision"]["applicants"][0]["missing_fields"])
+        self.assertIn("occupation", second["decision"]["applicants"][1]["missing_fields"])
+        self.assertFalse(
+            any(check["field"] == "relationship" for check in second["decision"]["applicants"][1]["checks"])
+        )
+        self.assertIn("multiple requested visa types", second["answer"])
+        self.assertIn("Visa No. 10", second["answer"])
+        self.assertIn("Visa No. 16", second["answer"])
+
+        third = self.chat(
+            "i am software engineer and my wife a teacher",
+            session_id=session_id,
+            language="en",
+        )
+
+        self.assertTrue(third["decision"]["mixed_visa_types"])
+        self.assertEqual(third["decision"]["applicants"][0]["visa_type"], 10)
+        self.assertEqual(third["decision"]["applicants"][1]["visa_type"], 16)
+        self.assertEqual(third["decision"]["applicants"][0]["applicant_data"]["age"], 33)
+        self.assertEqual(third["decision"]["applicants"][1]["applicant_data"]["age"], 26)
+        self.assertEqual(third["decision"]["applicants"][0]["applicant_data"]["occupation"], "software engineer")
+        self.assertEqual(third["decision"]["applicants"][1]["applicant_data"]["occupation"], "teacher")
+        self.assertIsNone(third["decision"]["applicants"][1]["applicant_data"]["relationship"])
+        self.assertNotIn("relationship", [check["field"] for check in third["decision"]["applicants"][1]["checks"]])
+        self.assertNotIn("Missing information: age", third["answer"])
+        self.assertIn("Visa No. 16", third["answer"])
+
+        fourth = self.chat(
+            "my wife need to apply for visa 16",
+            session_id=session_id,
+            language="en",
+        )
+
+        self.assertTrue(fourth["decision"]["mixed_visa_types"])
+        self.assertEqual(fourth["context"]["visa_type"], 10)
+        self.assertEqual(fourth["decision"]["applicants"][1]["visa_type"], 16)
+        self.assertEqual(fourth["decision"]["applicants"][1]["applicant_data"]["age"], 26)
+        self.assertEqual(fourth["decision"]["applicants"][1]["applicant_data"]["occupation"], "teacher")
+        self.assertIsNone(fourth["decision"]["applicants"][1]["applicant_data"]["relationship"])
+        self.assertNotIn("companion", fourth["answer"].lower())
+
+    def test_normal_chat_routes_bare_occupation_followup_to_pending_wife(self):
+        session_id = "normal-chat-bare-wife-occupation"
+        self.chat(
+            "hello i went to apply for visa 10 and my wife went to apply for visa 16 i am 33 and my wife 26",
+            session_id=session_id,
+            language="en",
+        )
+        self.chat("jordanian", session_id=session_id, language="en")
+        self.chat("i am software engineer", session_id=session_id, language="en")
+
+        data = self.chat("teacher", session_id=session_id, language="en")
+
+        self.assertTrue(data["decision"]["mixed_visa_types"])
+        self.assertEqual(data["context"]["applicants"][0]["occupation"], "software engineer")
+        self.assertEqual(data["context"]["applicants"][1]["occupation"], "teacher")
+        self.assertEqual(data["decision"]["applicants"][0]["applicant_data"]["occupation"], "software engineer")
+        self.assertEqual(data["decision"]["applicants"][1]["applicant_data"]["occupation"], "teacher")
+        self.assertEqual(data["decision"]["applicants"][1]["visa_type"], 16)
+        self.assertIsNone(data["decision"]["applicants"][1]["applicant_data"]["relationship"])
+
+    def test_normal_chat_routes_bare_age_followup_to_pending_wife_not_primary(self):
+        session_id = "normal-chat-bare-wife-age"
+        self.chat(
+            "hello i went to apply for visa 10 and my wife went to apply for visa 16 i am 33",
+            session_id=session_id,
+            language="en",
+        )
+        self.chat("jordanian", session_id=session_id, language="en")
+        self.chat("i am software engineer", session_id=session_id, language="en")
+
+        data = self.chat("26", session_id=session_id, language="en")
+
+        self.assertEqual(data["context"]["age"], 33)
+        self.assertEqual(data["context"]["applicants"][0]["age"], 33)
+        self.assertEqual(data["context"]["applicants"][1]["age"], 26)
+        self.assertEqual(data["decision"]["applicants"][0]["applicant_data"]["age"], 33)
+        self.assertEqual(data["decision"]["applicants"][1]["applicant_data"]["age"], 26)
+        self.assertIn("occupation", data["decision"]["applicants"][1]["missing_fields"])
+
+    def test_companion_relationship_without_age_is_relationship_only_in_normal_chat(self):
+        data = self.chat(
+            "i am jordanian and i am 44 and i am software engineer can i bring my wife with visa 10",
+            language="en",
+        )
+
+        self.assertEqual(data["decision"]["status"], "APPROVED")
+        self.assertNotIn("age", data["decision"]["missing_fields"])
+        self.assertNotIn("Missing information: age", data["answer"])
+        self.assertTrue(any(check["field"] == "relationship" and check["passed"] for check in data["decision"]["checks"]))
+
+    def test_normal_chat_asks_politely_for_missing_occupation_after_partial_result(self):
+        session_id = "normal-chat-missing-occupation-prompt"
+        self.chat(
+            "i went to apply for visa 10 i am 33 and my wife 29",
+            session_id=session_id,
+            language="en",
+        )
+
+        data = self.chat("jordanian", session_id=session_id, language="en")
+
+        self.assertEqual(data["decision"]["status"], "NEED_MORE_INFO")
+        self.assertIn("Missing information: occupation.", data["answer"])
+        self.assertIn(
+            "Please tell me your current occupation so I can complete the eligibility check.",
+            data["answer"],
+        )
+
+    def test_normal_chat_asks_politely_for_missing_age(self):
+        data = self.chat(
+            "I am from Jordan. My occupation is judge. Can I apply for visa 8?",
+            language="en",
+        )
+
+        self.assertEqual(data["decision"]["status"], "NEED_MORE_INFO")
+        self.assertIn("Missing information: age.", data["answer"])
+        self.assertIn(
+            "Please tell me your age so I can complete the eligibility check.",
+            data["answer"],
+        )
+
+    def test_reset_session_clears_previous_normal_chat_context(self):
+        session_id = "normal-chat-reset-clears-context"
+        self.chat(
+            "i went to apply for visa 10 i am 33 and my wife 29",
+            session_id=session_id,
+            language="en",
+        )
+        self.chat("jordanian", session_id=session_id, language="en")
+        self.chat("engineer", session_id=session_id, language="en")
+
+        reset_response = self.client.post(f"/api/reset-session/{session_id}")
+        self.assertEqual(reset_response.status_code, 200)
+
+        data = self.chat(
+            "hey i went to apply for visa 10",
+            session_id=session_id,
+            language="en",
+        )
+
+        self.assertEqual(data["context"]["visa_type"], 10)
+        self.assertIsNone(data["context"]["age"])
+        self.assertIsNone(data["context"]["occupation"])
+        self.assertEqual(data["context"]["applicants"], [])
+        self.assertIn("country", data["decision"]["missing_fields"])
+        self.assertNotIn("Age 33", data["answer"])
+        self.assertNotIn("engineer", data["answer"])
+        self.assertNotIn("Wife", data["answer"])
 
 
 if __name__ == "__main__":

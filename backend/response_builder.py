@@ -1,6 +1,7 @@
 import re
 
 from .rules_engine import (
+    build_relationship_list,
     first_rule_list,
     gender_policy,
     gender_rule_values,
@@ -76,6 +77,142 @@ RELATIONSHIP_NAMES_EN = {
     "مرافق": "companion",
 }
 
+RELATIONSHIP_EXACT_TRANSLATIONS_EN = {
+    "الأب": "Father",
+    "الاب": "Father",
+    "الأم": "Mother",
+    "الام": "Mother",
+    "الأخ": "Brother",
+    "الاخ": "Brother",
+    "الأخت": "Sister",
+    "الاخت": "Sister",
+    "الابن": "Son",
+    "الإبن": "Son",
+    "الابنة": "Daughter",
+    "الإبنة": "Daughter",
+    "الزوج": "Husband",
+    "الزوجة": "Wife",
+    "الزوجة الثانية": "Second wife",
+    "الزوجة الثالثة": "Third wife",
+    "العم": "Paternal uncle",
+    "العمة": "Paternal aunt",
+    "الخال": "Maternal uncle",
+    "الخالة": "Maternal aunt",
+    "الجد": "Grandfather",
+    "الجدة": "Grandmother",
+    "حفيد": "Grandson",
+    "حفيدة": "Granddaughter",
+    "ولىالامر": "Guardian",
+    "ولي الامر": "Guardian",
+    "قريب": "Relative",
+    "صديق": "Friend",
+    "رجل دين": "Cleric",
+    "غير محددة": "Unspecified relationship",
+    "قريب -قوة الشرطة": "Police force relative",
+    "قريب-قوة الشرطة": "Police force relative",
+    "قريب-قوة الجيش": "Army force relative",
+    "قريب -قوة الجيش": "Army force relative",
+    "قريب-قوةالحرس الوطني": "National Guard relative",
+    "قريب-قوة الحرس الوطني": "National Guard relative",
+    "زوجة الاب": "Father's wife",
+    "زوجة الأب": "Father's wife",
+    "زوجة الام": "Mother's wife",
+    "زوج الام": "Mother's husband",
+    "زوجة الابن": "Son's wife",
+    "زوجة الأخ": "Brother's wife",
+    "زوجة الاخ": "Brother's wife",
+    "زوجة العم": "Paternal uncle's wife",
+    "زوجة الخال": "Maternal uncle's wife",
+    "زوج الابنة": "Daughter's husband",
+    "زوجة الحفيد": "Grandson's wife",
+    "ابن الزوج": "Husband's son",
+    "ابنة الزوج": "Husband's daughter",
+    "ابن الزوجة": "Wife's son",
+    "ابنة الزوجة": "Wife's daughter",
+    "ابن الأخ": "Brother's son",
+    "ابن الاخ": "Brother's son",
+    "ابنة الأخ": "Brother's daughter",
+    "ابنة الاخ": "Brother's daughter",
+    "ابن الأخت": "Sister's son",
+    "ابن الاخت": "Sister's son",
+    "ابنة الأخت": "Sister's daughter",
+    "ابنة الاخت": "Sister's daughter",
+    "أم الزوجة": "Wife's mother",
+    "ام الزوجة": "Wife's mother",
+    "أب الزوجة": "Wife's father",
+    "اب الزوجة": "Wife's father",
+    "أم الزوج": "Husband's mother",
+    "ام الزوج": "Husband's mother",
+    "أب الزوج": "Husband's father",
+    "اب الزوج": "Husband's father",
+    "أخ الزوجة": "Wife's brother",
+    "اخ الزوجة": "Wife's brother",
+    "أخت الزوجة": "Wife's sister",
+    "اخت الزوجة": "Wife's sister",
+    "أخ الزوج": "Husband's brother",
+    "اخ الزوج": "Husband's brother",
+    "أخت الزوج": "Husband's sister",
+    "اخت الزوج": "Husband's sister",
+}
+
+RELATIONSHIP_WORD_TRANSLATIONS_EN = {
+    "اب": "father",
+    "ابو": "father",
+    "والد": "father",
+    "ام": "mother",
+    "والده": "mother",
+    "اخ": "brother",
+    "شقيق": "brother",
+    "اخت": "sister",
+    "ابن": "son",
+    "ابنه": "daughter",
+    "بنت": "daughter",
+    "زوج": "husband",
+    "زوجه": "wife",
+    "عم": "paternal uncle",
+    "عمه": "paternal aunt",
+    "خال": "maternal uncle",
+    "خاله": "maternal aunt",
+    "جد": "grandfather",
+    "جده": "grandmother",
+    "حفيد": "grandson",
+    "حفيده": "granddaughter",
+    "حفيدت": "granddaughter",
+    "ثانيه": "second",
+    "الثانيه": "second",
+    "ثالثه": "third",
+    "الثالثه": "third",
+    "قريب": "relative",
+    "صديق": "friend",
+    "رجل": "man",
+    "دين": "religion",
+}
+
+RELATIONSHIP_PREFIX_TRANSLATIONS_EN = (
+    ("والده", "mother of"),
+    ("والد", "father of"),
+    ("زوجه", "wife of"),
+    ("زوج", "husband of"),
+    ("ابنه", "daughter of"),
+    ("بنت", "daughter of"),
+    ("ابن", "son of"),
+    ("اخت", "sister of"),
+    ("اخ", "brother of"),
+    ("شقيق", "brother of"),
+    ("ام", "mother of"),
+    ("اب", "father of"),
+    ("حفيدت", "granddaughter of"),
+    ("حفيده", "granddaughter of"),
+    ("حفيد", "grandson of"),
+)
+
+MOJIBAKE_MARKERS = ("Ø", "Ù", "Ã", "Â", "â", "�")
+GENERIC_RELATIONSHIP_ENGLISH_LABELS = {
+    "relationship name not available",
+    "name not available",
+    "name not available in the data",
+}
+
 
 def is_arabic(text: str, session: dict | None = None) -> bool:
     if re.search(r"[\u0600-\u06ff]", text or ""):
@@ -147,12 +284,256 @@ def field_name(field, arabic: bool):
     return names.get(str(field), str(field).replace("_", " "))
 
 
+def text_has_arabic(value) -> bool:
+    return bool(re.search(r"[\u0600-\u06ff]", str(value or "")))
+
+
+def mojibake_score(value) -> int:
+    text = str(value or "")
+    return sum(text.count(marker) for marker in MOJIBAKE_MARKERS)
+
+
+def repair_text_encoding(value) -> str:
+    text = str(value or "").strip()
+    if not text:
+        return ""
+
+    best = text
+    for encoding in ("latin1", "cp1252"):
+        try:
+            decoded = text.encode(encoding).decode("utf-8")
+        except (UnicodeEncodeError, UnicodeDecodeError):
+            continue
+        if decoded and (text_has_arabic(decoded) or mojibake_score(decoded) < mojibake_score(best)):
+            best = decoded
+            break
+
+    replacements = {
+        "â€™": "'",
+        "â€˜": "'",
+        "â€œ": '"',
+        "â€�": '"',
+        "â€“": "-",
+        "â€”": "-",
+        "â€‹": "",
+        "\u2019": "'",
+        "\u2018": "'",
+        "\u201c": '"',
+        "\u201d": '"',
+        "\u2013": "-",
+        "\u2014": "-",
+        "\u200b": "",
+        "\ufeff": "",
+    }
+    for old, new in replacements.items():
+        best = best.replace(old, new)
+
+    return re.sub(r"\s+", " ", best).strip()
+
+
+def clean_english_relationship_text(value) -> str:
+    text = repair_text_encoding(value)
+    if not text:
+        return ""
+    if text_has_arabic(text) or mojibake_score(text):
+        return ""
+    if text.strip().lower() in GENERIC_RELATIONSHIP_ENGLISH_LABELS:
+        return ""
+    return text
+
+
+def normalize_arabic_relationship_key(value) -> str:
+    normalized = repair_text_encoding(value).strip().lower()
+    normalized = re.sub(r"[\u064b-\u065f\u0670]", "", normalized)
+    normalized = re.sub(r"[\u200b-\u200f]", "", normalized)
+    replacements = {
+        "أ": "ا",
+        "إ": "ا",
+        "آ": "ا",
+        "ى": "ي",
+        "ؤ": "و",
+        "ئ": "ي",
+        "ة": "ه",
+        "ـ": "",
+    }
+    for old, new in replacements.items():
+        normalized = normalized.replace(old, new)
+    normalized = re.sub(r"[()]", " ", normalized)
+    normalized = re.sub(r"[^\w\s\u0600-\u06ff]", " ", normalized)
+    normalized = re.sub(r"\s+", " ", normalized).strip()
+    return normalized
+
+
+def strip_arabic_article(value) -> str:
+    return str(value or "").removeprefix("ال")
+
+
+def exact_relationship_translation_en(value) -> str:
+    normalized_value = normalize_arabic_relationship_key(value)
+    if not normalized_value:
+        return ""
+
+    for arabic_name, english_name in RELATIONSHIP_EXACT_TRANSLATIONS_EN.items():
+        if normalize_arabic_relationship_key(arabic_name) == normalized_value:
+            return english_name
+    return ""
+
+
+def relationship_code(item: dict | None) -> str:
+    item = item or {}
+    return str(item.get("relation_code") or item.get("relationCode") or item.get("code") or "").strip()
+
+
+def relationship_word_translation_en(value) -> str:
+    normalized = strip_arabic_article(normalize_arabic_relationship_key(value))
+    return RELATIONSHIP_WORD_TRANSLATIONS_EN.get(normalized, "")
+
+
+def format_generated_relationship_label(value) -> str:
+    label = re.sub(r"\s+", " ", str(value or "")).strip()
+    if not label or text_has_arabic(label) or mojibake_score(label):
+        return ""
+    return label[:1].upper() + label[1:]
+
+
+def translate_arabic_relationship_noun_phrase(value, depth: int = 0) -> str:
+    if depth > 8:
+        return ""
+
+    text = normalize_arabic_relationship_key(value)
+    if not text:
+        return ""
+
+    exact = exact_relationship_translation_en(text)
+    if exact:
+        return exact.lower()
+
+    direct_word = relationship_word_translation_en(text)
+    if direct_word:
+        return direct_word
+
+    generated = translate_arabic_relationship_phrase_en(text, depth + 1)
+    if generated:
+        return generated.lower()
+
+    translated_words = [
+        relationship_word_translation_en(word)
+        for word in text.split()
+    ]
+    return " ".join(word for word in translated_words if word)
+
+
+def translate_arabic_relationship_phrase_en(value, depth: int = 0) -> str:
+    if depth > 8:
+        return ""
+
+    text = normalize_arabic_relationship_key(value)
+    if not text:
+        return ""
+
+    exact = exact_relationship_translation_en(text)
+    if exact:
+        return exact
+
+    for prefix, english_prefix in RELATIONSHIP_PREFIX_TRANSLATIONS_EN:
+        if text == prefix or text == f"ال{prefix}":
+            direct_word = relationship_word_translation_en(text) or english_prefix.replace(" of", "")
+            return format_generated_relationship_label(direct_word)
+
+        without_article = strip_arabic_article(text)
+        if not without_article.startswith(prefix) or len(without_article) <= len(prefix):
+            continue
+
+        rest = without_article[len(prefix):].strip()
+        if not rest:
+            continue
+
+        translated_rest = translate_arabic_relationship_noun_phrase(rest, depth + 1) or "relative"
+        return format_generated_relationship_label(f"{english_prefix} {translated_rest}")
+
+    translated = relationship_word_translation_en(text)
+    if translated:
+        return format_generated_relationship_label(translated)
+
+    return ""
+
+
+def translate_relationship_name_to_english(value, item: dict | None = None) -> str:
+    text = repair_text_encoding(value)
+    if not text:
+        return ""
+
+    if not text_has_arabic(text):
+        english_text = clean_english_relationship_text(text)
+        return format_generated_relationship_label(english_text) if english_text.islower() else english_text
+
+    exact = exact_relationship_translation_en(text)
+    if exact:
+        return exact
+
+    generated = translate_arabic_relationship_phrase_en(text)
+    if generated:
+        return generated
+
+    code = relationship_code(item)
+    return f"Relationship code {code}" if code else "Family relationship"
+
+
 def relationship_name(value, arabic: bool):
     if not value:
         return "العلاقة المذكورة" if arabic else "the mentioned relationship"
     if arabic:
-        return str(value)
-    return RELATIONSHIP_NAMES_EN.get(str(value), str(value))
+        return repair_text_encoding(value)
+    name = RELATIONSHIP_NAMES_EN.get(str(value)) or translate_relationship_name_to_english(value)
+    return name[:1].upper() + name[1:] if name.islower() else name
+
+
+def format_relationship_list_item(item: dict, arabic: bool):
+    if not isinstance(item, dict):
+        return ""
+
+    if arabic:
+        name = (
+            item.get("relation_name_ar")
+            or item.get("relationNameAr")
+            or item.get("arabicDescription")
+            or item.get("ArabicDescription")
+            or item.get("label")
+            or item.get("value")
+            or ""
+        )
+        return repair_text_encoding(name)
+
+    name_en = (
+        item.get("relation_name_en")
+        or item.get("relationNameEn")
+        or item.get("DescriptionEn")
+        or item.get("EnglishDescription")
+        or ""
+    )
+    clean_name_en = clean_english_relationship_text(name_en)
+    if clean_name_en:
+        return clean_name_en
+
+    name_ar = (
+        item.get("relation_name_ar")
+        or item.get("relationNameAr")
+        or item.get("arabicDescription")
+        or item.get("ArabicDescription")
+        or ""
+    )
+    translated_name = translate_relationship_name_to_english(name_ar, item)
+    if translated_name:
+        return translated_name
+
+    for fallback_key in ("label", "value"):
+        fallback = item.get(fallback_key)
+        translated_fallback = translate_relationship_name_to_english(fallback, item)
+        if translated_fallback:
+            return translated_fallback
+
+    code = relationship_code(item)
+    return f"Relationship code {code}" if code else "Family relationship"
 
 
 def gender_policy_note(policy: dict | None, arabic: bool):
@@ -189,15 +570,15 @@ def status_text(status, arabic: bool):
     normalized = str(status or "").upper()
     if arabic:
         return {
-            "APPROVED": "مبدئياً مطابق",
-            "NOT_APPROVED": "غير مطابق",
+            "APPROVED": "مؤهل",
+            "NOT_APPROVED": "غير مؤهل",
             "NEED_MORE_INFO": "تحتاج معلومات إضافية",
             "INFO": "معلومات",
         }.get(normalized, "تحتاج معلومات إضافية")
 
     return {
-        "APPROVED": "Approved",
-        "NOT_APPROVED": "Not Approved",
+        "APPROVED": "Eligible",
+        "NOT_APPROVED": "Not Eligible",
         "NEED_MORE_INFO": "Need More Information",
         "INFO": "Information",
     }.get(normalized, "Need More Information")
@@ -670,14 +1051,13 @@ def build_occupation_confirmation_answer(user_message: str, decision: dict, sess
 def build_relationship_details_answer(user_message: str, decision: dict, session: dict):
     arabic = is_arabic(user_message, session)
     raw = decision.get("raw_visa_details") or {}
-    summary = extract_rule_summary(raw)
     visa_label = format_visa_label(decision.get("visa_type"), decision.get("visa_name"), arabic)
     country = country_display(session, decision, arabic)
-    relationship_names = allowed_names(
-        summary["relationships"],
-        ["relationNameAr", "arabicDescription", "ArabicDescription", "relationNameEn", "DescriptionEn"] if arabic else ["relationNameEn", "DescriptionEn", "relationNameAr", "arabicDescription", "ArabicDescription"],
-        limit=80,
-    )
+    relationship_names = [
+        format_relationship_list_item(item, arabic)
+        for item in build_relationship_list(raw)
+    ]
+    relationship_names = clean_items([name for name in relationship_names if name])
 
     if not relationship_names:
         return (
@@ -939,7 +1319,22 @@ def translate_check(check: dict, arabic: bool):
             return message or "The provided age is not logically consistent with the stated occupation."
         if field == "occupation" and check.get("matched_value"):
             return f"Occupation is allowed ({check.get('matched_value')})." if passed else "Occupation is not listed as allowed."
+        if field == "relationship":
+            relation = relationship_name(check.get("input_value") or check.get("matched_value"), False)
+            return (
+                f"Relationship is allowed ({relation})."
+                if passed
+                else f"Relationship is not allowed ({relation})."
+            )
         return message or field_name(field, False)
+
+    if field == "relationship":
+        relation = relationship_name(check.get("input_value") or check.get("matched_value"), True)
+        return (
+            f"العلاقة مسموحة ({relation}) حسب البيانات."
+            if passed
+            else f"العلاقة غير مسموحة ({relation}) حسب البيانات."
+        )
 
     if field == "age":
         return "العمر ضمن النطاق المسموح." if passed else "العمر خارج النطاق المسموح."
@@ -949,15 +1344,193 @@ def translate_check(check: dict, arabic: bool):
         if passed and check.get("matched_value"):
             return f"المهنة مسموحة ({check.get('matched_value')})."
         return "المهنة مسموحة حسب البيانات." if passed else "المهنة غير مدرجة ضمن المهن المسموحة."
-    if field == "relationship":
-        return "العلاقة مسموحة حسب البيانات." if passed else "العلاقة غير مسموحة حسب البيانات."
     if field == "gender":
         return "الجنس مطابق للشروط." if passed else "يوجد تقييد على الجنس لهذه الفيزا."
 
     return message or field_name(field, True)
 
 
+def applicant_display_label(applicant_decision: dict, index: int, arabic: bool):
+    label = str((applicant_decision or {}).get("applicant_label") or "").strip()
+    relationship = ((applicant_decision or {}).get("applicant_data") or {}).get("relationship")
+    if relationship:
+        return relationship_name(relationship, arabic)
+    if arabic:
+        return "مقدم الطلب" if index == 0 else f"مقدم الطلب {index + 1}"
+    return label or ("Applicant" if index == 0 else f"Applicant {index + 1}")
+
+
+def format_applicant_facts(applicant_data: dict, arabic: bool):
+    applicant_data = applicant_data or {}
+    facts = []
+
+    if applicant_data.get("age") is not None:
+        facts.append(("العمر" if arabic else "Age") + f": {applicant_data.get('age')}")
+    if applicant_data.get("occupation"):
+        facts.append(("المهنة" if arabic else "Occupation") + f": {applicant_data.get('occupation')}")
+    if applicant_data.get("gender"):
+        facts.append(("الجنس" if arabic else "Gender") + f": {applicant_data.get('gender')}")
+    if applicant_data.get("relationship"):
+        facts.append(("العلاقة" if arabic else "Relationship") + f": {relationship_name(applicant_data.get('relationship'), arabic)}")
+
+    return facts
+
+
+def missing_prompt_owner(label: str, index: int, arabic: bool):
+    normalized = str(label or "").strip().lower()
+    if arabic:
+        if index == 0 or normalized in {"applicant", "مقدم الطلب"}:
+            return "الخاصة بك"
+        return f"الخاصة بـ {label}"
+
+    owner_map = {
+        "applicant": "your",
+        "wife": "your wife's",
+        "husband": "your husband's",
+        "son": "your son's",
+        "daughter": "your daughter's",
+        "father": "your father's",
+        "mother": "your mother's",
+        "brother": "your brother's",
+        "sister": "your sister's",
+    }
+    if index == 0:
+        return "your"
+    return owner_map.get(normalized, f"{label}'s" if label else "the applicant's")
+
+
+def missing_fields_prompt(missing_items: list[dict], arabic: bool):
+    missing_items = [
+        item for item in (missing_items or [])
+        if isinstance(item, dict) and item.get("field")
+    ]
+    if not missing_items:
+        return None
+
+    grouped = {}
+    for item in missing_items:
+        key = item.get("applicant_index", 0)
+        grouped.setdefault(key, {
+            "label": item.get("applicant_label") or ("Applicant" if key == 0 else f"Applicant {key + 1}"),
+            "fields": [],
+        })
+        if item.get("field") not in grouped[key]["fields"]:
+            grouped[key]["fields"].append(item.get("field"))
+
+    if len(grouped) == 1:
+        index, details = next(iter(grouped.items()))
+        fields = details["fields"]
+        label = details["label"]
+        owner = missing_prompt_owner(label, int(index or 0), arabic)
+        has_age = "age" in fields or "valid_age" in fields
+        has_occupation = "occupation" in fields
+
+        if arabic:
+            if has_age and has_occupation:
+                return f"يرجى تزويدي بالعمر والمهنة الحالية {owner} حتى أتمكن من إكمال فحص الأهلية."
+            if has_occupation:
+                return f"يرجى تزويدي بالمهنة الحالية {owner} حتى أتمكن من إكمال فحص الأهلية."
+            if has_age:
+                return f"يرجى تزويدي بالعمر {owner} حتى أتمكن من إكمال فحص الأهلية."
+            readable = "، ".join(field_name(field, True) for field in fields)
+            return f"يرجى تزويدي بـ {readable} حتى أتمكن من إكمال فحص الأهلية."
+
+        if has_age and has_occupation:
+            return f"Please tell me {owner} age and current occupation so I can complete the eligibility check."
+        if has_occupation:
+            return f"Please tell me {owner} current occupation so I can complete the eligibility check."
+        if has_age:
+            return f"Please tell me {owner} age so I can complete the eligibility check."
+        readable = ", ".join(field_name(field, False) for field in fields)
+        return f"Please provide {owner} {readable} so I can complete the eligibility check."
+
+    if arabic:
+        parts = []
+        for index, details in grouped.items():
+            label = details["label"]
+            fields = "، ".join(field_name(field, True) for field in details["fields"])
+            parts.append(f"{label}: {fields}")
+        return "يرجى تزويدي بالمعلومات الناقصة التالية حتى أتمكن من إكمال فحص الأهلية: " + "؛ ".join(parts) + "."
+
+    parts = []
+    for index, details in grouped.items():
+        label = details["label"] or ("Applicant" if index == 0 else f"Applicant {index + 1}")
+        fields = ", ".join(field_name(field, False) for field in details["fields"])
+        parts.append(f"{label}: {fields}")
+    return "Please provide the missing information so I can complete the eligibility check: " + "; ".join(parts) + "."
+
+
+def build_multi_applicant_eligibility_answer(user_message: str, decision: dict, session: dict):
+    arabic = is_arabic(user_message, session)
+    visa_label = format_visa_label(decision.get("visa_type"), decision.get("visa_name"), arabic)
+    country = country_display(session, decision, arabic)
+    applicants = decision.get("applicants") or []
+    mixed_visa_types = bool(decision.get("mixed_visa_types"))
+
+    lines = []
+    if arabic:
+        lines.append("نتيجة الأهلية لكل الأشخاص المذكورين:")
+        lines.append(f"الأهلية الإجمالية: {status_text(decision.get('status'), True)}")
+        lines.append(f"البلد: {country}")
+        lines.append("الفيزات: أكثر من نوع فيزا مذكور في الطلب." if mixed_visa_types else f"الفيزا: {visa_label}")
+    else:
+        lines.append("Eligibility result for all mentioned applicants:")
+        lines.append(f"Overall eligibility: {status_text(decision.get('status'), False)}")
+        lines.append(f"Country: {country}")
+        lines.append("Visas: multiple requested visa types." if mixed_visa_types else f"Visa: {visa_label}")
+
+    for index, applicant_decision in enumerate(applicants):
+        passed = [check for check in (applicant_decision.get("checks") or []) if check.get("passed") is True]
+        failed = [check for check in (applicant_decision.get("checks") or []) if check.get("passed") is False]
+        missing = applicant_decision.get("missing_fields") or []
+        label = applicant_display_label(applicant_decision, index, arabic)
+        facts = format_applicant_facts(applicant_decision.get("applicant_data"), arabic)
+
+        lines.append("")
+        if arabic:
+            lines.append(f"{label}: {status_text(applicant_decision.get('status'), True)}")
+        else:
+            lines.append(f"{label}: {status_text(applicant_decision.get('status'), False)}")
+
+        if mixed_visa_types:
+            applicant_visa_label = format_visa_label(
+                applicant_decision.get("visa_type"),
+                applicant_decision.get("visa_name"),
+                arabic,
+            )
+            lines.append(
+                f"- الفيزا: {applicant_visa_label}"
+                if arabic
+                else f"- Visa: {applicant_visa_label}"
+            )
+
+        if facts:
+            lines.extend(f"- {fact}" for fact in facts)
+
+        if passed:
+            lines.extend(f"- {translate_check(check, arabic)}" for check in passed)
+        if failed:
+            lines.extend(f"- {translate_check(check, arabic)}" for check in failed)
+        if missing:
+            readable = ("، ".join(field_name(field, True) for field in missing) if arabic else ", ".join(field_name(field, False) for field in missing))
+            lines.append(
+                f"- معلومات مطلوبة: {readable}."
+                if arabic
+                else f"- Missing information: {readable}."
+            )
+
+    prompt = missing_fields_prompt(decision.get("missing_fields_by_applicant") or [], arabic)
+    if prompt:
+        lines.append("")
+        lines.append(prompt)
+
+    return "\n".join(lines)
+
+
 def build_eligibility_answer(user_message: str, decision: dict, session: dict):
+    if decision.get("applicants"):
+        return build_multi_applicant_eligibility_answer(user_message, decision, session)
+
     arabic = is_arabic(user_message, session)
     checks = decision.get("checks") or []
     passed = [check for check in checks if check.get("passed") is True]
@@ -974,7 +1547,7 @@ def build_eligibility_answer(user_message: str, decision: dict, session: dict):
 
     if arabic:
         lines.append("نتيجة الفحص المبدئي حسب قواعد التأشيرات المتاحة:")
-        lines.append(f"الحالة: {status_text(decision.get('status'), True)}")
+        lines.append(f"الأهلية: {status_text(decision.get('status'), True)}")
         lines.append(f"البلد: {country}")
         lines.append(f"الفيزا: {visa_label}")
         if gender_note:
@@ -1000,6 +1573,12 @@ def build_eligibility_answer(user_message: str, decision: dict, session: dict):
                 readable = "، ".join(field_name(field, True) for field in missing)
             lines.append("")
             lines.append(f"معلومات مطلوبة لإكمال الفحص: {readable}.")
+            prompt = missing_fields_prompt([
+                {"applicant_index": 0, "applicant_label": "مقدم الطلب", "field": field}
+                for field in missing
+            ], True)
+            if prompt:
+                lines.append(prompt)
 
         if alternatives:
             lines.append("")
@@ -1016,7 +1595,7 @@ def build_eligibility_answer(user_message: str, decision: dict, session: dict):
         return "\n".join(lines)
 
     lines.append("Preliminary eligibility result based on available visa rules:")
-    lines.append(f"Status: {status_text(decision.get('status'), False)}")
+    lines.append(f"Eligibility: {status_text(decision.get('status'), False)}")
     lines.append(f"Country: {country}")
     lines.append(f"Visa: {visa_label}")
     if gender_note:
@@ -1042,6 +1621,12 @@ def build_eligibility_answer(user_message: str, decision: dict, session: dict):
             readable = ", ".join(field_name(field, False) for field in missing)
         lines.append("")
         lines.append(f"Missing information: {readable}.")
+        prompt = missing_fields_prompt([
+            {"applicant_index": 0, "applicant_label": "Applicant", "field": field}
+            for field in missing
+        ], False)
+        if prompt:
+            lines.append(prompt)
 
     if alternatives:
         lines.append("")
@@ -1096,6 +1681,9 @@ def build_chat_answer(user_message: str, decision: dict, session: dict, extracte
 
     if intent == "relationship_details":
         return build_relationship_details_answer(user_message, decision, session)
+
+    if decision.get("applicants") and intent in {"eligibility_check", "relationship_check"}:
+        return build_multi_applicant_eligibility_answer(user_message, decision, session)
 
     if intent == "relationship_check":
         return build_relationship_check_answer(user_message, decision, session)

@@ -45,9 +45,9 @@ class VisaApiService:
                 expires_at = time.monotonic() + self.cache_ttl
                 self._cache[key] = (expires_at, value)
 
-    def _get_rules(self, params: dict):
+    def _get_rules(self, params: dict, force_refresh: bool = False):
         cache_key = tuple(sorted(params.items()))
-        cached = self._cache_get(cache_key)
+        cached = None if force_refresh else self._cache_get(cache_key)
         if cached is not None:
             return cached
 
@@ -72,16 +72,16 @@ class VisaApiService:
 
         raise last_error
 
-    def get_visa_types_by_country(self, ocr_code: str):
+    def get_visa_types_by_country(self, ocr_code: str, force_refresh: bool = False):
         params = {"ocrCode": ocr_code}
-        return self._get_rules(params)
+        return self._get_rules(params, force_refresh=force_refresh)
 
-    def get_visa_details(self, ocr_code: str, visa_type: int):
+    def get_visa_details(self, ocr_code: str, visa_type: int, force_refresh: bool = False):
         params = {
             "ocrCode": ocr_code,
             "visaType": visa_type
         }
-        return self._get_rules(params)
+        return self._get_rules(params, force_refresh=force_refresh)
 
 
 visa_api = VisaApiService()

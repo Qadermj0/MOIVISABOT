@@ -4,6 +4,7 @@ const THEME_KEY = "kuwaitVisaUi.theme";
 const API_BASE = "";
 const DEFAULT_LANGUAGE = "en";
 const DEFAULT_THEME = "light";
+const VISA_DATA_REFRESH_TOKEN = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 const VISA_TYPE_NAMES_EN = {
   1: "Government work entry visa",
   2: "Private sector work entry visa",
@@ -202,7 +203,7 @@ const translations = {
     unreadableAnswer: "I received the response, but no readable answer was provided.",
     availableVisaTypes: "Available visa types:",
     chooseVisaToCheck: "Choose a visa to check eligibility:",
-    status: "Status",
+    status: "Eligibility",
     visa: "Visa",
     applicantCountry: "Applicant Country",
     passedChecks: "Passed checks",
@@ -217,8 +218,8 @@ const translations = {
     noMissingFields: "No missing fields were returned.",
     availableVisaTypesTitle: "Available Visa Types",
     noVisaTypesReturned: "No visa types were returned.",
-    approved: "Approved",
-    notApproved: "Not Approved",
+    approved: "Eligible",
+    notApproved: "Not Eligible",
     needMoreInfo: "Need More Information",
     information: "Information",
     visaNo: "Visa No.",
@@ -335,7 +336,7 @@ const translations = {
     unreadableAnswer: "وصلني الرد، لكن لا توجد إجابة قابلة للعرض.",
     availableVisaTypes: "أنواع التأشيرات المتاحة:",
     chooseVisaToCheck: "اختر فيزا لبدء فحص الأهلية:",
-    status: "الحالة",
+    status: "الأهلية",
     visa: "التأشيرة",
     applicantCountry: "دولة مقدم الطلب",
     passedChecks: "الفحوصات المطابقة",
@@ -350,8 +351,8 @@ const translations = {
     noMissingFields: "لا توجد حقول ناقصة.",
     availableVisaTypesTitle: "أنواع التأشيرات المتاحة",
     noVisaTypesReturned: "لم يتم إرجاع أنواع تأشيرات.",
-    approved: "مطابق",
-    notApproved: "غير مطابق",
+    approved: "مؤهل",
+    notApproved: "غير مؤهل",
     needMoreInfo: "تحتاج معلومات إضافية",
     information: "معلومات",
     visaNo: "تأشيرة رقم",
@@ -389,6 +390,7 @@ const state = {
   voiceStream: null,
   voiceChunks: [],
   voiceRecordingTimer: null,
+  visaDataRefreshToken: VISA_DATA_REFRESH_TOKEN,
 };
 
 const elements = {
@@ -945,11 +947,15 @@ function getOrCreateSessionId() {
     return existing;
   }
 
+  const generated = createSessionId();
+  localStorage.setItem(SESSION_KEY, generated);
+  return generated;
+}
+
+function createSessionId() {
   const generated = crypto.randomUUID
     ? crypto.randomUUID()
     : `session-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-
-  localStorage.setItem(SESSION_KEY, generated);
   return generated;
 }
 
@@ -1071,7 +1077,7 @@ function syncInitialGreeting() {
   const hasUserMessages = Boolean(elements.chatMessages.querySelector(".user-message"));
   if (!hasUserMessages) {
     elements.chatMessages.innerHTML = "";
-    appendMessage("assistant", t("welcomeMessage"));
+    appendWelcomeMessage();
   }
 }
 
@@ -1134,9 +1140,13 @@ function handleLanguageSelection(event) {
 
 async function apiRequest(path, options = {}) {
   const response = await fetch(`${API_BASE}${path}`, {
+    cache: "no-store",
     ...options,
     headers: {
       "Content-Type": "application/json",
+      "Cache-Control": "no-cache",
+      "Pragma": "no-cache",
+      "X-Visa-Data-Refresh": state.visaDataRefreshToken,
       ...(options.headers || {}),
     },
   });
@@ -1153,6 +1163,11 @@ async function apiRequest(path, options = {}) {
   }
 
   return data;
+}
+
+function withVisaDataRefresh(path) {
+  const separator = path.includes("?") ? "&" : "?";
+  return `${path}${separator}fresh=${encodeURIComponent(state.visaDataRefreshToken)}`;
 }
 
 function tryParseJson(text) {
@@ -1196,6 +1211,7 @@ async function submitChatMessage(message, language = detectMessageLanguage(messa
         session_id: state.sessionId,
         message,
         language,
+        fresh_master_data: state.visaDataRefreshToken,
       }),
     });
 
@@ -1408,27 +1424,30 @@ function updateVoiceButtonState() {
 
 async function handleResetConversation() {
   setChatLoading(true, t("resettingConversation"));
+  const previousSessionId = state.sessionId;
 
   try {
-    await apiRequest(`/api/reset-session/${encodeURIComponent(state.sessionId)}`, {
+    await apiRequest(`/api/reset-session/${encodeURIComponent(previousSessionId)}`, {
       method: "POST",
     });
-
+  } catch (error) {
+    console.warn("Could not reset previous chat session on the server.", error);
+  } finally {
+    state.sessionId = createSessionId();
+    localStorage.setItem(SESSION_KEY, state.sessionId);
     resetChatMessages();
     setChatStatus(t("conversationReset"), "success");
-  } catch (error) {
-    setChatStatus(error.message, "error");
-  } finally {
     setChatLoading(false);
   }
 }
 
 function resetChatMessages() {
   elements.chatMessages.innerHTML = "";
-  appendMessage(
-    "assistant",
-    t("welcomeMessage")
-  );
+  appendWelcomeMessage();
+}
+
+function appendWelcomeMessage() {
+  return appendMessage("assistant", t("welcomeMessage"), { welcomeMessage: true });
 }
 
 function appendLoadingMessage(role, text) {
@@ -1449,6 +1468,9 @@ function appendMessage(role, text, metadata = {}) {
 function createMessageElement(role, text, metadata = {}) {
   const article = document.createElement("article");
   article.className = `message ${role === "user" ? "user-message" : "assistant-message"}`;
+  if (metadata.welcomeMessage) {
+    article.dataset.welcomeMessage = "true";
+  }
 
   const avatar = document.createElement("div");
   avatar.className = role === "user" ? "message-avatar" : "message-avatar message-avatar-image";
@@ -1921,7 +1943,7 @@ async function handleCountryChange() {
   setEligibilityStatus(t("loadingVisaTypes"));
 
   try {
-    const data = await apiRequest(`/api/visa-types/${encodeURIComponent(ocrCode)}`);
+    const data = await apiRequest(withVisaDataRefresh(`/api/visa-types/${encodeURIComponent(ocrCode)}`));
     state.visaTypes = normalizeVisaTypes(data);
     populateVisaTypes();
     setEligibilityStatus(state.visaTypes.length ? "" : t("noVisaTypes"));
@@ -2088,7 +2110,7 @@ async function loadOccupationsForSelectedVisa() {
 
   try {
     const data = await apiRequest(
-      `/api/occupations/${encodeURIComponent(ocrCode)}/${encodeURIComponent(visaType)}`
+      withVisaDataRefresh(`/api/occupations/${encodeURIComponent(ocrCode)}/${encodeURIComponent(visaType)}`)
     );
 
     if (ocrCode !== elements.countrySelect.value || visaType !== elements.visaTypeSelect.value) {
@@ -2389,7 +2411,7 @@ async function loadRelationshipsForSelectedVisa() {
 
   try {
     const data = await apiRequest(
-      `/api/relationships/${encodeURIComponent(ocrCode)}/${encodeURIComponent(visaType)}`
+      withVisaDataRefresh(`/api/relationships/${encodeURIComponent(ocrCode)}/${encodeURIComponent(visaType)}`)
     );
 
     if (ocrCode !== elements.countrySelect.value || visaType !== elements.visaTypeSelect.value) {
@@ -2607,6 +2629,7 @@ async function handleEligibilitySubmit(event) {
         occupation: optionalText(elements.occupationInput.value),
         gender: optionalText(elements.genderSelect.value),
         relationship: optionalList(state.selectedRelationships),
+        fresh_master_data: state.visaDataRefreshToken,
       }),
     });
 

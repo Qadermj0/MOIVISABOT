@@ -702,6 +702,7 @@ def check_eligibility(visa_data, user_data):
     occupation = user_data.get("occupation")
     gender = user_data.get("gender")
     relationship = user_data.get("relationship")
+    skip_occupation = bool(user_data.get("skip_occupation"))
 
     min_age, max_age = get_age_rule(rules)
     if not min_age and not max_age:
@@ -768,7 +769,7 @@ def check_eligibility(visa_data, user_data):
         if isinstance(o, dict)
     ]
 
-    if occupation_rules:
+    if occupation_rules and not skip_occupation:
         if not occupation:
             result["missing_fields"].append("occupation")
         else:
@@ -799,6 +800,7 @@ def check_eligibility(visa_data, user_data):
             "passed": matched_rel,
             "field": "relationship",
             "message": f"Relationship {relationship_value} is allowed." if matched_rel else f"Relationship {relationship_value} is not allowed.",
+            "input_value": relationship_value,
             "matched_value": matched_rel_name
         })
 

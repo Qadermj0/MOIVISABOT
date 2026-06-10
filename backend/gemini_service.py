@@ -49,6 +49,8 @@ Make the answer explanatory and conversational, but stay inside the visible rule
 You are the eligibility answer agent.
 Your job is to explain an eligibility decision from the rule engine.
 The rule engine status, checks, failed checks, and missing fields are mandatory and cannot be changed.
+Use user-facing eligibility wording: "Eligible", "Not Eligible", or "Need More Information".
+Do not say "Approved" or "Not Approved" for eligibility results.
 If more information is needed, say that clearly and ask only for the missing fields.
 If a check passed, never describe it as failed. If a check failed, never describe it as passed.
 """,
@@ -163,6 +165,7 @@ class GeminiService:
             "occupation": None,
             "gender": None,
             "relationship": None,
+            "applicants": [],
             "is_follow_up": False,
         }
 
@@ -268,17 +271,25 @@ class GeminiService:
         status = str((decision or {}).get("status") or "").upper()
         checks = (decision or {}).get("checks") or []
 
-        if status == "NEED_MORE_INFO" and ("not approved" in text or "approved" in text):
+        if status == "NEED_MORE_INFO" and (
+            "not approved" in text
+            or "approved" in text
+            or "not eligible" in text
+            or "you are eligible" in text
+            or "status: eligible" in text
+        ):
             return True
 
-        if status == "APPROVED" and "not approved" in text:
+        if status == "APPROVED" and ("not approved" in text or "not eligible" in text):
             return True
 
         if status == "NOT_APPROVED" and (
             "status: approved" in text
+            or "status: eligible" in text
             or "currently approved" in text
             or "application is approved" in text
             or "you are approved" in text
+            or "you are eligible" in text
         ):
             return True
 
@@ -338,7 +349,10 @@ class GeminiService:
 
         intent = str((decision or {}).get("intent") or "").strip()
         status = str((decision or {}).get("status") or "").upper()
-        if status == "API_ERROR" or intent in {"dependent_residency_inquiry", "residency_admin_inquiry", "system_support_inquiry"}:
+        if status == "API_ERROR" or intent in {"relationship_details", "dependent_residency_inquiry", "residency_admin_inquiry", "system_support_inquiry"}:
+            return False
+
+        if (decision or {}).get("applicants"):
             return False
 
         if any(
@@ -677,7 +691,7 @@ Absolute rules:
 - For visa type lists, include every visa number. Use English visa names for English answers and Arabic visa names for Arabic answers.
 - For requirements, explain only the visible rules already present in the fallback answer or compact decision data.
 - Preserve the fallback answer facts and level of detail. Do not expand long arrays beyond the fallback answer unless the user explicitly asks for the full list.
-- For eligibility checks, clearly explain Approved / Not Approved / Need More Information based on decision.status.
+- For eligibility checks, clearly explain Eligible / Not Eligible / Need More Information based on decision.status.
 - If decision.intent is visa_details, answer as an informational rule summary only. Do not describe it as an eligibility check, do not mention missing fields, and do not ask the user to provide age, occupation, gender, or relationship.
 - For visa_details, summarize relationship lists briefly and do not list more than 12 relationships unless the user explicitly asks about relationships.
 - If decision.intent is age_details, answer only with the age rule for the selected country and visa. Do not ask for age, occupation, gender, or relationship.
@@ -686,7 +700,7 @@ Absolute rules:
 - If decision.intent is relationship_details, answer only with the allowed relationships/companions. If none are listed, clearly say that no relationships or companions are allowed in the current data. Do not list visa types.
 - If decision.intent is relationship_check, answer only whether the mentioned relationship is allowed or not allowed. Do not ask for age, occupation, or gender.
 - If decision.intent is relationship_reset, acknowledge that the companion/relationship was removed from the check, then give the updated result if the compact decision contains one.
-- If decision.status is NEED_MORE_INFO, never call it Approved or Not Approved. Say that more information is needed and ask only for missing_fields.
+- If decision.status is NEED_MORE_INFO, never call it Eligible, Not Eligible, Approved, or Not Approved. Say that more information is needed and ask only for missing_fields.
 - If the check is for the wife as the applicant and missing_fields includes age or occupation, ask specifically for the wife's age and/or wife's occupation. Do not ask for generic age or occupation.
 - If decision.status is NOT_APPROVED because occupation failed, do not ask for age just because it is absent. The failed occupation already determines the current visa result.
 - If decision.alternative_visas is present, mention those alternative visa numbers as options the user may check instead. Do not invent alternatives.

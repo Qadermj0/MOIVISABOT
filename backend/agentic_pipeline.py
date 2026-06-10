@@ -65,6 +65,7 @@ EXTRACTION_FIELDS = (
     "occupation",
     "gender",
     "relationship",
+    "applicants",
 )
 
 
