@@ -382,6 +382,7 @@ const state = {
   isEligibilityLoading: false,
   currentEligibilityStep: "country",
   hasEligibilityResult: false,
+  directCheckResetToken: 0,
   isOccupationsLoading: false,
   isRelationshipsLoading: false,
   isVoiceRecording: false,
@@ -1908,6 +1909,7 @@ function openEligibilityModal() {
 }
 
 function closeEligibilityModal() {
+  resetDirectEligibilityCheck();
   closeAllSearchableSelects();
   closeOccupationMenu();
   closeRelationshipMenu();
@@ -1977,6 +1979,40 @@ function resetDirectCheckAfterCountry() {
   clearDirectInputs();
   elements.eligibilityResult.innerHTML = "";
   syncEligibilityExperience();
+}
+
+function resetDirectEligibilityCheck() {
+  state.directCheckResetToken += 1;
+  state.selectedCountry = null;
+  state.hasEligibilityResult = false;
+  state.visaTypes = [];
+  state.occupations = [];
+  state.relationships = [];
+  state.selectedRelationships = [];
+  state.isEligibilityLoading = false;
+  state.isOccupationsLoading = false;
+  state.isRelationshipsLoading = false;
+
+  elements.countrySelect.value = "";
+  syncSearchableSelect("country");
+  elements.visaTypeGroup.classList.add("hidden");
+  elements.visaTypeSelect.innerHTML = "";
+  elements.visaTypeSelect.appendChild(createOption("", t("selectVisaType")));
+  elements.visaTypeSelect.disabled = false;
+  syncSearchableSelect("visaType");
+  resetOccupationOptions();
+  resetRelationshipOptions();
+  hideConditionalFields();
+  clearDirectInputs();
+  elements.eligibilityResult.innerHTML = "";
+  setEligibilityStatus("");
+  setEligibilityLoading(false);
+  syncEligibilityExperience("country");
+  elements.eligibilityModal.scrollTop = 0;
+  const modalDialog = elements.eligibilityModal.querySelector(".modal");
+  if (modalDialog) {
+    modalDialog.scrollTop = 0;
+  }
 }
 
 function populateVisaTypes() {
@@ -2611,6 +2647,7 @@ async function handleEligibilitySubmit(event) {
 
   const ocrCode = elements.countrySelect.value;
   const visaType = elements.visaTypeSelect.value;
+  const requestResetToken = state.directCheckResetToken;
 
   if (!ocrCode || !visaType) {
     return;
@@ -2633,14 +2670,23 @@ async function handleEligibilitySubmit(event) {
       }),
     });
 
+    if (requestResetToken !== state.directCheckResetToken) {
+      return;
+    }
+
     renderEligibilityResult(data);
     state.hasEligibilityResult = true;
     syncEligibilityExperience("result");
     setEligibilityStatus("");
   } catch (error) {
+    if (requestResetToken !== state.directCheckResetToken) {
+      return;
+    }
     setEligibilityStatus(error.message, "error");
   } finally {
-    setEligibilityLoading(false);
+    if (requestResetToken === state.directCheckResetToken) {
+      setEligibilityLoading(false);
+    }
   }
 }
 
@@ -2727,10 +2773,7 @@ function renderEligibilityResult(data) {
   resetBtn.type = "button";
   resetBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v6h6"/></svg><span>' + t("startOver") + '</span>';
   resetBtn.addEventListener("click", function() {
-    elements.countrySelect.value = "";
-    syncSearchableSelect("country");
-    handleCountryChange();
-    syncEligibilityExperience("country");
+    resetDirectEligibilityCheck();
   });
   actions.appendChild(resetBtn);
   card.appendChild(actions);
@@ -2774,10 +2817,7 @@ function renderVisaTypesOnlyResult(card, visaTypes) {
   resetBtn.type = "button";
   resetBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v6h6"/></svg><span>' + t("startOver") + '</span>';
   resetBtn.addEventListener("click", function() {
-    elements.countrySelect.value = "";
-    syncSearchableSelect("country");
-    handleCountryChange();
-    syncEligibilityExperience("country");
+    resetDirectEligibilityCheck();
   });
   actions.appendChild(resetBtn);
   card.appendChild(actions);
